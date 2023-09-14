@@ -1,6 +1,6 @@
 // alt1 base libs, provides all the commonly used methods for image matching and capture
 // also gives your editor info about the window.alt1 api
-import * as a1lib from "alt1";
+import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
 import * as TargetMob from 'alt1/targetmob';
 
@@ -8,26 +8,28 @@ import * as TargetMob from 'alt1/targetmob';
 // add these files to the output directory
 // this works because in /webpack.config.js we told webpack to treat all html, json and imageimports
 // as assets
-import "./index.html";
-import "./appconfig.json";
-import "./icon.png";
-import "./css/jobgauge.css";
-import TargetMobReader from "alt1/targetmob";
+import './index.html';
+import './appconfig.json';
+import './icon.png';
+import './css/jobgauge.css';
+import TargetMobReader from 'alt1/targetmob';
 
-
-var output = document.getElementById("output");
+var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
 var settingsButton = document.getElementById('SettingsButton');
-var offhand = <HTMLInputElement> document.getElementById('Offhand');
-var forcedConjures = <HTMLInputElement> document.getElementById('ForcedConjures');
-var jobGauge = document.getElementById("JobGauge");
+var offhand = <HTMLInputElement>document.getElementById('Offhand');
+var forcedConjures = <HTMLInputElement>(
+	document.getElementById('ForcedConjures')
+);
+var colorFields: any = document.getElementsByClassName('colors');
+var jobGauge = document.getElementById('JobGauge');
 var conjures = document.getElementById('Conjures');
 var skeleton_conjure = document.getElementById('Skeleton');
 var zombie_conjure = document.getElementById('Zombie');
 var ghost_conjure = document.getElementById('Ghost');
 var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
-var necrosis = document.getElementById("Necrosis");
+var necrosis = document.getElementById('Necrosis');
 
 // loads all images as raw pixel data async, images have to be saved as *.data.png
 // this also takes care of metadata headers in the image that make browser load the image
@@ -80,12 +82,18 @@ export function startJobGauge() {
 		return;
 	}
 	var img = a1lib.captureHoldFullRs();
-	setInterval(() => { findNecrosis() }, 200);
-	setInterval(() => { getSoulsValue(); }, 200);
+	setInterval(() => {
+		findNecrosis();
+	}, 200);
+	setInterval(() => {
+		getSoulsValue();
+	}, 200);
 	setInterval(() => {
 		getConjures();
 	}, 200);
-	setInterval(function() { checkBloat(img) }, 200);
+	setInterval(function () {
+		checkBloat(img);
+	}, 200);
 }
 
 function initSettings() {
@@ -95,9 +103,21 @@ function initSettings() {
 			JSON.stringify({
 				buffsLocation: getBuffsLocation,
 				offhand95: false,
-				forcedConjures: true
+				forcedConjures: true,
+				soulBgColor: '#52f9fa;',
+				necrosisDefaultBgColor: '#9205e4;',
+				necrosisFreecastBgColor: '#FFaf88;',
+				necrosisCappedBgColor: '#FF0000;',
+				bloatNotchColor: '#FF0000;',
 			})
 		);
+		document.getElementById('SoulBgColor')['value'] = '#52f9fa';
+		document.getElementById('NecrosisDefaultBgColor')['value'] ='#9205e4';
+		document.getElementById('NecrosisFreestyleBgColor')['value'] =
+			'#FFaf88';
+		document.getElementById('NecrosisCappedBgColor')['value'] = '#FF0000';
+		document.getElementById('BloatNotchColor')['value'] = '#FF0000';
+		loadSettings();
 	} else {
 		loadSettings();
 	}
@@ -117,8 +137,54 @@ function loadSettings() {
 	} else {
 		forcedConjures.checked = false;
 	}
-}
 
+	let currentSoulBgColor = getSetting('soulBgColor');
+	let currentNecrosisDefaultBgColor = getSetting('necrosisDefaultBgColor');
+	let currentNecrosisFreecastBgColor = getSetting('necrosisFreecastBgColor');
+	let currentNecrosisCappedBgColor = getSetting('necrosisCappedBgColor');
+	let currentBloatNotchColor = getSetting('bloatNotchColor');
+
+	document.documentElement.style.setProperty(
+		'--soul-bg-color',
+		currentSoulBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-default-bg-color',
+		currentNecrosisDefaultBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-freecast-bg-color',
+		currentNecrosisFreecastBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-capped-bg-color',
+		currentNecrosisCappedBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--bloat-notch-color',
+		currentBloatNotchColor
+	);
+
+	document
+		.getElementById('SoulBgColor')
+		.setAttribute('value', currentSoulBgColor);
+
+	document
+		.getElementById('NecrosisDefaultBgColor')
+		.setAttribute('value', currentNecrosisDefaultBgColor);
+
+	document
+		.getElementById('NecrosisFreestyleBgColor')
+		.setAttribute('value', currentNecrosisFreecastBgColor);
+
+	document
+		.getElementById('NecrosisCappedBgColor')
+		.setAttribute('value', currentNecrosisCappedBgColor);
+
+	document
+		.getElementById('BloatNotchColor')
+		.setAttribute('value', currentBloatNotchColor);
+}
 
 offhand.addEventListener('click', () => {
 	updateSetting('offhand95', offhand.checked);
@@ -130,6 +196,13 @@ forcedConjures.addEventListener('click', () => {
 	loadSettings();
 });
 
+for (let color of colorFields) {
+	color.addEventListener('input', (e) => {
+		updateSetting(e.target.dataset.setting, e.target.value);
+		loadSettings();
+	});
+}
+
 function getSetting(setting) {
 	if (!localStorage.nyusNecroJobGauge) {
 		initSettings();
@@ -138,12 +211,12 @@ function getSetting(setting) {
 }
 
 function updateSetting(setting, value) {
-    if (!localStorage.getItem("nyusNecroJobGauge")) {
-        localStorage.setItem("nyusNecroJobGauge", JSON.stringify({}));
-    }
-    var save_data = JSON.parse(localStorage.getItem("nyusNecroJobGauge"));
-    save_data[setting] = value;
-    localStorage.setItem("nyusNecroJobGauge", JSON.stringify(save_data));
+	if (!localStorage.getItem('nyusNecroJobGauge')) {
+		localStorage.setItem('nyusNecroJobGauge', JSON.stringify({}));
+	}
+	var save_data = JSON.parse(localStorage.getItem('nyusNecroJobGauge'));
+	save_data[setting] = value;
+	localStorage.setItem('nyusNecroJobGauge', JSON.stringify(save_data));
 }
 
 function getBuffsLocation() {
@@ -156,7 +229,7 @@ function getBuffsLocation() {
 }
 
 function checkBloat(img) {
-	var targetDisplay = new TargetMob.default;
+	var targetDisplay = new TargetMob.default();
 	targetDisplay.read();
 	if (targetDisplay.lastpos === null) {
 		return;
@@ -184,10 +257,7 @@ function checkBloat(img) {
 					bloat.style.setProperty('--timer', (0.0).toString());
 					bloat.dataset.timer = (0.0).toString();
 				} else {
-					let currentTick = roundedToFixed(
-						bloat.dataset.timer,
-						1
-					);
+					let currentTick = roundedToFixed(bloat.dataset.timer, 1);
 					let nextTick = roundedToFixed(
 						parseFloat(currentTick) - 0.6,
 						1
@@ -203,7 +273,6 @@ function checkBloat(img) {
 		bloat.style.setProperty('--timer', (0.0).toString());
 		bloat.dataset.timer = (0.0).toString();
 	}
-
 }
 
 function roundedToFixed(input, digits) {
@@ -211,8 +280,8 @@ function roundedToFixed(input, digits) {
 	return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
 
-a1lib.on('rsfocus' , startJobGauge);
-settingsButton.addEventListener('click' , toggleSettings);
+a1lib.on('rsfocus', startJobGauge);
+settingsButton.addEventListener('click', toggleSettings);
 
 function toggleSettings() {
 	settings.classList.toggle('visible');
@@ -220,14 +289,18 @@ function toggleSettings() {
 
 function findNecrosis() {
 	var buffsLocation = getBuffsLocation();
-	var searchArea = a1lib.captureHold(buffsLocation.x, buffsLocation.y, buffsLocation.width, buffsLocation.height);
+	var searchArea = a1lib.captureHold(
+		buffsLocation.x,
+		buffsLocation.y,
+		buffsLocation.width,
+		buffsLocation.height
+	);
 	var isNecrosis = searchArea.findSubimage(imgs.necrosis).length;
 	if (isNecrosis) {
 		getNecrosisStacks();
-	 }
-	 else {
+	} else {
 		necrosis.dataset.stacks = '0';
-	 }
+	}
 }
 
 function getNecrosisStacks() {
@@ -270,7 +343,8 @@ function getSoulsValue() {
 	var isSouls4 = searchArea.findSubimage(imgs.residual_soul_4).length;
 	var isSouls5 = searchArea.findSubimage(imgs.residual_soul_5).length;
 	var residualSouls = [isSouls1, isSouls2, isSouls3, isSouls4, isSouls5];
-	var residualSoulsValue = parseInt(residualSouls.indexOf(1).toString(), 10) + 1;
+	var residualSoulsValue =
+		parseInt(residualSouls.indexOf(1).toString(), 10) + 1;
 	souls.dataset.souls = residualSoulsValue.toString();
 }
 
@@ -283,16 +357,16 @@ function getConjures() {
 		buffsLocation.height
 	);
 	var conjuredSkeleton =
-		(searchArea.findSubimage(imgs.skeleton_warrior_top).length ||
-		searchArea.findSubimage(imgs.skeleton_warrior_right).length);
-	var conjuredZombie= searchArea.findSubimage(imgs.putrid_zombie_top).length;
+		searchArea.findSubimage(imgs.skeleton_warrior_top).length ||
+		searchArea.findSubimage(imgs.skeleton_warrior_right).length;
+	var conjuredZombie = searchArea.findSubimage(imgs.putrid_zombie_top).length;
 	var conjuredGhost =
 		searchArea.findSubimage(imgs.vengeful_ghost_top).length ||
 		searchArea.findSubimage(imgs.vengeful_ghost_right).length;
 	var conjuredConjures = [conjuredSkeleton, conjuredZombie, conjuredGhost];
 	if (conjuredConjures[0] == 1) {
 		skeleton_conjure.classList.remove('inactive');
-	} else if (conjuredConjures[0] == 0 ) {
+	} else if (conjuredConjures[0] == 0) {
 		skeleton_conjure.classList.add('inactive');
 	}
 	if (conjuredConjures[1] == 1) {
@@ -366,15 +440,15 @@ function check12s(searchArea) {
 }
 
 function finalCountdown(conjure: HTMLElement) {
-		conjure.classList.add('forced-active');
-		for (let i = 0; i < 12; i++) {
-			setTimeout(() => {
-				if (parseInt(conjure.dataset.remaining) > 0) {
-					let newValue = parseInt(conjure.dataset.remaining) - 1;
-					conjure.dataset.remaining = newValue.toString();
-				}
-			}, 1000 * i);
-		}
+	conjure.classList.add('forced-active');
+	for (let i = 0; i < 12; i++) {
+		setTimeout(() => {
+			if (parseInt(conjure.dataset.remaining) > 0) {
+				let newValue = parseInt(conjure.dataset.remaining) - 1;
+				conjure.dataset.remaining = newValue.toString();
+			}
+		}, 1000 * i);
+	}
 }
 
 //check if we are running inside alt1 by checking if the alt1 global exists
@@ -382,12 +456,17 @@ if (window.alt1) {
 	//tell alt1 about the app
 	//this makes alt1 show the add app button when running inside the embedded browser
 	//also updates app settings if they are changed
-	alt1.identifyAppUrl("./appconfig.json");
+	alt1.identifyAppUrl('./appconfig.json');
 	initSettings();
 	startJobGauge();
 } else {
-	let addappurl = `alt1://addapp/${new URL("./appconfig.json", document.location.href).href}`;
-	output.insertAdjacentHTML("beforeend", `
+	let addappurl = `alt1://addapp/${
+		new URL('./appconfig.json', document.location.href).href
+	}`;
+	output.insertAdjacentHTML(
+		'beforeend',
+		`
 		Alt1 not detected, click <a href='${addappurl}'>here</a> to add this app to Alt1
-	`);
+	`
+	);
 }

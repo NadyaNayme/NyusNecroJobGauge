@@ -1,3 +1,11 @@
+:root {
+  --soul-bg-color:#52f9fa;
+  --necrosis-default-bg-color:#9205e4;
+  --necrosis-freecast-bg-color:#FFaf88;
+  --necrosis-capped-bg-color:#FF0000;
+  --bloat-notch-color:#FF0000;
+}
+
 body {
   background-color: #0F0F0F;
   background-image: url('../asset/resource/gauge-bg.png');
@@ -134,7 +142,7 @@ body {
 }
 
 #Souls .soul {
-  background-color: #52f9fa;
+  background-color: var(--soul-bg-color);
   border-radius: 50%;
   width: 16px;
   height: 16px;
@@ -226,7 +234,7 @@ body {
 #Notches .notch {
   width: 2px;
   height: 8px;
-  background-color: red;
+  background-color: var(--bloat-notch-color);
   position: relative;
   z-index: 3;
   opacity: .5;
@@ -266,7 +274,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
   border: solid 1px #010101;
-  background-color: #9205e4;
+  background-color: var(--necrosis-default-bg-color);
   width: 12px;
   height: 12px;
 }
@@ -308,11 +316,11 @@ body {
 #Necrosis[data-stacks="6"] .stack::before,
 #Necrosis[data-stacks="8"] .stack::before,
 #Necrosis[data-stacks="10"] .stack::before {
-  background-color: orange;
+  background-color: var(--necrosis-freecast-bg-color);
 }
 
 #Necrosis[data-stacks="12"] .stack::before {
-  background-color: red;
+  background-color: var(--necrosis-capped-bg-color);
 }
 
 .nisimgbutton {

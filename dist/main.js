@@ -320,7 +320,15 @@ var ___CSS_LOADER_URL_REPLACEMENT_5___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_6___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_6___);
 var ___CSS_LOADER_URL_REPLACEMENT_7___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_7___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `body {
+___CSS_LOADER_EXPORT___.push([module.id, `:root {
+  --soul-bg-color:#52f9fa;
+  --necrosis-default-bg-color:#9205e4;
+  --necrosis-freecast-bg-color:#FFaf88;
+  --necrosis-capped-bg-color:#FF0000;
+  --bloat-notch-color:#FF0000;
+}
+
+body {
   background-color: #0F0F0F;
   background-image: url(${___CSS_LOADER_URL_REPLACEMENT_0___});
   overflow: hidden;
@@ -456,7 +464,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 }
 
 #Souls .soul {
-  background-color: #52f9fa;
+  background-color: var(--soul-bg-color);
   border-radius: 50%;
   width: 16px;
   height: 16px;
@@ -548,7 +556,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 #Notches .notch {
   width: 2px;
   height: 8px;
-  background-color: red;
+  background-color: var(--bloat-notch-color);
   position: relative;
   z-index: 3;
   opacity: .5;
@@ -588,7 +596,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   left: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
   border: solid 1px #010101;
-  background-color: #9205e4;
+  background-color: var(--necrosis-default-bg-color);
   width: 12px;
   height: 12px;
 }
@@ -630,11 +638,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 #Necrosis[data-stacks="6"] .stack::before,
 #Necrosis[data-stacks="8"] .stack::before,
 #Necrosis[data-stacks="10"] .stack::before {
-  background-color: orange;
+  background-color: var(--necrosis-freecast-bg-color);
 }
 
 #Necrosis[data-stacks="12"] .stack::before {
-  background-color: red;
+  background-color: var(--necrosis-capped-bg-color);
 }
 
 .nisimgbutton {
@@ -4941,19 +4949,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var output = document.getElementById("output");
+var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
 var settingsButton = document.getElementById('SettingsButton');
 var offhand = document.getElementById('Offhand');
-var forcedConjures = document.getElementById('ForcedConjures');
-var jobGauge = document.getElementById("JobGauge");
+var forcedConjures = (document.getElementById('ForcedConjures'));
+var colorFields = document.getElementsByClassName('colors');
+var jobGauge = document.getElementById('JobGauge');
 var conjures = document.getElementById('Conjures');
 var skeleton_conjure = document.getElementById('Skeleton');
 var zombie_conjure = document.getElementById('Zombie');
 var ghost_conjure = document.getElementById('Ghost');
 var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
-var necrosis = document.getElementById("Necrosis");
+var necrosis = document.getElementById('Necrosis');
 // loads all images as raw pixel data async, images have to be saved as *.data.png
 // this also takes care of metadata headers in the image that make browser load the image
 // with slightly wrong colors
@@ -4998,20 +5007,38 @@ function startJobGauge() {
         return;
     }
     var img = alt1__WEBPACK_IMPORTED_MODULE_4__.captureHoldFullRs();
-    setInterval(function () { findNecrosis(); }, 200);
-    setInterval(function () { getSoulsValue(); }, 200);
+    setInterval(function () {
+        findNecrosis();
+    }, 200);
+    setInterval(function () {
+        getSoulsValue();
+    }, 200);
     setInterval(function () {
         getConjures();
     }, 200);
-    setInterval(function () { checkBloat(img); }, 200);
+    setInterval(function () {
+        checkBloat(img);
+    }, 200);
 }
 function initSettings() {
     if (!localStorage.nyusNecroJobGauge) {
         localStorage.setItem('nyusNecroJobGauge', JSON.stringify({
             buffsLocation: getBuffsLocation,
             offhand95: false,
-            forcedConjures: true
+            forcedConjures: true,
+            soulBgColor: '#52f9fa;',
+            necrosisDefaultBgColor: '#9205e4;',
+            necrosisFreecastBgColor: '#FFaf88;',
+            necrosisCappedBgColor: '#FF0000;',
+            bloatNotchColor: '#FF0000;',
         }));
+        document.getElementById('SoulBgColor')['value'] = '#52f9fa';
+        document.getElementById('NecrosisDefaultBgColor')['value'] = '#9205e4';
+        document.getElementById('NecrosisFreestyleBgColor')['value'] =
+            '#FFaf88';
+        document.getElementById('NecrosisCappedBgColor')['value'] = '#FF0000';
+        document.getElementById('BloatNotchColor')['value'] = '#FF0000';
+        loadSettings();
     }
     else {
         loadSettings();
@@ -5032,6 +5059,31 @@ function loadSettings() {
     else {
         forcedConjures.checked = false;
     }
+    var currentSoulBgColor = getSetting('soulBgColor');
+    var currentNecrosisDefaultBgColor = getSetting('necrosisDefaultBgColor');
+    var currentNecrosisFreecastBgColor = getSetting('necrosisFreecastBgColor');
+    var currentNecrosisCappedBgColor = getSetting('necrosisCappedBgColor');
+    var currentBloatNotchColor = getSetting('bloatNotchColor');
+    document.documentElement.style.setProperty('--soul-bg-color', currentSoulBgColor);
+    document.documentElement.style.setProperty('--necrosis-default-bg-color', currentNecrosisDefaultBgColor);
+    document.documentElement.style.setProperty('--necrosis-freecast-bg-color', currentNecrosisFreecastBgColor);
+    document.documentElement.style.setProperty('--necrosis-capped-bg-color', currentNecrosisCappedBgColor);
+    document.documentElement.style.setProperty('--bloat-notch-color', currentBloatNotchColor);
+    document
+        .getElementById('SoulBgColor')
+        .setAttribute('value', currentSoulBgColor);
+    document
+        .getElementById('NecrosisDefaultBgColor')
+        .setAttribute('value', currentNecrosisDefaultBgColor);
+    document
+        .getElementById('NecrosisFreestyleBgColor')
+        .setAttribute('value', currentNecrosisFreecastBgColor);
+    document
+        .getElementById('NecrosisCappedBgColor')
+        .setAttribute('value', currentNecrosisCappedBgColor);
+    document
+        .getElementById('BloatNotchColor')
+        .setAttribute('value', currentBloatNotchColor);
 }
 offhand.addEventListener('click', function () {
     updateSetting('offhand95', offhand.checked);
@@ -5041,6 +5093,13 @@ forcedConjures.addEventListener('click', function () {
     updateSetting('forcedConjures', forcedConjures.checked);
     loadSettings();
 });
+for (var _i = 0, colorFields_1 = colorFields; _i < colorFields_1.length; _i++) {
+    var color = colorFields_1[_i];
+    color.addEventListener('input', function (e) {
+        updateSetting(e.target.dataset.setting, e.target.value);
+        loadSettings();
+    });
+}
 function getSetting(setting) {
     if (!localStorage.nyusNecroJobGauge) {
         initSettings();
@@ -5048,12 +5107,12 @@ function getSetting(setting) {
     return JSON.parse(localStorage.getItem('nyusNecroJobGauge'))[setting];
 }
 function updateSetting(setting, value) {
-    if (!localStorage.getItem("nyusNecroJobGauge")) {
-        localStorage.setItem("nyusNecroJobGauge", JSON.stringify({}));
+    if (!localStorage.getItem('nyusNecroJobGauge')) {
+        localStorage.setItem('nyusNecroJobGauge', JSON.stringify({}));
     }
-    var save_data = JSON.parse(localStorage.getItem("nyusNecroJobGauge"));
+    var save_data = JSON.parse(localStorage.getItem('nyusNecroJobGauge'));
     save_data[setting] = value;
-    localStorage.setItem("nyusNecroJobGauge", JSON.stringify(save_data));
+    localStorage.setItem('nyusNecroJobGauge', JSON.stringify(save_data));
 }
 function getBuffsLocation() {
     var buffs = new (alt1_buffs__WEBPACK_IMPORTED_MODULE_5___default())();
@@ -5065,7 +5124,7 @@ function getBuffsLocation() {
     }
 }
 function checkBloat(img) {
-    var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default());
+    var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default())();
     targetDisplay.read();
     if (targetDisplay.lastpos === null) {
         return;
@@ -5158,8 +5217,8 @@ function getSoulsValue() {
 function getConjures() {
     var buffsLocation = getBuffsLocation();
     var searchArea = alt1__WEBPACK_IMPORTED_MODULE_4__.captureHold(buffsLocation.x, buffsLocation.y, buffsLocation.width, buffsLocation.height);
-    var conjuredSkeleton = (searchArea.findSubimage(imgs.skeleton_warrior_top).length ||
-        searchArea.findSubimage(imgs.skeleton_warrior_right).length);
+    var conjuredSkeleton = searchArea.findSubimage(imgs.skeleton_warrior_top).length ||
+        searchArea.findSubimage(imgs.skeleton_warrior_right).length;
     var conjuredZombie = searchArea.findSubimage(imgs.putrid_zombie_top).length;
     var conjuredGhost = searchArea.findSubimage(imgs.vengeful_ghost_top).length ||
         searchArea.findSubimage(imgs.vengeful_ghost_right).length;
@@ -5250,13 +5309,13 @@ if (window.alt1) {
     //tell alt1 about the app
     //this makes alt1 show the add app button when running inside the embedded browser
     //also updates app settings if they are changed
-    alt1.identifyAppUrl("./appconfig.json");
+    alt1.identifyAppUrl('./appconfig.json');
     initSettings();
     startJobGauge();
 }
 else {
-    var addappurl = "alt1://addapp/".concat(new URL("./appconfig.json", document.location.href).href);
-    output.insertAdjacentHTML("beforeend", "\n\t\tAlt1 not detected, click <a href='".concat(addappurl, "'>here</a> to add this app to Alt1\n\t"));
+    var addappurl = "alt1://addapp/".concat(new URL('./appconfig.json', document.location.href).href);
+    output.insertAdjacentHTML('beforeend', "\n\t\tAlt1 not detected, click <a href='".concat(addappurl, "'>here</a> to add this app to Alt1\n\t"));
 }
 
 })();
