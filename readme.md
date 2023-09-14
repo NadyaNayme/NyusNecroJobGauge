@@ -5,7 +5,7 @@ Track your Residual Souls, Necrosis stacks, summoned Conjures, and Bloat all in 
 ## Installation
 
 To install SusAlert copy & paste this link into your browser:
-alt1://addapp/https://nadyanayme.github.io/NyusNecroJobGauge/appconfig.json
+alt1://addapp/https://nadyanayme.github.io/NyusNecroJobGauge/dist/appconfig.json
 
 
 ## Settings
