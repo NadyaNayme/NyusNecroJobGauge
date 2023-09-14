@@ -19,6 +19,7 @@ body {
   z-index: 99;
   top: 0;
   left: 0;
+  overflow-y: auto;
 }
 
 #Settings.visible .container {
@@ -66,6 +67,22 @@ body {
   overflow: hidden;
   position: relative;
   border: solid 2px black;
+}
+
+#Conjures .conjure.forced-active::before {
+  content: attr(data-remaining);
+  z-index: 3;
+  font-family: 'trajan-pro-3', sans-serif;
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  font-size: 14px;
+  width: 90%;
+  height: 100%;
+  color: #FFFFFF;
+  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;
+  opacity: .75;
 }
 
 #Conjures .conjure::after {
@@ -194,7 +211,7 @@ body {
   color: #FFF;
   z-index: 3;
   font-family: 'trajan-pro-3', sans-serif;
-  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;;
+  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;
 }
 
 #Notches {

@@ -22,9 +22,9 @@ var offhand = <HTMLInputElement> document.getElementById('Offhand');
 var forcedConjures = <HTMLInputElement> document.getElementById('ForcedConjures');
 var jobGauge = document.getElementById("JobGauge");
 var conjures = document.getElementById('Conjures');
-var skeleton_conjure = conjures.getElementsByClassName('skeleton')[0];
-var zombie_conjure = conjures.getElementsByClassName('zombie')[0];
-var ghost_conjure = conjures.getElementsByClassName('ghost')[0];
+var skeleton_conjure = document.getElementById('Skeleton');
+var zombie_conjure = document.getElementById('Zombie');
+var ghost_conjure = document.getElementById('Ghost');
 var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById("Necrosis");
@@ -112,7 +112,7 @@ function loadSettings() {
 		souls.dataset.offhand = '90';
 	}
 
-	if (Boolean(getSetting('forcedConjures')) {
+	if (Boolean(getSetting('forcedConjures'))) {
 		forcedConjures.checked = true;
 	} else {
 		forcedConjures.checked = false;
@@ -159,12 +159,12 @@ function checkBloat(img) {
 	var targetDisplay = new TargetMob.default;
 	targetDisplay.read();
 	if (targetDisplay.lastpos === null) {
-		// Do nothing
+		return;
 	}
 
 	var target_display_loc = {
-		x: targetDisplay.lastpos.x - 120,
-		y: targetDisplay.lastpos.y + 20,
+		x: targetDisplay?.lastpos.x - 120,
+		y: targetDisplay?.lastpos.y + 20,
 		w: 150,
 		h: 60,
 	};
@@ -310,15 +310,26 @@ function getConjures() {
 	}
 }
 
+var foundSkeleton12 = false;
+var foundZombie12 = false;
+var foundGhost12 = false;
+
 function check12s(searchArea) {
 	var conjuredSkeletonT12 =
 		searchArea.findSubimage(imgs.skeleton_warrior_T12).length ||
 		searchArea.findSubimage(imgs.skeleton_warrior_T12_17).length;
 	if (conjuredSkeletonT12) {
-		skeleton_conjure.classList.add('forced-active');
+		if (foundSkeleton12 === false) {
+			foundSkeleton12 = true;
+			setTimeout(function () {
+				finalCountdown(skeleton_conjure);
+			}, 1000);
+		}
 		setTimeout(() => {
 			skeleton_conjure.classList.remove('forced-active');
 			skeleton_conjure.classList.add('inactive');
+			skeleton_conjure.dataset.remaining = '11';
+			foundSkeleton12 = false;
 		}, 12000);
 	}
 	var conjuredZombieT12 = searchArea.findSubimage(
@@ -326,21 +337,48 @@ function check12s(searchArea) {
 	).length;
 	if (conjuredZombieT12) {
 		zombie_conjure.classList.add('forced-active');
+		if (foundZombie12 === false) {
+			foundZombie12 = true;
+			setTimeout(function () {
+				finalCountdown(zombie_conjure);
+			}, 1000);
+		}
 		setTimeout(() => {
 			zombie_conjure.classList.remove('forced-active');
 			zombie_conjure.classList.add('inactive');
+			zombie_conjure.dataset.remaining = '11';
+			foundZombie12 = false;
 		}, 12000);
 	}
 	var conjuredGhostT12 = searchArea.findSubimage(
 		imgs.vengeful_ghost_T12
 	).length;
 	if (conjuredGhostT12) {
-		ghost_conjure.classList.add('forced-active');
+		if (foundGhost12 === false) {
+			foundGhost12 = true;
+			setTimeout(function() {
+				finalCountdown(ghost_conjure)
+			},1000);
+		}
 		setTimeout(() => {
 			ghost_conjure.classList.remove('forced-active');
 			ghost_conjure.classList.add('inactive');
+			ghost_conjure.dataset.remaining = '11';
+			foundGhost12 = false;
 		}, 12000);
 	}
+}
+
+function finalCountdown(conjure: HTMLElement) {
+		conjure.classList.add('forced-active');
+		for (let i = 0; i < 12; i++) {
+			setTimeout(() => {
+				if (parseInt(conjure.dataset.remaining) > 0) {
+					let newValue = parseInt(conjure.dataset.remaining) - 1;
+					conjure.dataset.remaining = newValue.toString();
+				}
+			}, 1000 * i);
+		}
 }
 
 //check if we are running inside alt1 by checking if the alt1 global exists

@@ -341,6 +341,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   z-index: 99;
   top: 0;
   left: 0;
+  overflow-y: auto;
 }
 
 #Settings.visible .container {
@@ -388,6 +389,22 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   overflow: hidden;
   position: relative;
   border: solid 2px black;
+}
+
+#Conjures .conjure.forced-active::before {
+  content: attr(data-remaining);
+  z-index: 3;
+  font-family: 'trajan-pro-3', sans-serif;
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  font-size: 14px;
+  width: 90%;
+  height: 100%;
+  color: #FFFFFF;
+  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;
+  opacity: .75;
 }
 
 #Conjures .conjure::after {
@@ -516,7 +533,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   color: #FFF;
   z-index: 3;
   font-family: 'trajan-pro-3', sans-serif;
-  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;;
+  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;
 }
 
 #Notches {
@@ -554,10 +571,13 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 #Necrosis > ul {
   padding: 0 1rem;
   position: relative;
+  list-style: none;
 }
 
 #Necrosis ul .stack {
   position: relative;
+  height: 18px;
+  list-style-type: none;
 }
 
 #Necrosis .stack::before {
@@ -4928,9 +4948,9 @@ var offhand = document.getElementById('Offhand');
 var forcedConjures = document.getElementById('ForcedConjures');
 var jobGauge = document.getElementById("JobGauge");
 var conjures = document.getElementById('Conjures');
-var skeleton_conjure = conjures.getElementsByClassName('skeleton')[0];
-var zombie_conjure = conjures.getElementsByClassName('zombie')[0];
-var ghost_conjure = conjures.getElementsByClassName('ghost')[0];
+var skeleton_conjure = document.getElementById('Skeleton');
+var zombie_conjure = document.getElementById('Zombie');
+var ghost_conjure = document.getElementById('Ghost');
 var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById("Necrosis");
@@ -5048,11 +5068,11 @@ function checkBloat(img) {
     var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default());
     targetDisplay.read();
     if (targetDisplay.lastpos === null) {
-        // Do nothing
+        return;
     }
     var target_display_loc = {
-        x: targetDisplay.lastpos.x - 120,
-        y: targetDisplay.lastpos.y + 20,
+        x: (targetDisplay === null || targetDisplay === void 0 ? void 0 : targetDisplay.lastpos.x) - 120,
+        y: (targetDisplay === null || targetDisplay === void 0 ? void 0 : targetDisplay.lastpos.y) + 20,
         w: 150,
         h: 60,
     };
@@ -5166,31 +5186,67 @@ function getConjures() {
         check12s(searchArea);
     }
 }
+var foundSkeleton12 = false;
+var foundZombie12 = false;
+var foundGhost12 = false;
 function check12s(searchArea) {
     var conjuredSkeletonT12 = searchArea.findSubimage(imgs.skeleton_warrior_T12).length ||
         searchArea.findSubimage(imgs.skeleton_warrior_T12_17).length;
     if (conjuredSkeletonT12) {
-        skeleton_conjure.classList.add('forced-active');
+        if (foundSkeleton12 === false) {
+            foundSkeleton12 = true;
+            setTimeout(function () {
+                finalCountdown(skeleton_conjure);
+            }, 1000);
+        }
         setTimeout(function () {
             skeleton_conjure.classList.remove('forced-active');
             skeleton_conjure.classList.add('inactive');
+            skeleton_conjure.dataset.remaining = '11';
+            foundSkeleton12 = false;
         }, 12000);
     }
     var conjuredZombieT12 = searchArea.findSubimage(imgs.putrid_zombie_T12).length;
     if (conjuredZombieT12) {
         zombie_conjure.classList.add('forced-active');
+        if (foundZombie12 === false) {
+            foundZombie12 = true;
+            setTimeout(function () {
+                finalCountdown(zombie_conjure);
+            }, 1000);
+        }
         setTimeout(function () {
             zombie_conjure.classList.remove('forced-active');
             zombie_conjure.classList.add('inactive');
+            zombie_conjure.dataset.remaining = '11';
+            foundZombie12 = false;
         }, 12000);
     }
     var conjuredGhostT12 = searchArea.findSubimage(imgs.vengeful_ghost_T12).length;
     if (conjuredGhostT12) {
-        ghost_conjure.classList.add('forced-active');
+        if (foundGhost12 === false) {
+            foundGhost12 = true;
+            setTimeout(function () {
+                finalCountdown(ghost_conjure);
+            }, 1000);
+        }
         setTimeout(function () {
             ghost_conjure.classList.remove('forced-active');
             ghost_conjure.classList.add('inactive');
+            ghost_conjure.dataset.remaining = '11';
+            foundGhost12 = false;
         }, 12000);
+    }
+}
+function finalCountdown(conjure) {
+    conjure.classList.add('forced-active');
+    for (var i = 0; i < 12; i++) {
+        setTimeout(function () {
+            if (parseInt(conjure.dataset.remaining) > 0) {
+                var newValue = parseInt(conjure.dataset.remaining) - 1;
+                conjure.dataset.remaining = newValue.toString();
+            }
+        }, 1000 * i);
     }
 }
 //check if we are running inside alt1 by checking if the alt1 global exists
