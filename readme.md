@@ -2,7 +2,7 @@
 
 Track your Residual Souls, Necrosis stacks, summoned Conjures, and Bloat all in one consistent place. Inspired by FFXIV's Job Gauges - to make tracking your resources as easy as can be!
 
-![Necromancy Job Gauge](./NecroJobGauge.png)
+![Necromancy Job Gauge](./NecroJobGauge.png) ![Necromancy Job Gauge](./NecroJobGauge2.png)
 
 ## Installation
 
