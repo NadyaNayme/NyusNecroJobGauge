@@ -5193,16 +5193,15 @@ function check12s(searchArea) {
     var conjuredSkeletonT12 = searchArea.findSubimage(imgs.skeleton_warrior_T12).length ||
         searchArea.findSubimage(imgs.skeleton_warrior_T12_17).length;
     if (conjuredSkeletonT12) {
+        skeleton_conjure.classList.add('forced-active');
         if (foundSkeleton12 === false) {
             foundSkeleton12 = true;
-            setTimeout(function () {
-                finalCountdown(skeleton_conjure);
-            }, 1000);
+            finalCountdown(skeleton_conjure);
         }
         setTimeout(function () {
             skeleton_conjure.classList.remove('forced-active');
             skeleton_conjure.classList.add('inactive');
-            skeleton_conjure.dataset.remaining = '11';
+            skeleton_conjure.dataset.remaining = '12';
             foundSkeleton12 = false;
         }, 12000);
     }
@@ -5211,29 +5210,26 @@ function check12s(searchArea) {
         zombie_conjure.classList.add('forced-active');
         if (foundZombie12 === false) {
             foundZombie12 = true;
-            setTimeout(function () {
-                finalCountdown(zombie_conjure);
-            }, 1000);
+            finalCountdown(zombie_conjure);
         }
         setTimeout(function () {
             zombie_conjure.classList.remove('forced-active');
             zombie_conjure.classList.add('inactive');
-            zombie_conjure.dataset.remaining = '11';
+            zombie_conjure.dataset.remaining = '12';
             foundZombie12 = false;
         }, 12000);
     }
     var conjuredGhostT12 = searchArea.findSubimage(imgs.vengeful_ghost_T12).length;
     if (conjuredGhostT12) {
+        ghost_conjure.classList.add('forced-active');
         if (foundGhost12 === false) {
             foundGhost12 = true;
-            setTimeout(function () {
-                finalCountdown(ghost_conjure);
-            }, 1000);
+            finalCountdown(ghost_conjure);
         }
         setTimeout(function () {
             ghost_conjure.classList.remove('forced-active');
             ghost_conjure.classList.add('inactive');
-            ghost_conjure.dataset.remaining = '11';
+            ghost_conjure.dataset.remaining = '12';
             foundGhost12 = false;
         }, 12000);
     }
