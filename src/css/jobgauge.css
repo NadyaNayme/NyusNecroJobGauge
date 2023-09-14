@@ -232,10 +232,13 @@ body {
 #Necrosis > ul {
   padding: 0 1rem;
   position: relative;
+  list-style: none;
 }
 
 #Necrosis ul .stack {
   position: relative;
+  height: 18px;
+  list-style-type: none;
 }
 
 #Necrosis .stack::before {
