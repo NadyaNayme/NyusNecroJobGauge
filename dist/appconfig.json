@@ -1,0 +1,16 @@
+{
+	"appName": "NyusNecroJobGauge",
+	"description": "FFXIV-inspired Job Gauge for Necromancy",
+	"appUrl": "./index.html",
+	"configUrl": "./appconfig.json",
+	"iconUrl": "./icon.png",
+	"defaultWidth": 210,
+	"defaultHeight": 168,
+	"minWidth": 210,
+	"minHeight": 168,
+	"maxWidth": 1000,
+	"maxHeight": 1000,
+	"requestHandlers": [ ],
+	"activators": [	],
+	"permissions": "pixel,overlay, gamestate"
+}

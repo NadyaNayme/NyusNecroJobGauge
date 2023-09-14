@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head></head>
+	<body>
+		<div id="output"></div>
+		<div id="Settings">
+			<div class="container">
+				<h2>Settings</h2>
+				Using T95 Offhand? <input type="checkbox" id="Offhand">
+				<br>
+				Force last 10s of Conjures? * <input type="checkbox" id="ForcedConjures">
+				<br> * Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.
+			</div>
+		</div>
+		<div id="SettingsButton" class="nisimgbutton"><span>⚙︎</span></div>
+		<div id="JobGauge">
+			<ul id="Conjures">
+				<li id="Skeleton" class="conjure inactive skeleton"></li>
+				<li id="Zombie" class="conjure inactive zombie"></li>
+				<li id="Ghost" class="conjure inactive ghost"></li>
+			</ul>
+			<ul id="Souls" data-souls="0" data-offhand="95">
+				<li class="soul"></li>
+				<li class="soul"></li>
+				<li class="soul"></li>
+				<li class="soul"></li>
+				<li class="soul"></li>
+			</ul>
+			<div id="Bloat" data-timer="0">
+				<ul id="Notches">
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				<li class="notch"></li>
+				</ul>
+			</div>
+			<ul id="Necrosis" data-stacks="0">
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+				<ul>
+				<li class="stack"></li>
+				<li class="stack"></li>
+				</ul>
+			</div>
+		<script src="./main.js"></script>
+	</body>
+</html>
