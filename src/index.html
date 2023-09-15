@@ -6,20 +6,32 @@
 		<div id="Settings">
 			<div class="container">
 				<h2>Settings</h2>
-				Using T95 Offhand? <input type="checkbox" id="Offhand">
-				<br>
-				Force last 10s of Conjures? * <input type="checkbox" id="ForcedConjures">
-				<br> * Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.
-				<br>
-				Residual Souls Color: <input value="#52f9fa" type="color" id="SoulBgColor" class="colors" data-setting="soulBgColor">
-				<br>
-				Necrosis 0-4 Stacks color: <input value="#9205e4" type="color" id="NecrosisDefaultBgColor" class="colors" data-setting="necrosisDefaultBgColor">
-				<br>
-				Necrosis 6-10 Stacks color: <input value="#FFaf88" type="color" id="NecrosisFreestyleBgColor" class="colors" data-setting="necrosisFreecastBgColor">
-				<br>
-				Necrosis 12 Stacks color: <input value="#FF0000" type="color" id="NecrosisCappedBgColor" class="colors" data-setting="necrosisCappedBgColor">
-				<br>
-				Bloat Notch color: <input value="#FF0000" type="color" class="colors" id="BloatNotchColor" data-setting="bloatNotchColor">
+				<div class="flex setting"><input type="checkbox" id="GhostSettings"> Hide Settings Cog (bottom right corner) unless hovered</div>
+				<div class="flex setting"><input type="checkbox" id="Offhand"> Using T95 Offhand</div>
+				<div class="flex setting"><input type="checkbox" id="SingleRowNecrosis"> Hide 2nd row of Necrosis Stacks</div>
+				<div class="flex setting"><input type="checkbox" id="ForcedConjures">Force "active" the last 10s of Conjures *</div>
+				<small>* Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.</small>
+				<h3>UI Colors</h3>
+				<div class="flex"><input value="#52f9fa" type="color" id="SoulBgColor" class="colors" data-setting="soulBgColor"><label for="SoulBgColor">Residual Souls</label></div>
+				<div class="flex"><input value="#9205e4" type="color" id="NecrosisDefaultBgColor" class="colors" data-setting="necrosisDefaultBgColor"><label for="NecrosisDefaultBgColor">Necrosis 0-4 Stacks</label></div>
+				<div class="flex"><input value="#fd7d00" type="color" id="NecrosisFreestyleBgColor" class="colors" data-setting="necrosisFreecastBgColor"><label for="NecrosisFreestyleBgColor">Necrosis 6-10 Stacks</label></div>
+				<div class="flex"><input value="#ff0000" type="color" id="NecrosisCappedBgColor" class="colors" data-setting="necrosisCappedBgColor"><label for="NecrosisCappedBgColor">Necrosis 12 Stacks</label></div>
+				<div class="flex"><input value="#ff0000" type="color" id="BloatNotchColor" class="colors"  data-setting="bloatNotchColor"><label for="BloatNotchColor">Bloat Notches</label></div>
+				<div class="flex"><button id="RevertDefaultColors">Revert to Default Colors</button></div>
+				<h3>UI Scale</h3>
+				Job Gauge Scale <br>
+				<div class="flex setting"><input type="range" min="30" max="200" value="100" id="JobGaugeScale" list="rangeList"><output id="JobGaugeScaleOutput"></output>%</div>
+				Conjures Scale <br>
+				<div class="flex setting"><input type="range" min="30" max="200" value="100" id="ConjuresScale" list="rangeList"><output id="ConjuresScaleOutput"></output>%</div>
+				Residual Souls Scale <br>
+				<div class="flex setting"><input type="range" min="30" max="200" value="100" id="SoulsScale" list="rangeList"><output id="SoulsScaleOutput"></output>%</div>
+				Bloat Scale <br>
+				<div class="flex setting"><input type="range" min="30" max="200" value="100" id="BloatScale" list="rangeList"><output id="BloatScaleOutput"></output>%</div>
+				Necrosis Scale <br>
+				<div class="flex setting"><input type="range" min="30" max="200" value="100" id="NecrosisScale" list="rangeList"><output id="NecrosisScaleOutput"></output>%</div>
+				<datalist id="rangeList">
+					<option>100</option>
+				</datalist>
 			</div>
 		</div>
 		<div id="SettingsButton" class="nisimgbutton"><span>⚙︎</span></div>

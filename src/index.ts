@@ -12,16 +12,10 @@ import './index.html';
 import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
-import TargetMobReader from 'alt1/targetmob';
 
 var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
 var settingsButton = document.getElementById('SettingsButton');
-var offhand = <HTMLInputElement>document.getElementById('Offhand');
-var forcedConjures = <HTMLInputElement>(
-	document.getElementById('ForcedConjures')
-);
-var colorFields: any = document.getElementsByClassName('colors');
 var jobGauge = document.getElementById('JobGauge');
 var conjures = document.getElementById('Conjures');
 var skeleton_conjure = document.getElementById('Skeleton');
@@ -98,46 +92,124 @@ export function startJobGauge() {
 
 function initSettings() {
 	if (!localStorage.nyusNecroJobGauge) {
-		localStorage.setItem(
-			'nyusNecroJobGauge',
-			JSON.stringify({
-				buffsLocation: getBuffsLocation,
-				offhand95: false,
-				forcedConjures: true,
-				soulBgColor: '#52f9fa;',
-				necrosisDefaultBgColor: '#9205e4;',
-				necrosisFreecastBgColor: '#FFaf88;',
-				necrosisCappedBgColor: '#FF0000;',
-				bloatNotchColor: '#FF0000;',
-			})
-		);
-		document.getElementById('SoulBgColor')['value'] = '#52f9fa';
-		document.getElementById('NecrosisDefaultBgColor')['value'] ='#9205e4';
-		document.getElementById('NecrosisFreestyleBgColor')['value'] =
-			'#FFaf88';
-		document.getElementById('NecrosisCappedBgColor')['value'] = '#FF0000';
-		document.getElementById('BloatNotchColor')['value'] = '#FF0000';
+		setDefaultSettings();
 		loadSettings();
 	} else {
 		loadSettings();
 	}
 }
 
+function setDefaultSettings() {
+		localStorage.setItem(
+			'nyusNecroJobGauge',
+			JSON.stringify({
+				buffsLocation: getBuffsLocation,
+				offhand95: false,
+				forcedConjures: true,
+				ghostSettings: false,
+				singleNecrosis: false,
+				jobGaugeScale: 100,
+				conjureScale: 100,
+				soulScale: 100,
+				bloatScale: 100,
+				necrosisScale: 100,
+				soulBgColor: '#52f9fa',
+				necrosisDefaultBgColor: '#9205e4',
+				necrosisFreecastBgColor: '#fd7d00',
+				necrosisCappedBgColor: '#ff0000',
+				bloatNotchColor: '#ff0000',
+			})
+		);
+}
+
 function loadSettings() {
-	if (Boolean(getSetting('offhand95'))) {
-		offhand.checked = true;
-		souls.dataset.offhand = '95';
-	} else {
-		offhand.checked = false;
-		souls.dataset.offhand = '90';
+	setOffhand();
+	setForcedConjures();
+	setGhostSettingsButton();
+	setSingleNecrosis();
+	setCustomColors();
+	setCustomScale();
+}
+
+function setOffhand() {
+	offhand.checked = Boolean(getSetting('offhand95'));
+	souls.classList.toggle('t90', !Boolean(getSetting('offhand95')));
+}
+
+function setForcedConjures() {
+	forcedConjures.checked = Boolean(getSetting('forcedConjures'));
+}
+
+function setGhostSettingsButton() {
+	ghostSettings.checked = Boolean(getSetting('ghostSettings'))
+	settingsButton.classList.toggle('ghost', Boolean(getSetting('ghostSettings')));
+}
+
+function setSingleNecrosis() {
+	singleNecrosis.checked = Boolean(getSetting('singleNecrosis'))
+	necrosis.classList.toggle('single', Boolean(getSetting('singleNecrosis')));
+}
+
+function setDefaultColors() {
+	let currentSoulBgColor = '#52f9fa';
+	let currentNecrosisDefaultBgColor = '#9205e4';
+	let currentNecrosisFreecastBgColor = '#fd7d00';
+	let currentNecrosisCappedBgColor = '#ff0000';
+	let currentBloatNotchColor = '#ff0000';
+
+	document.documentElement.style.setProperty(
+		'--soul-bg-color',
+		currentSoulBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-default-bg-color',
+		currentNecrosisDefaultBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-freecast-bg-color',
+		currentNecrosisFreecastBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--necrosis-capped-bg-color',
+		currentNecrosisCappedBgColor
+	);
+	document.documentElement.style.setProperty(
+		'--bloat-notch-color',
+		currentBloatNotchColor
+	);
+
+	document
+		.getElementById('SoulBgColor')
+		.setAttribute('value', currentSoulBgColor);
+
+	document
+		.getElementById('NecrosisDefaultBgColor')
+		.setAttribute('value', currentNecrosisDefaultBgColor);
+
+	document
+		.getElementById('NecrosisFreestyleBgColor')
+		.setAttribute('value', currentNecrosisFreecastBgColor);
+
+	document
+		.getElementById('NecrosisCappedBgColor')
+		.setAttribute('value', currentNecrosisCappedBgColor);
+
+	document
+		.getElementById('BloatNotchColor')
+		.setAttribute('value', currentBloatNotchColor);
+
+	for (let color of colorFields) {
+		updateSetting(color.dataset.setting, color.value);
 	}
 
-	if (Boolean(getSetting('forcedConjures'))) {
-		forcedConjures.checked = true;
-	} else {
-		forcedConjures.checked = false;
-	}
+}
 
+let revertDefaultColorButton = document.getElementById('RevertDefaultColors');
+revertDefaultColorButton.addEventListener('click', () => {
+	setDefaultColors();
+})
+
+function setCustomColors() {
 	let currentSoulBgColor = getSetting('soulBgColor');
 	let currentNecrosisDefaultBgColor = getSetting('necrosisDefaultBgColor');
 	let currentNecrosisFreecastBgColor = getSetting('necrosisFreecastBgColor');
@@ -186,21 +258,55 @@ function loadSettings() {
 		.setAttribute('value', currentBloatNotchColor);
 }
 
-offhand.addEventListener('click', () => {
-	updateSetting('offhand95', offhand.checked);
-	loadSettings();
-});
+function setCustomScale() {
+	jobGauge.style.setProperty(
+		'--scale',
+		getSetting('jobGaugeScale')
+	);
+	conjures.style.setProperty('--scale', getSetting('conjureScale'));
+	souls.style.setProperty('--scale', getSetting('soulScale'));
+	bloat.style.setProperty('--scale', getSetting('bloatScale'));
+	necrosis.style.setProperty('--scale', getSetting('necrosisScale'));
 
-forcedConjures.addEventListener('click', () => {
-	updateSetting('forcedConjures', forcedConjures.checked);
-	loadSettings();
-});
+	document
+		.getElementById('JobGaugeScale')
+		.setAttribute('value', getSetting('jobGaugeScale'));
 
-for (let color of colorFields) {
-	color.addEventListener('input', (e) => {
-		updateSetting(e.target.dataset.setting, e.target.value);
-		loadSettings();
-	});
+	document
+		.getElementById('ConjuresScale')
+		.setAttribute('value', getSetting('conjureScale'));
+
+	document
+		.getElementById('SoulsScale')
+		.setAttribute('value', getSetting('soulScale'));
+
+	document
+		.getElementById('BloatScale')
+		.setAttribute('value', getSetting('bloatScale'));
+
+	document
+		.getElementById('NecrosisScale')
+		.setAttribute('value', getSetting('necrosisScale'));
+
+	let JobGaugeScaleValue = document.querySelector('#JobGaugeScaleOutput');
+	let JobGaugeScaleInput: any = document.querySelector('#JobGaugeScale');
+	JobGaugeScaleValue.textContent = JobGaugeScaleInput.value;
+
+	let ConjuresScaleValue = document.querySelector('#ConjuresScaleOutput');
+	let ConjuresScaleInput: any = document.querySelector('#ConjuresScale');
+	ConjuresScaleValue.textContent = ConjuresScaleInput.value;
+
+	let SoulsScaleValue = document.querySelector('#SoulsScaleOutput');
+	let SoulsScaleInput: any = document.querySelector('#SoulsScale');
+	SoulsScaleValue.textContent = SoulsScaleInput.value;
+
+	let BloatScaleValue = document.querySelector('#BloatScaleOutput');
+	let BloatScaleInput: any = document.querySelector('#BloatScale');
+	BloatScaleValue.textContent = BloatScaleInput.value;
+
+	let NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
+	let NecrosisScaleInput: any = document.querySelector('#NecrosisScale');
+	NecrosisScaleValue.textContent = NecrosisScaleInput.value;
 }
 
 function getSetting(setting) {
@@ -217,6 +323,7 @@ function updateSetting(setting, value) {
 	var save_data = JSON.parse(localStorage.getItem('nyusNecroJobGauge'));
 	save_data[setting] = value;
 	localStorage.setItem('nyusNecroJobGauge', JSON.stringify(save_data));
+	loadSettings();
 }
 
 function getBuffsLocation() {
@@ -281,7 +388,6 @@ function roundedToFixed(input, digits) {
 }
 
 a1lib.on('rsfocus', startJobGauge);
-settingsButton.addEventListener('click', toggleSettings);
 
 function toggleSettings() {
 	settings.classList.toggle('visible');
@@ -450,6 +556,88 @@ function finalCountdown(conjure: HTMLElement) {
 		}, 1000 * i);
 	}
 }
+
+/* Settings */
+
+settingsButton.addEventListener('click', toggleSettings);
+
+var offhand = <HTMLInputElement>document.getElementById('Offhand');
+var forcedConjures = <HTMLInputElement>(
+	document.getElementById('ForcedConjures')
+);
+var ghostSettings = <HTMLInputElement>document.getElementById('GhostSettings');
+var singleNecrosis = <HTMLInputElement>(
+	document.getElementById('SingleRowNecrosis')
+);
+var colorFields: any = document.getElementsByClassName('colors');
+
+offhand.addEventListener('click', () => {
+	updateSetting('offhand95', offhand.checked);
+});
+
+forcedConjures.addEventListener('click', () => {
+	updateSetting('forcedConjures', forcedConjures.checked);
+});
+
+ghostSettings.addEventListener('click', () => {
+	updateSetting('ghostSettings', ghostSettings.checked);
+});
+
+singleNecrosis.addEventListener('click', () => {
+	updateSetting('singleNecrosis', singleNecrosis.checked);
+});
+
+for (let color of colorFields) {
+	color.addEventListener('input', (e) => {
+		updateSetting(e.target.dataset.setting, e.target.value);
+	});
+}
+
+var JobGaugeScaleValue = document.querySelector('#JobGaugeScaleOutput');
+var JobGaugeScaleInput: any = document.querySelector('#JobGaugeScale');
+JobGaugeScaleValue.textContent = JobGaugeScaleInput.value;
+JobGaugeScaleInput.addEventListener('input', (event) => {
+	JobGaugeScaleValue.textContent = event.target.value;
+	updateSetting('jobGaugeScale', event.target.value);
+});
+
+var ConjuresScaleValue = document.querySelector('#ConjuresScaleOutput');
+var ConjuresScaleInput: any = document.querySelector('#ConjuresScale');
+ConjuresScaleValue.textContent = ConjuresScaleInput.value;
+ConjuresScaleInput.addEventListener('input', (event) => {
+	ConjuresScaleValue.textContent = event.target.value;
+	updateSetting('conjureScale', event.target.value);
+});
+
+
+var SoulsScaleValue = document.querySelector('#SoulsScaleOutput');
+var SoulsScaleInput: any = document.querySelector('#SoulsScale');
+SoulsScaleValue.textContent = SoulsScaleInput.value;
+SoulsScaleInput.addEventListener('input', (event) => {
+	SoulsScaleValue.textContent = event.target.value;
+	updateSetting('soulScale', event.target.value);
+});
+
+
+var BloatScaleValue = document.querySelector('#BloatScaleOutput');
+var BloatScaleInput: any = document.querySelector('#BloatScale');
+BloatScaleValue.textContent = BloatScaleInput.value;
+BloatScaleInput.addEventListener('input', (event) => {
+	BloatScaleValue.textContent = event.target.value;
+	updateSetting('bloatScale', event.target.value);
+});
+
+
+var NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
+var NecrosisScaleInput: any = document.querySelector('#NecrosisScale');
+NecrosisScaleValue.textContent = NecrosisScaleInput.value;
+NecrosisScaleInput.addEventListener('input', (event) => {
+	NecrosisScaleValue.textContent = event.target.value;
+	updateSetting('necrosisScale', event.target.value);
+});
+
+
+/* End Settings */
 
 //check if we are running inside alt1 by checking if the alt1 global exists
 if (window.alt1) {
