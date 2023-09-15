@@ -9,6 +9,7 @@
 				<div class="flex setting"><input type="checkbox" id="GhostSettings"> Hide Settings Cog (bottom right corner) unless hovered</div>
 				<div class="flex setting"><input type="checkbox" id="Offhand"> Using T95 Offhand</div>
 				<div class="flex setting"><input type="checkbox" id="SingleRowNecrosis"> Hide 2nd row of Necrosis Stacks</div>
+				<div class="flex setting"><input type="checkbox" id="ActiveConjureTimers">Track time remaining for summoned Conjures</div>
 				<div class="flex setting"><input type="checkbox" id="ForcedConjures">Force "active" the last 10s of Conjures *</div>
 				<small>* Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.</small>
 				<h3>UI Colors</h3>
@@ -37,9 +38,9 @@
 		<div id="SettingsButton" class="nisimgbutton"><span>⚙︎</span></div>
 		<div id="JobGauge">
 			<ul id="Conjures">
-				<li id="Skeleton" class="conjure inactive skeleton" data-remaining="12"></li>
-				<li id="Zombie" class="conjure inactive zombie" data-remaining="12"></li>
-				<li id="Ghost" class="conjure inactive ghost" data-remaining="12"></li>
+				<li id="Skeleton" class="conjure skeleton" data-timer="11" data-remaining="12"></li>
+				<li id="Zombie" class="conjure zombie" data-timer="11" data-remaining="12"></li>
+				<li id="Ghost" class="conjure ghost" data-timer="11" data-remaining="12"></li>
 			</ul>
 			<ul id="Souls" data-souls="0" data-offhand="95">
 				<li class="soul"></li>

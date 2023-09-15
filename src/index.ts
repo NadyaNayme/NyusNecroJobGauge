@@ -13,6 +13,8 @@ import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
 
+var buffs = new BuffReader.default();
+
 var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
 var settingsButton = document.getElementById('SettingsButton');
@@ -30,7 +32,7 @@ var necrosis = document.getElementById('Necrosis');
 // with slightly wrong colors
 // this function is async, so you cant acccess the images instantly but generally takes <20ms
 // use `await imgs.promise` if you want to use the images as soon as they are loaded
-var imgs = a1lib.webpackImages({
+var buffImages = a1lib.webpackImages({
 	necrosis: require('./asset/data/Necrosis.data.png'),
 	necrosis_2: require('./asset/data/Necrosis-2.data.png'),
 	necrosis_4: require('./asset/data/Necrosis-4.data.png'),
@@ -38,26 +40,25 @@ var imgs = a1lib.webpackImages({
 	necrosis_8: require('./asset/data/Necrosis-8.data.png'),
 	necrosis_10: require('./asset/data/Necrosis-10.data.png'),
 	necrosis_12: require('./asset/data/Necrosis-12.data.png'),
+
 	residual_soul: require('./asset/data/Residual_Soul.data.png'),
-	residual_soul_top: require('./asset/data/Residual_Soul-Top.data.png'),
-	residual_soul_1: require('./asset/data/Residual_Soul_1.data.png'),
-	residual_soul_2: require('./asset/data/Residual_Soul_2.data.png'),
-	residual_soul_3: require('./asset/data/Residual_Soul_3.data.png'),
-	residual_soul_4: require('./asset/data/Residual_Soul_4.data.png'),
-	residual_soul_5: require('./asset/data/Residual_Soul_5.data.png'),
+
 	skeleton_warrior: require('./asset/data/Skeleton_Warrior.data.png'),
-	skeleton_warrior_T12: require('./asset/data/Skeleton_Warrior-T12.data.png'),
-	skeleton_warrior_T12_17: require('./asset/data/Skeleton_Warrior-T12-17.data.png'),
-	skeleton_warrior_top: require('./asset/data/Skeleton_Warrior-Top.data.png'),
-	skeleton_warrior_right: require('./asset/data/Skeleton_Warrior-Right.data.png'),
 	putrid_zombie: require('./asset/data/Putrid_Zombie.data.png'),
-	putrid_zombie_T12: require('./asset/data/Putrid_Zombie-T12.data.png'),
-	putrid_zombie_top: require('./asset/data/Putrid_Zombie-Top.data.png'),
 	vengeful_ghost: require('./asset/data/Vengeful_Ghost.data.png'),
-	vengeful_ghost_T12: require('./asset/data/Vengeful_Ghost-T12.data.png'),
-	vengeful_ghost_top: require('./asset/data/Vengeful_Ghost-Top.data.png'),
-	vengeful_ghost_right: require('./asset/data/Vengeful_Ghost-Right.data.png'),
+
 	bloated: require('./asset/data/Bloated.data.png'),
+});
+
+var abilityImgs = a1lib.webpackImages({
+	skeleton_warrior_ability: require('./asset/data/Skeleton_Warrior-ability.data.png'),
+	skeleton_warrior_ability_gcd: require('./asset/data/Skeleton_Warrior-ability-gcd.data.png'),
+
+	putrid_zombie_ability: require('./asset/data/Putrid_Zombie-ability.data.png'),
+	putrid_zombie_ability_gcd: require('./asset/data/Putrid_Zombie-ability-gcd.data.png'),
+
+	vengeful_ghost_ability: require('./asset/data/Vengeful_Ghost-ability.data.png'),
+	vengeful_ghost_ability_gcd: require('./asset/data/Vengeful_Ghost-ability-gcd.data.png'),
 });
 
 export function startJobGauge() {
@@ -77,11 +78,11 @@ export function startJobGauge() {
 	}
 	var img = a1lib.captureHoldFullRs();
 	setInterval(() => {
-		findNecrosis();
-	}, 200);
+		getNecrosisStacks();
+	}, 150);
 	setInterval(() => {
 		getSoulsValue();
-	}, 200);
+	}, 150);
 	setInterval(() => {
 		getConjures();
 	}, 200);
@@ -118,12 +119,14 @@ function setDefaultSettings() {
 				necrosisFreecastBgColor: '#fd7d00',
 				necrosisCappedBgColor: '#ff0000',
 				bloatNotchColor: '#ff0000',
+				activeConjureTimers: true
 			})
 		);
 }
 
 function loadSettings() {
 	setOffhand();
+	setConjureTimers();
 	setForcedConjures();
 	setGhostSettingsButton();
 	setSingleNecrosis();
@@ -134,6 +137,22 @@ function loadSettings() {
 function setOffhand() {
 	offhand.checked = Boolean(getSetting('offhand95'));
 	souls.classList.toggle('t90', !Boolean(getSetting('offhand95')));
+}
+
+function setConjureTimers() {
+	conjureTimers.checked = Boolean(getSetting('activeConjureTimers'));
+	skeleton_conjure.classList.toggle(
+		'active-timer',
+		getSetting('activeConjureTimers')
+	);
+	zombie_conjure.classList.toggle(
+		'active-timer',
+		getSetting('activeConjureTimers')
+	);
+	ghost_conjure.classList.toggle(
+		'active-timer',
+		getSetting('activeConjureTimers')
+	);
 }
 
 function setForcedConjures() {
@@ -327,11 +346,18 @@ function updateSetting(setting, value) {
 }
 
 function getBuffsLocation() {
-	var buffs = new BuffReader.default();
 	if (buffs.find()) {
 		return buffs.getCaptRect();
 	} else {
 		getBuffsLocation();
+	}
+}
+
+function getActiveBuffs() {
+	if (buffs.find()) {
+		return buffs.read();
+	} else {
+		getActiveBuffs();
 	}
 }
 
@@ -354,7 +380,7 @@ function checkBloat(img) {
 		target_display_loc.w,
 		target_display_loc.h
 	);
-	var targetIsBloated = targetDebuffs.findSubimage(imgs.bloated).length;
+	var targetIsBloated = targetDebuffs.findSubimage(buffImages.bloated).length;
 	var bloatTimer = parseFloat(parseFloat(bloat.dataset.timer).toFixed(2));
 	if (targetIsBloated && bloatTimer == 0) {
 		bloat.dataset.timer = '18';
@@ -389,159 +415,137 @@ function roundedToFixed(input, digits) {
 
 a1lib.on('rsfocus', startJobGauge);
 
-function toggleSettings() {
-	settings.classList.toggle('visible');
-}
+function findNecrosisCount() {
+	let allBuffs = getActiveBuffs();
+	let necrosisCount = 0;
 
-function findNecrosis() {
-	var buffsLocation = getBuffsLocation();
-	var searchArea = a1lib.captureHold(
-		buffsLocation.x,
-		buffsLocation.y,
-		buffsLocation.width,
-		buffsLocation.height
-	);
-	var isNecrosis = searchArea.findSubimage(imgs.necrosis).length;
-	if (isNecrosis) {
-		getNecrosisStacks();
-	} else {
-		necrosis.dataset.stacks = '0';
+	for (let [key, value] of Object.entries(allBuffs)) {
+		let necrosisBuff = value.countMatch(buffImages.necrosis, false);
+		if (necrosisBuff.passed > 140) {
+			necrosisCount = value.readTime();
+		}
 	}
+
+	return necrosisCount;
 }
 
 function getNecrosisStacks() {
-	var buffsLocation = getBuffsLocation();
-	var searchArea = a1lib.captureHold(
-		buffsLocation.x,
-		buffsLocation.y,
-		buffsLocation.width,
-		buffsLocation.height
-	);
-	var isNecrosis2 = searchArea.findSubimage(imgs.necrosis_2).length;
-	var isNecrosis4 = searchArea.findSubimage(imgs.necrosis_4).length;
-	var isNecrosis6 = searchArea.findSubimage(imgs.necrosis_6).length;
-	var isNecrosis8 = searchArea.findSubimage(imgs.necrosis_8).length;
-	var isNecrosis10 = searchArea.findSubimage(imgs.necrosis_10).length;
-	var isNecrosis12 = searchArea.findSubimage(imgs.necrosis_12).length;
-	var necrosisStacks = [
-		isNecrosis2,
-		isNecrosis4,
-		isNecrosis6,
-		isNecrosis8,
-		isNecrosis10,
-		isNecrosis12,
-	];
-	var necrosisStackValue = (necrosisStacks.indexOf(1) + 1) * 2;
+	let necrosisStackValue = findNecrosisCount();
 	necrosis.dataset.stacks = necrosisStackValue.toString();
 }
 
+function findSoulCount() {
+	let allBuffs = getActiveBuffs();
+	let soulsCount = 0;
+
+	for (let [key, value] of Object.entries(allBuffs)) {
+		let soulsBuff = value.countMatch(
+			buffImages.residual_soul,
+			false
+		);
+		if (soulsBuff.passed > 200) {
+			soulsCount = value.readTime();
+		}
+	}
+
+	return soulsCount;
+}
+
 function getSoulsValue() {
-	var buffsLocation = getBuffsLocation();
-	var searchArea = a1lib.captureHold(
-		buffsLocation.x,
-		buffsLocation.y,
-		buffsLocation.width,
-		buffsLocation.height
-	);
-	var isSouls1 = searchArea.findSubimage(imgs.residual_soul_1).length;
-	var isSouls2 = searchArea.findSubimage(imgs.residual_soul_2).length;
-	var isSouls3 = searchArea.findSubimage(imgs.residual_soul_3).length;
-	var isSouls4 = searchArea.findSubimage(imgs.residual_soul_4).length;
-	var isSouls5 = searchArea.findSubimage(imgs.residual_soul_5).length;
-	var residualSouls = [isSouls1, isSouls2, isSouls3, isSouls4, isSouls5];
-	var residualSoulsValue =
-		parseInt(residualSouls.indexOf(1).toString(), 10) + 1;
+	let residualSoulsValue = findSoulCount();
 	souls.dataset.souls = residualSoulsValue.toString();
 }
 
-function getConjures() {
-	var buffsLocation = getBuffsLocation();
-	var searchArea = a1lib.captureHold(
-		buffsLocation.x,
-		buffsLocation.y,
-		buffsLocation.width,
-		buffsLocation.height
-	);
-	var conjuredSkeleton =
-		searchArea.findSubimage(imgs.skeleton_warrior_top).length ||
-		searchArea.findSubimage(imgs.skeleton_warrior_right).length;
-	var conjuredZombie = searchArea.findSubimage(imgs.putrid_zombie_top).length;
-	var conjuredGhost =
-		searchArea.findSubimage(imgs.vengeful_ghost_top).length ||
-		searchArea.findSubimage(imgs.vengeful_ghost_right).length;
-	var conjuredConjures = [conjuredSkeleton, conjuredZombie, conjuredGhost];
-	if (conjuredConjures[0] == 1) {
-		skeleton_conjure.classList.remove('inactive');
-	} else if (conjuredConjures[0] == 0) {
-		skeleton_conjure.classList.add('inactive');
+function trackConjures() {
+	let allBuffs = getActiveBuffs();
+
+	let foundSkeleton = false;
+	let foundZombie = false;
+	let foundGhost = false;
+
+	for (let [key, value] of Object.entries(allBuffs)) {
+		let skeletonCheck = value.countMatch(
+			buffImages.skeleton_warrior,
+			false
+		);
+		if (skeletonCheck.passed > 90) {
+			foundSkeleton = true;
+			skeleton_conjure.dataset.timer = value.readTime().toString();
+		}
+
+		let zombieCheck = value.countMatch(buffImages.putrid_zombie, false);
+		if (zombieCheck.passed > 100) {
+			foundZombie = true;
+			zombie_conjure.dataset.timer = value.readTime().toString();
+		}
+
+		let ghostCheck = value.countMatch(buffImages.vengeful_ghost, false);
+		if (ghostCheck.passed > 200) {
+			foundGhost = true;
+			ghost_conjure.dataset.timer = value.readTime().toString();
+		}
 	}
-	if (conjuredConjures[1] == 1) {
-		zombie_conjure.classList.remove('inactive');
-	} else if (conjuredConjures[1] == 0) {
-		zombie_conjure.classList.add('inactive');
-	}
-	if (conjuredConjures[2] == 1) {
-		ghost_conjure.classList.remove('inactive');
-	} else if (conjuredConjures[2] == 0) {
-		ghost_conjure.classList.add('inactive');
-	}
-	if (forcedConjures.checked) {
-		check12s(searchArea);
-	}
+
+	return [foundSkeleton, foundZombie, foundGhost];
 }
 
-var foundSkeleton12 = false;
-var foundZombie12 = false;
-var foundGhost12 = false;
+var startedSkeleton12sTimer = false;
+var startedZombie12sTimer = false;
+var startedGhost12sTimer = false;
+function getConjures() {
+	let foundConjures = trackConjures();
 
-function check12s(searchArea) {
-	var conjuredSkeletonT12 =
-		searchArea.findSubimage(imgs.skeleton_warrior_T12).length ||
-		searchArea.findSubimage(imgs.skeleton_warrior_T12_17).length;
-	if (conjuredSkeletonT12) {
-		skeleton_conjure.classList.add('forced-active');
-		if (foundSkeleton12 === false) {
-			foundSkeleton12 = true;
-			finalCountdown(skeleton_conjure);
+	skeleton_conjure.classList.toggle('active', foundConjures[0]);
+	zombie_conjure.classList.toggle('active', foundConjures[1]);
+	ghost_conjure.classList.toggle('active', foundConjures[2]);
+
+	if (forcedConjures.checked) {
+
+		let skeletonFinal12 = skeleton_conjure.dataset.timer;
+		let zombieFinal12 = zombie_conjure.dataset.timer;
+		let ghostFinal12 = ghost_conjure.dataset.timer
+
+		if (skeletonFinal12 == '12') {
+			skeleton_conjure.classList.add('forced-active');
+			if (startedSkeleton12sTimer === false) {
+				startedSkeleton12sTimer = true;
+				finalCountdown(skeleton_conjure);
+			}
+			setTimeout(() => {
+				skeleton_conjure.classList.remove('forced-active');
+				skeleton_conjure.classList.remove('active');
+				skeleton_conjure.dataset.remaining = '12';
+				startedSkeleton12sTimer = false;
+			}, 11000);
 		}
-		setTimeout(() => {
-			skeleton_conjure.classList.remove('forced-active');
-			skeleton_conjure.classList.add('inactive');
-			skeleton_conjure.dataset.remaining = '12';
-			foundSkeleton12 = false;
-		}, 12000);
-	}
-	var conjuredZombieT12 = searchArea.findSubimage(
-		imgs.putrid_zombie_T12
-	).length;
-	if (conjuredZombieT12) {
-		zombie_conjure.classList.add('forced-active');
-		if (foundZombie12 === false) {
-			foundZombie12 = true;
-			finalCountdown(zombie_conjure);
+
+		if (zombieFinal12 == '12') {
+			zombie_conjure.classList.add('forced-active');
+			if (startedZombie12sTimer === false) {
+				startedZombie12sTimer = true;
+				finalCountdown(zombie_conjure);
+			}
+			setTimeout(() => {
+				zombie_conjure.classList.remove('forced-active');
+				zombie_conjure.classList.remove('active');
+				zombie_conjure.dataset.remaining = '12';
+				startedZombie12sTimer = false;
+			}, 11000);
 		}
-		setTimeout(() => {
-			zombie_conjure.classList.remove('forced-active');
-			zombie_conjure.classList.add('inactive');
-			zombie_conjure.dataset.remaining = '12';
-			foundZombie12 = false;
-		}, 12000);
-	}
-	var conjuredGhostT12 = searchArea.findSubimage(
-		imgs.vengeful_ghost_T12
-	).length;
-	if (conjuredGhostT12) {
-		ghost_conjure.classList.add('forced-active');
-		if (foundGhost12 === false) {
-			foundGhost12 = true;
-			finalCountdown(ghost_conjure);
+
+		if (ghostFinal12 == '12') {
+			ghost_conjure.classList.add('forced-active');
+			if (startedGhost12sTimer === false) {
+				startedGhost12sTimer = true;
+				finalCountdown(ghost_conjure);
+			}
+			setTimeout(() => {
+				ghost_conjure.classList.remove('forced-active');
+				ghost_conjure.classList.remove('active');
+				ghost_conjure.dataset.remaining = '12';
+				startedGhost12sTimer = false;
+			}, 11000);
 		}
-		setTimeout(() => {
-			ghost_conjure.classList.remove('forced-active');
-			ghost_conjure.classList.add('inactive');
-			ghost_conjure.dataset.remaining = '12';
-			foundGhost12 = false;
-		}, 12000);
 	}
 }
 
@@ -559,9 +563,16 @@ function finalCountdown(conjure: HTMLElement) {
 
 /* Settings */
 
+function toggleSettings() {
+	settings.classList.toggle('visible');
+}
+
 settingsButton.addEventListener('click', toggleSettings);
 
 var offhand = <HTMLInputElement>document.getElementById('Offhand');
+var conjureTimers = <HTMLInputElement>(
+	document.getElementById('ActiveConjureTimers')
+);
 var forcedConjures = <HTMLInputElement>(
 	document.getElementById('ForcedConjures')
 );
@@ -573,6 +584,10 @@ var colorFields: any = document.getElementsByClassName('colors');
 
 offhand.addEventListener('click', () => {
 	updateSetting('offhand95', offhand.checked);
+});
+
+conjureTimers.addEventListener('click', () => {
+	updateSetting('activeConjureTimers', conjureTimers.checked);
 });
 
 forcedConjures.addEventListener('click', () => {
@@ -635,7 +650,6 @@ NecrosisScaleInput.addEventListener('input', (event) => {
 	NecrosisScaleValue.textContent = event.target.value;
 	updateSetting('necrosisScale', event.target.value);
 });
-
 
 /* End Settings */
 

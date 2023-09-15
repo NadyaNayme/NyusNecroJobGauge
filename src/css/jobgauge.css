@@ -96,8 +96,7 @@ body {
   border: solid 2px black;
 }
 
-#Conjures .conjure.forced-active::before {
-  content: attr(data-remaining);
+#Conjures .conjure.active-timer::before {
   z-index: 3;
   font-family: 'trajan-pro-3', sans-serif;
   position: absolute;
@@ -108,8 +107,16 @@ body {
   width: 90%;
   height: 100%;
   color: #FFFFFF;
-  text-shadow: -1px -1px 1px black, -1px 1px 1px black, 1px -1px 1px black, 1px 1px 1px black;
-  opacity: .75;
+  text-shadow: -1px -1px 0px #010101, -1px 1px 0px #010101, 1px -1px 0px #010101, 1px 1px 0px #010101;
+  opacity: .95;
+}
+
+#Conjures .conjure.active.active-timer:not(.forced-active)::before {
+  content: attr(data-timer);
+}
+
+#Conjures .conjure.active-timer.forced-active::before {
+  content: attr(data-remaining);
 }
 
 #Conjures .conjure::after {
@@ -138,7 +145,7 @@ body {
   background-position: 50% 50%;
 }
 
-.conjure.inactive::after {
+.conjure:not(.active)::after {
   filter: grayscale(1);
   opacity: .65;
 }
