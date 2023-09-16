@@ -34,13 +34,6 @@ var necrosis = document.getElementById('Necrosis');
 // use `await imgs.promise` if you want to use the images as soon as they are loaded
 var buffImages = a1lib.webpackImages({
 	necrosis: require('./asset/data/Necrosis.data.png'),
-	necrosis_2: require('./asset/data/Necrosis-2.data.png'),
-	necrosis_4: require('./asset/data/Necrosis-4.data.png'),
-	necrosis_6: require('./asset/data/Necrosis-6.data.png'),
-	necrosis_8: require('./asset/data/Necrosis-8.data.png'),
-	necrosis_10: require('./asset/data/Necrosis-10.data.png'),
-	necrosis_12: require('./asset/data/Necrosis-12.data.png'),
-
 	residual_soul: require('./asset/data/Residual_Soul.data.png'),
 
 	skeleton_warrior: require('./asset/data/Skeleton_Warrior.data.png'),
@@ -468,7 +461,7 @@ function trackConjures() {
 			buffImages.skeleton_warrior,
 			false
 		);
-		if (skeletonCheck.passed > 90) {
+		if (skeletonCheck.passed > 70) {
 			foundSkeleton = true;
 			skeleton_conjure.dataset.timer = value.readTime().toString();
 		}
