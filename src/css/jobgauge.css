@@ -471,6 +471,10 @@ input[type="color"]:hover {
   cursor: pointer;
 }
 
+select {
+  margin: 0 .25rem 0 1rem;
+}
+
 .nisimgbutton {
     width: 20px;
     height: 20px;

@@ -595,6 +595,10 @@ input[type="color"]:hover {
   cursor: pointer;
 }
 
+select {
+  margin: 0 .25rem 0 1rem;
+}
+
 .nisimgbutton {
     width: 20px;
     height: 20px;
@@ -4924,6 +4928,16 @@ var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById('Necrosis');
 var livingDeath = document.getElementById('LivingDeath');
+var alarms = {
+    alarm1: './resource/alarms/alarm1.wav',
+    alarm2: './resource/alarms/alarm2.wav',
+    notification1: './resource/alarms/notification1.wav',
+    notification2: './resource/alarms/notification2.wav',
+    notification3: './resource/alarms/notification3.wav',
+    bell: './resource/alarms/bell.wav',
+    elevator: './resource/alarms/elevator.wav',
+    nuclear: './resource/alarms/nuclear.wav',
+};
 // loads all images as raw pixel data async, images have to be saved as *.data.png
 // this also takes care of metadata headers in the image that make browser load the image
 // with slightly wrong colors
@@ -5011,6 +5025,14 @@ function setDefaultSettings() {
         bloatTracker: false,
         necrosisTracker: false,
         livingdDeathTracker: false,
+        playCappedSoulsAlert: false,
+        soulsAlertAudio: alarms.notification1,
+        loopCappedSoulsAlert: false,
+        soulsAlertAudioVolume: 100,
+        playCappedNecrosisAlert: false,
+        necrosisAlertAudio: alarms.notification1,
+        loopCappedNecrosisAlert: false,
+        necrosisAlertAudioVolume: 100,
     }));
 }
 function loadSettings() {
@@ -5023,6 +5045,7 @@ function loadSettings() {
     setNecrosisGap();
     setLivingDeathCooldown();
     setLivingDeathPlacement();
+    setAlerts();
     setCustomColors();
     setCustomScale();
 }
@@ -5041,6 +5064,12 @@ function setTrackedComponents() {
 function setOffhand() {
     offhand.checked = Boolean(getSetting('offhand95'));
     souls.classList.toggle('t90', !Boolean(getSetting('offhand95')));
+    if (offhand.checked) {
+        soulsCap.innerHTML = '5';
+    }
+    else {
+        soulsCap.innerHTML = '3';
+    }
 }
 function setConjureTimers() {
     conjureTimers.checked = Boolean(getSetting('activeConjureTimers'));
@@ -5075,6 +5104,23 @@ function setLivingDeathPlacement() {
     else {
         livingDeath.style.setProperty('--order', '-1');
     }
+}
+function setAlerts() {
+    playCappedSoulsAlert.checked = Boolean(getSetting('playCappedSoulsAlert'));
+    loopCappedSoulsAlert.checked = Boolean(getSetting('loopCappedSoulsAlert'));
+    playCappedNecrosisAlert.checked = Boolean(getSetting('playCappedNecrosisAlert'));
+    loopCappedNecrosisAlert.checked = Boolean(getSetting('loopCappedNecrosisAlert'));
+    soulsAlertAudio.value = getSetting('soulsAlertAudio');
+    necrosisAlertAudio.value = getSetting('necrosisAlertAudio');
+    /* Volume */
+    var SoulsAlertAudioVolumeOutput = document.querySelector('#SoulsAlertAudioVolumeOutput');
+    var SoulsAlertAudioVolume = document.querySelector('#SoulsAlertAudioVolume');
+    SoulsAlertAudioVolume.value = getSetting('soulsAlertAudioVolume');
+    SoulsAlertAudioVolumeOutput.textContent = SoulsAlertAudioVolume.value;
+    var NecrosisAlertAudioVolumeOutput = document.querySelector('#NecrosisAlertAudioVolumeOutput');
+    var NecrosisAlertAudioVolume = document.querySelector('#NecrosisAlertAudioVolume');
+    NecrosisAlertAudioVolume.value = getSetting('necrosisAlertAudioVolume');
+    NecrosisAlertAudioVolumeOutput.textContent = NecrosisAlertAudioVolume.value;
 }
 function setDefaultColors() {
     var currentSoulBgColor = '#52f9fa';
@@ -5257,8 +5303,26 @@ function roundedToFixed(input, digits) {
     var rounder = Math.pow(10, digits);
     return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
+var soulsAlert;
+var necrosisAlert;
+function playAlert(type) {
+    if (type === 'souls') {
+        soulsAlert = new Audio(alarms[getSetting('soulsAlertAudio')]);
+        soulsAlert.loop = getSetting('loopCappedSoulsAlert');
+        soulsAlert.volume = Number(getSetting('soulsAlertAudioVolume')) / 100;
+        soulsAlert.play();
+    }
+    if (type == 'necrosis') {
+        necrosisAlert = new Audio(alarms[getSetting('necrosisAlertAudio')]);
+        necrosisAlert.loop = getSetting('loopCappedNecrosisAlert');
+        necrosisAlert.volume = Number(getSetting('necrosisAlertAudioVolume')) / 100;
+        necrosisAlert.play();
+    }
+}
 function findNecrosisCount(buffs) {
     var necrosisCount = 0;
+    var lastNecrosisCount = Number(necrosis.dataset.stacks);
+    var maxNecrosisCount = 12;
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], _key = _b[0], value = _b[1];
         var necrosisBuff = value.countMatch(buffImages.necrosis, false);
@@ -5267,6 +5331,20 @@ function findNecrosisCount(buffs) {
         }
     }
     necrosis.dataset.stacks = necrosisCount.toString();
+    if (necrosisCount === maxNecrosisCount &&
+        lastNecrosisCount != maxNecrosisCount &&
+        getSetting('playCappedNecrosisAlert')) {
+        playAlert('necrosis');
+    }
+    else if (lastNecrosisCount == maxNecrosisCount) {
+        return;
+    }
+    else {
+        if (necrosisAlert) {
+            necrosisAlert.pause();
+            necrosisAlert.currentTime = 0;
+        }
+    }
     return necrosisCount;
 }
 function findLivingDeath(buffs) {
@@ -5317,6 +5395,11 @@ function startLivingDeathCooldownTimer() {
 }
 function findSoulCount(buffs) {
     var soulsCount = 0;
+    var lastSoulsCount = Number(souls.dataset.souls);
+    var maxSoulsCount = 3;
+    if (getSetting('offhand95')) {
+        maxSoulsCount = 5;
+    }
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], _key = _b[0], value = _b[1];
         var soulsBuff = value.countMatch(buffImages.residual_soul, false);
@@ -5325,6 +5408,20 @@ function findSoulCount(buffs) {
         }
     }
     souls.dataset.souls = soulsCount.toString();
+    if (soulsCount === maxSoulsCount &&
+        lastSoulsCount != maxSoulsCount &&
+        getSetting('playCappedSoulsAlert')) {
+        playAlert('souls');
+    }
+    else if (lastSoulsCount == maxSoulsCount) {
+        return;
+    }
+    else {
+        if (soulsAlert) {
+            soulsAlert.pause();
+            soulsAlert.currentTime = 0;
+        }
+    }
     return soulsCount;
 }
 var startedSkeleton12sTimer = false;
@@ -5424,6 +5521,7 @@ var bloatTracker = document.getElementById('BloatTracker');
 var necrosisTracker = (document.getElementById('NecrosisTracker'));
 var livingdDeathTracker = (document.getElementById('LivingDeathTracker'));
 var offhand = document.getElementById('Offhand');
+var soulsCap = document.getElementById('SoulsCap');
 var conjureTimers = (document.getElementById('ActiveConjureTimers'));
 var forcedConjures = (document.getElementById('ForcedConjures'));
 var ghostSettings = document.getElementById('GhostSettings');
@@ -5431,6 +5529,12 @@ var gappedNecrosis = (document.getElementById('GappedNecrosis'));
 var livingDeathCooldown = (document.getElementById('LivingDeathCooldown'));
 var livingDeathPlacement = (document.getElementById('LivingDeathPlacement'));
 var singleNecrosis = (document.getElementById('SingleRowNecrosis'));
+var playCappedSoulsAlert = (document.getElementById('PlayCappedSoulsAlert'));
+var loopCappedSoulsAlert = (document.getElementById('LoopCappedSoulsAlert'));
+var soulsAlertAudio = (document.getElementById('SoulsAlertAudio'));
+var playCappedNecrosisAlert = (document.getElementById('PlayCappedNecrosisAlert'));
+var loopCappedNecrosisAlert = (document.getElementById('LoopCappedNecrosisAlert'));
+var necrosisAlertAudio = (document.getElementById('NecrosisAlertAudio'));
 var colorFields = document.getElementsByClassName('colors');
 conjuresTracker.addEventListener('click', function () {
     updateSetting('conjuresTracker', conjuresTracker.checked);
@@ -5449,6 +5553,12 @@ livingdDeathTracker.addEventListener('click', function () {
 });
 offhand.addEventListener('click', function () {
     updateSetting('offhand95', offhand.checked);
+    if (getSetting('offhand95')) {
+        soulsCap.innerHTML = '5';
+    }
+    else {
+        soulsCap.innerHTML = '3';
+    }
 });
 conjureTimers.addEventListener('click', function () {
     updateSetting('activeConjureTimers', conjureTimers.checked);
@@ -5470,6 +5580,32 @@ livingDeathPlacement.addEventListener('click', function () {
 });
 singleNecrosis.addEventListener('click', function () {
     updateSetting('singleNecrosis', singleNecrosis.checked);
+});
+playCappedSoulsAlert.addEventListener('click', function () {
+    updateSetting('playCappedSoulsAlert', playCappedSoulsAlert.checked);
+    if (!playCappedSoulsAlert.checked) {
+        soulsAlert.pause();
+        soulsAlert.currentTime = 0;
+    }
+});
+loopCappedSoulsAlert.addEventListener('click', function () {
+    updateSetting('loopCappedSoulsAlert', loopCappedSoulsAlert.checked);
+});
+soulsAlertAudio.addEventListener('change', function () {
+    updateSetting('soulsAlertAudio', soulsAlertAudio.value);
+});
+playCappedNecrosisAlert.addEventListener('click', function () {
+    updateSetting('playCappedNecrosisAlert', playCappedNecrosisAlert.checked);
+    if (!playCappedNecrosisAlert.checked) {
+        necrosisAlert.pause();
+        necrosisAlert.currentTime = 0;
+    }
+});
+loopCappedNecrosisAlert.addEventListener('click', function () {
+    updateSetting('loopCappedNecrosisAlert', loopCappedNecrosisAlert.checked);
+});
+necrosisAlertAudio.addEventListener('change', function () {
+    updateSetting('necrosisAlertAudio', necrosisAlertAudio.value);
 });
 for (var _i = 0, colorFields_1 = colorFields; _i < colorFields_1.length; _i++) {
     var color = colorFields_1[_i];
@@ -5518,6 +5654,22 @@ NecrosisScaleValue.textContent = NecrosisScaleInput.value;
 NecrosisScaleInput.addEventListener('input', function (event) {
     NecrosisScaleValue.textContent = event.target.value;
     updateSetting('necrosisScale', event.target.value);
+});
+var SoulsAlertAudioVolumeOutput = document.querySelector('#SoulsAlertAudioVolumeOutput');
+var SoulsAlertAudioVolume = document.querySelector('#SoulsAlertAudioVolume');
+SoulsAlertAudioVolumeOutput.textContent = SoulsAlertAudioVolume.value;
+SoulsAlertAudioVolume.addEventListener('input', function (event) {
+    SoulsAlertAudioVolumeOutput.textContent = event.target.value;
+    updateSetting('soulsAlertAudioVolume', event.target.value);
+    soulsAlert.volume = Number(getSetting('soulslertAudioVolume')) / 100;
+});
+var NecrosisAlertAudioVolumeOutput = document.querySelector('#NecrosisAlertAudioVolumeOutput');
+var NecrosisAlertAudioVolume = document.querySelector('#NecrosisAlertAudioVolume');
+NecrosisAlertAudioVolumeOutput.textContent = NecrosisAlertAudioVolume.value;
+NecrosisAlertAudioVolume.addEventListener('input', function (event) {
+    NecrosisAlertAudioVolumeOutput.textContent = event.target.value;
+    updateSetting('necrosisAlertAudioVolume', event.target.value);
+    necrosisAlert.volume = Number(getSetting('necrosisAlertAudioVolume')) / 100;
 });
 var resetAllSettingsButton = document.getElementById('ResetAllSettings');
 resetAllSettingsButton.addEventListener('click', function () {
