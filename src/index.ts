@@ -62,20 +62,13 @@ export function startJobGauge() {
 		return;
 	}
 	setInterval(() => {
-		getNecrosisStacks();
-	}, 150);
-	setInterval(() => {
-		getSoulsValue();
-	}, 150);
-	setInterval(() => {
-		getLivingDeathTime();
-	}, 150);
-	setInterval(() => {
-		getConjures();
-	}, 200);
-	setInterval(function () {
+		let buffs = getActiveBuffs();
+		getNecrosisStacks(buffs);
+		getSoulsValue(buffs);
+		getLivingDeathTime(buffs);
+		getConjures(buffs);
 		checkBloat();
-	}, 200);
+	}, 300);
 }
 
 function initSettings() {
@@ -88,34 +81,33 @@ function initSettings() {
 }
 
 function setDefaultSettings() {
-		localStorage.setItem(
-			'nyusNecroJobGauge',
-			JSON.stringify({
-				buffsLocation: getBuffsLocation,
-				offhand95: false,
-				forcedConjures: true,
-				ghostSettings: false,
-				singleNecrosis: false,
-				jobGaugeScale: 100,
-				conjureScale: 100,
-				soulScale: 100,
-				bloatScale: 100,
-				necrosisScale: 100,
-				soulBgColor: '#52f9fa',
-				necrosisDefaultBgColor: '#9205e4',
-				necrosisFreecastBgColor: '#fd7d00',
-				necrosisCappedBgColor: '#ff0000',
-				bloatNotchColor: '#ff0000',
-				activeConjureTimers: true,
-				gappedNecrosis: false,
-				livingDeathPlacement: false,
-				conjuresTracker: false,
-				soulsTracker: false,
-				bloatTracker: false,
-				necrosisTracker: false,
-				livingdDeathTracker: false,
-			})
-		);
+	localStorage.setItem(
+		'nyusNecroJobGauge',
+		JSON.stringify({
+			offhand95: false,
+			forcedConjures: true,
+			ghostSettings: false,
+			singleNecrosis: false,
+			jobGaugeScale: 100,
+			conjureScale: 100,
+			soulScale: 100,
+			bloatScale: 100,
+			necrosisScale: 100,
+			soulBgColor: '#52f9fa',
+			necrosisDefaultBgColor: '#9205e4',
+			necrosisFreecastBgColor: '#fd7d00',
+			necrosisCappedBgColor: '#ff0000',
+			bloatNotchColor: '#ff0000',
+			activeConjureTimers: true,
+			gappedNecrosis: false,
+			livingDeathPlacement: false,
+			conjuresTracker: false,
+			soulsTracker: false,
+			bloatTracker: false,
+			necrosisTracker: false,
+			livingdDeathTracker: false,
+		})
+	);
 }
 
 function loadSettings() {
@@ -133,7 +125,10 @@ function loadSettings() {
 
 function setTrackedComponents() {
 	conjuresTracker.checked = Boolean(getSetting('conjuresTracker'));
-	conjures.classList.toggle('tracked', !Boolean(getSetting('conjuresTracker')));
+	conjures.classList.toggle(
+		'tracked',
+		!Boolean(getSetting('conjuresTracker'))
+	);
 
 	soulsTracker.checked = Boolean(getSetting('soulsTracker'));
 	souls.classList.toggle('tracked', !Boolean(getSetting('soulsTracker')));
@@ -180,12 +175,15 @@ function setForcedConjures() {
 }
 
 function setGhostSettingsButton() {
-	ghostSettings.checked = Boolean(getSetting('ghostSettings'))
-	settingsButton.classList.toggle('ghost', Boolean(getSetting('ghostSettings')));
+	ghostSettings.checked = Boolean(getSetting('ghostSettings'));
+	settingsButton.classList.toggle(
+		'ghost',
+		Boolean(getSetting('ghostSettings'))
+	);
 }
 
 function setSingleNecrosis() {
-	singleNecrosis.checked = Boolean(getSetting('singleNecrosis'))
+	singleNecrosis.checked = Boolean(getSetting('singleNecrosis'));
 	necrosis.classList.toggle('single', Boolean(getSetting('singleNecrosis')));
 }
 
@@ -256,13 +254,12 @@ function setDefaultColors() {
 	for (let color of colorFields) {
 		updateSetting(color.dataset.setting, color.value);
 	}
-
 }
 
 let revertDefaultColorButton = document.getElementById('RevertDefaultColors');
 revertDefaultColorButton.addEventListener('click', () => {
 	setDefaultColors();
-})
+});
 
 function setCustomColors() {
 	let currentSoulBgColor = getSetting('soulBgColor');
@@ -314,10 +311,7 @@ function setCustomColors() {
 }
 
 function setCustomScale() {
-	jobGauge.style.setProperty(
-		'--scale',
-		getSetting('jobGaugeScale')
-	);
+	jobGauge.style.setProperty('--scale', getSetting('jobGaugeScale'));
 	conjures.style.setProperty('--scale', getSetting('conjureScale'));
 	souls.style.setProperty('--scale', getSetting('soulScale'));
 	bloat.style.setProperty('--scale', getSetting('bloatScale'));
@@ -381,14 +375,6 @@ function updateSetting(setting, value) {
 	loadSettings();
 }
 
-function getBuffsLocation() {
-	if (buffs.find()) {
-		return buffs.getCaptRect();
-	} else {
-		getBuffsLocation();
-	}
-}
-
 function getActiveBuffs() {
 	if (buffs.find()) {
 		return buffs.read();
@@ -450,11 +436,10 @@ function roundedToFixed(input, digits) {
 
 a1lib.on('rsfocus', startJobGauge);
 
-function findNecrosisCount() {
-	let allBuffs = getActiveBuffs();
+function findNecrosisCount(buffs: BuffReader.Buff[]) {
 	let necrosisCount = 0;
 
-	for (let [key, value] of Object.entries(allBuffs)) {
+	for (let [key, value] of Object.entries(buffs)) {
 		let necrosisBuff = value.countMatch(buffImages.necrosis, false);
 		if (necrosisBuff.passed > 140) {
 			necrosisCount = value.readTime();
@@ -464,16 +449,15 @@ function findNecrosisCount() {
 	return necrosisCount;
 }
 
-function getNecrosisStacks() {
-	let necrosisStackValue = findNecrosisCount();
+function getNecrosisStacks(buffs: BuffReader.Buff[]) {
+	let necrosisStackValue = findNecrosisCount(buffs);
 	necrosis.dataset.stacks = necrosisStackValue.toString();
 }
 
-function findLivingDeath() {
-	let allBuffs = getActiveBuffs();
+function findLivingDeath(buffs: BuffReader.Buff[]) {
 	let livingDeathTimer = 0;
 
-	for (let [key, value] of Object.entries(allBuffs)) {
+	for (let [key, value] of Object.entries(buffs)) {
 		let livingDeathBuff = value.countMatch(buffImages.livingDeath, false);
 		if (livingDeathBuff.passed > 150) {
 			livingDeath.classList.remove('cooldown');
@@ -484,8 +468,8 @@ function findLivingDeath() {
 	return livingDeathTimer;
 }
 
-function getLivingDeathTime() {
-	let livingDeathTimer = findLivingDeath();
+function getLivingDeathTime(buffs: BuffReader.Buff[]) {
+	let livingDeathTimer = findLivingDeath(buffs);
 	livingDeath.dataset.timer = livingDeathTimer.toString();
 
 	if (livingDeathTimer > 10) {
@@ -514,7 +498,8 @@ function getLivingDeathTime() {
 var startedLivingDeathCooldownTimer = false;
 function startLivingDeathCooldownTimer() {
 	if (!startedLivingDeathCooldownTimer) {
-		startedLivingDeathCooldownTimer = true; /* Prevent stacking countdowns every 150ms */
+		startedLivingDeathCooldownTimer =
+			true; /* Prevent stacking countdowns every 150ms */
 		finalCountdown(livingDeath, 60);
 	}
 	setTimeout(() => {
@@ -524,15 +509,11 @@ function startLivingDeathCooldownTimer() {
 	}, 60000);
 }
 
-function findSoulCount() {
-	let allBuffs = getActiveBuffs();
+function findSoulCount(buffs: BuffReader.Buff[]) {
 	let soulsCount = 0;
 
-	for (let [key, value] of Object.entries(allBuffs)) {
-		let soulsBuff = value.countMatch(
-			buffImages.residual_soul,
-			false
-		);
+	for (let [key, value] of Object.entries(buffs)) {
+		let soulsBuff = value.countMatch(buffImages.residual_soul, false);
 		if (soulsBuff.passed > 200) {
 			soulsCount = value.readTime();
 		}
@@ -541,19 +522,17 @@ function findSoulCount() {
 	return soulsCount;
 }
 
-function getSoulsValue() {
-	let residualSoulsValue = findSoulCount();
+function getSoulsValue(buffs: BuffReader.Buff[]) {
+	let residualSoulsValue = findSoulCount(buffs);
 	souls.dataset.souls = residualSoulsValue.toString();
 }
 
-function trackConjures() {
-	let allBuffs = getActiveBuffs();
-
+function trackConjures(buffs: BuffReader.Buff[]) {
 	let foundSkeleton = false;
 	let foundZombie = false;
 	let foundGhost = false;
 
-	for (let [key, value] of Object.entries(allBuffs)) {
+	for (let [key, value] of Object.entries(buffs)) {
 		let skeletonCheck = value.countMatch(
 			buffImages.skeleton_warrior,
 			false
@@ -582,18 +561,17 @@ function trackConjures() {
 var startedSkeleton12sTimer = false;
 var startedZombie12sTimer = false;
 var startedGhost12sTimer = false;
-function getConjures() {
-	let foundConjures = trackConjures();
+function getConjures(buffs: BuffReader.Buff[]) {
+	let foundConjures = trackConjures(buffs);
 
 	skeleton_conjure.classList.toggle('active', foundConjures[0]);
 	zombie_conjure.classList.toggle('active', foundConjures[1]);
 	ghost_conjure.classList.toggle('active', foundConjures[2]);
 
 	if (forcedConjures.checked) {
-
 		let skeletonFinal12 = skeleton_conjure.dataset.timer;
 		let zombieFinal12 = zombie_conjure.dataset.timer;
-		let ghostFinal12 = ghost_conjure.dataset.timer
+		let ghostFinal12 = ghost_conjure.dataset.timer;
 
 		if (skeletonFinal12 == '12') {
 			skeleton_conjure.classList.add('forced-active');
@@ -679,33 +657,32 @@ var forcedConjures = <HTMLInputElement>(
 	document.getElementById('ForcedConjures')
 );
 var ghostSettings = <HTMLInputElement>document.getElementById('GhostSettings');
-var gappedNecrosis = <HTMLInputElement>document.getElementById('GappedNecrosis');
-var livingDeathPlacement = <HTMLInputElement>document.getElementById('LivingDeathPlacement');
+var gappedNecrosis = <HTMLInputElement>(
+	document.getElementById('GappedNecrosis')
+);
+var livingDeathPlacement = <HTMLInputElement>(
+	document.getElementById('LivingDeathPlacement')
+);
 var singleNecrosis = <HTMLInputElement>(
 	document.getElementById('SingleRowNecrosis')
 );
 var colorFields: any = document.getElementsByClassName('colors');
 
-
 conjuresTracker.addEventListener('click', () => {
 	updateSetting('conjuresTracker', conjuresTracker.checked);
 });
-
 
 soulsTracker.addEventListener('click', () => {
 	updateSetting('soulsTracker', soulsTracker.checked);
 });
 
-
 bloatTracker.addEventListener('click', () => {
 	updateSetting('bloatTracker', bloatTracker.checked);
 });
 
-
 necrosisTracker.addEventListener('click', () => {
 	updateSetting('necrosisTracker', necrosisTracker.checked);
 });
-
 
 livingdDeathTracker.addEventListener('click', () => {
 	updateSetting('livingdDeathTracker', livingdDeathTracker.checked);
@@ -761,7 +738,6 @@ ConjuresScaleInput.addEventListener('input', (event) => {
 	updateSetting('conjureScale', event.target.value);
 });
 
-
 var SoulsScaleValue = document.querySelector('#SoulsScaleOutput');
 var SoulsScaleInput: any = document.querySelector('#SoulsScale');
 SoulsScaleValue.textContent = SoulsScaleInput.value;
@@ -770,7 +746,6 @@ SoulsScaleInput.addEventListener('input', (event) => {
 	updateSetting('soulScale', event.target.value);
 });
 
-
 var BloatScaleValue = document.querySelector('#BloatScaleOutput');
 var BloatScaleInput: any = document.querySelector('#BloatScale');
 BloatScaleValue.textContent = BloatScaleInput.value;
@@ -778,7 +753,6 @@ BloatScaleInput.addEventListener('input', (event) => {
 	BloatScaleValue.textContent = event.target.value;
 	updateSetting('bloatScale', event.target.value);
 });
-
 
 var NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
 var NecrosisScaleInput: any = document.querySelector('#NecrosisScale');

@@ -4944,20 +4944,13 @@ function startJobGauge() {
         return;
     }
     setInterval(function () {
-        getNecrosisStacks();
-    }, 150);
-    setInterval(function () {
-        getSoulsValue();
-    }, 150);
-    setInterval(function () {
-        getLivingDeathTime();
-    }, 150);
-    setInterval(function () {
-        getConjures();
-    }, 200);
-    setInterval(function () {
+        var buffs = getActiveBuffs();
+        getNecrosisStacks(buffs);
+        getSoulsValue(buffs);
+        getLivingDeathTime(buffs);
+        getConjures(buffs);
         checkBloat();
-    }, 200);
+    }, 300);
 }
 function initSettings() {
     if (!localStorage.nyusNecroJobGauge) {
@@ -4970,7 +4963,6 @@ function initSettings() {
 }
 function setDefaultSettings() {
     localStorage.setItem('nyusNecroJobGauge', JSON.stringify({
-        buffsLocation: getBuffsLocation,
         offhand95: false,
         forcedConjures: true,
         ghostSettings: false,
@@ -5168,14 +5160,6 @@ function updateSetting(setting, value) {
     localStorage.setItem('nyusNecroJobGauge', JSON.stringify(save_data));
     loadSettings();
 }
-function getBuffsLocation() {
-    if (buffs.find()) {
-        return buffs.getCaptRect();
-    }
-    else {
-        getBuffsLocation();
-    }
-}
 function getActiveBuffs() {
     if (buffs.find()) {
         return buffs.read();
@@ -5227,10 +5211,9 @@ function roundedToFixed(input, digits) {
     return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
 alt1__WEBPACK_IMPORTED_MODULE_6__.on('rsfocus', startJobGauge);
-function findNecrosisCount() {
-    var allBuffs = getActiveBuffs();
+function findNecrosisCount(buffs) {
     var necrosisCount = 0;
-    for (var _i = 0, _a = Object.entries(allBuffs); _i < _a.length; _i++) {
+    for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         var necrosisBuff = value.countMatch(buffImages.necrosis, false);
         if (necrosisBuff.passed > 140) {
@@ -5239,14 +5222,13 @@ function findNecrosisCount() {
     }
     return necrosisCount;
 }
-function getNecrosisStacks() {
-    var necrosisStackValue = findNecrosisCount();
+function getNecrosisStacks(buffs) {
+    var necrosisStackValue = findNecrosisCount(buffs);
     necrosis.dataset.stacks = necrosisStackValue.toString();
 }
-function findLivingDeath() {
-    var allBuffs = getActiveBuffs();
+function findLivingDeath(buffs) {
     var livingDeathTimer = 0;
-    for (var _i = 0, _a = Object.entries(allBuffs); _i < _a.length; _i++) {
+    for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         var livingDeathBuff = value.countMatch(buffImages.livingDeath, false);
         if (livingDeathBuff.passed > 150) {
@@ -5256,8 +5238,8 @@ function findLivingDeath() {
     }
     return livingDeathTimer;
 }
-function getLivingDeathTime() {
-    var livingDeathTimer = findLivingDeath();
+function getLivingDeathTime(buffs) {
+    var livingDeathTimer = findLivingDeath(buffs);
     livingDeath.dataset.timer = livingDeathTimer.toString();
     if (livingDeathTimer > 10) {
         livingDeath.dataset.cast = '1';
@@ -5283,7 +5265,8 @@ function getLivingDeathTime() {
 var startedLivingDeathCooldownTimer = false;
 function startLivingDeathCooldownTimer() {
     if (!startedLivingDeathCooldownTimer) {
-        startedLivingDeathCooldownTimer = true; /* Prevent stacking countdowns every 150ms */
+        startedLivingDeathCooldownTimer =
+            true; /* Prevent stacking countdowns every 150ms */
         finalCountdown(livingDeath, 60);
     }
     setTimeout(function () {
@@ -5292,10 +5275,9 @@ function startLivingDeathCooldownTimer() {
         startedLivingDeathCooldownTimer = false;
     }, 60000);
 }
-function findSoulCount() {
-    var allBuffs = getActiveBuffs();
+function findSoulCount(buffs) {
     var soulsCount = 0;
-    for (var _i = 0, _a = Object.entries(allBuffs); _i < _a.length; _i++) {
+    for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         var soulsBuff = value.countMatch(buffImages.residual_soul, false);
         if (soulsBuff.passed > 200) {
@@ -5304,16 +5286,15 @@ function findSoulCount() {
     }
     return soulsCount;
 }
-function getSoulsValue() {
-    var residualSoulsValue = findSoulCount();
+function getSoulsValue(buffs) {
+    var residualSoulsValue = findSoulCount(buffs);
     souls.dataset.souls = residualSoulsValue.toString();
 }
-function trackConjures() {
-    var allBuffs = getActiveBuffs();
+function trackConjures(buffs) {
     var foundSkeleton = false;
     var foundZombie = false;
     var foundGhost = false;
-    for (var _i = 0, _a = Object.entries(allBuffs); _i < _a.length; _i++) {
+    for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         var skeletonCheck = value.countMatch(buffImages.skeleton_warrior, false);
         if (skeletonCheck.passed > 70) {
@@ -5336,8 +5317,8 @@ function trackConjures() {
 var startedSkeleton12sTimer = false;
 var startedZombie12sTimer = false;
 var startedGhost12sTimer = false;
-function getConjures() {
-    var foundConjures = trackConjures();
+function getConjures(buffs) {
+    var foundConjures = trackConjures(buffs);
     skeleton_conjure.classList.toggle('active', foundConjures[0]);
     zombie_conjure.classList.toggle('active', foundConjures[1]);
     ghost_conjure.classList.toggle('active', foundConjures[2]);
@@ -5411,8 +5392,8 @@ var offhand = document.getElementById('Offhand');
 var conjureTimers = (document.getElementById('ActiveConjureTimers'));
 var forcedConjures = (document.getElementById('ForcedConjures'));
 var ghostSettings = document.getElementById('GhostSettings');
-var gappedNecrosis = document.getElementById('GappedNecrosis');
-var livingDeathPlacement = document.getElementById('LivingDeathPlacement');
+var gappedNecrosis = (document.getElementById('GappedNecrosis'));
+var livingDeathPlacement = (document.getElementById('LivingDeathPlacement'));
 var singleNecrosis = (document.getElementById('SingleRowNecrosis'));
 var colorFields = document.getElementsByClassName('colors');
 conjuresTracker.addEventListener('click', function () {
