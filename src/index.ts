@@ -14,6 +14,7 @@ import './icon.png';
 import './css/jobgauge.css';
 
 var buffs = new BuffReader.default();
+var targetDisplay = new TargetMob.default();
 
 var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
@@ -397,7 +398,6 @@ function getActiveBuffs() {
 }
 
 function checkBloat() {
-	var targetDisplay = new TargetMob.default();
 	targetDisplay.read();
 	if (targetDisplay.lastpos === null) {
 		return;

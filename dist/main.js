@@ -4883,12 +4883,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   startJobGauge: () => (/* binding */ startJobGauge)
 /* harmony export */ });
-/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! alt1 */ "../node_modules/alt1/dist/base/index.js");
-/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! alt1 */ "../node_modules/alt1/dist/base/index.js");
+/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var alt1_buffs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! alt1/buffs */ "../node_modules/alt1/dist/buffs/index.js");
 /* harmony import */ var alt1_buffs__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(alt1_buffs__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var alt1_targetmob__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! alt1/targetmob */ "../node_modules/alt1/dist/targetmob/index.js");
-/* harmony import */ var alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(alt1_targetmob__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var alt1_targetmob__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! alt1/targetmob */ "../node_modules/alt1/dist/targetmob/index.js");
+/* harmony import */ var alt1_targetmob__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(alt1_targetmob__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.html */ "./index.html");
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
@@ -4907,6 +4907,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var buffs = new (alt1_buffs__WEBPACK_IMPORTED_MODULE_4___default())();
+var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_5___default())();
 var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
 var settingsButton = document.getElementById('SettingsButton');
@@ -4924,7 +4925,7 @@ var livingDeath = document.getElementById('LivingDeath');
 // with slightly wrong colors
 // this function is async, so you cant acccess the images instantly but generally takes <20ms
 // use `await imgs.promise` if you want to use the images as soon as they are loaded
-var buffImages = alt1__WEBPACK_IMPORTED_MODULE_5__.webpackImages({
+var buffImages = alt1__WEBPACK_IMPORTED_MODULE_6__.webpackImages({
     livingDeath: __webpack_require__(/*! ./asset/data/Living_Death.data.png */ "./asset/data/Living_Death.data.png"),
     necrosis: __webpack_require__(/*! ./asset/data/Necrosis.data.png */ "./asset/data/Necrosis.data.png"),
     residual_soul: __webpack_require__(/*! ./asset/data/Residual_Soul.data.png */ "./asset/data/Residual_Soul.data.png"),
@@ -5184,7 +5185,6 @@ function getActiveBuffs() {
     }
 }
 function checkBloat() {
-    var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default())();
     targetDisplay.read();
     if (targetDisplay.lastpos === null) {
         return;
@@ -5195,7 +5195,7 @@ function checkBloat() {
         w: 150,
         h: 60,
     };
-    var targetDebuffs = alt1__WEBPACK_IMPORTED_MODULE_5__.captureHold(target_display_loc.x, target_display_loc.y, target_display_loc.w, target_display_loc.h);
+    var targetDebuffs = alt1__WEBPACK_IMPORTED_MODULE_6__.captureHold(target_display_loc.x, target_display_loc.y, target_display_loc.w, target_display_loc.h);
     var targetIsBloated = targetDebuffs.findSubimage(buffImages.bloated).length;
     var bloatTimer = parseFloat(parseFloat(bloat.dataset.timer).toFixed(2));
     if (targetIsBloated && bloatTimer == 0) {
@@ -5226,7 +5226,7 @@ function roundedToFixed(input, digits) {
     var rounder = Math.pow(10, digits);
     return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
-alt1__WEBPACK_IMPORTED_MODULE_5__.on('rsfocus', startJobGauge);
+alt1__WEBPACK_IMPORTED_MODULE_6__.on('rsfocus', startJobGauge);
 function findNecrosisCount() {
     var allBuffs = getActiveBuffs();
     var necrosisCount = 0;
