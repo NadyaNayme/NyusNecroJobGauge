@@ -208,12 +208,12 @@ body {
 #Conjures {
   --scale: 100;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin: 0;
   padding: 0;
   list-style: none;
   transform: scale(calc(var(--scale) / 100));
-  margin-bottom: -.25rem;
+  margin-bottom: calc(-40px * (1 - (var(--scale)/100)));
   transform-origin: top;
 }
 
@@ -298,6 +298,7 @@ body {
   padding: .65rem 0;
   transform: scale(calc(var(--scale) / 100));
   transform-origin: top;
+  margin-bottom: calc(-35px * (1 - (var(--scale)/100)))
 }
 
 #Souls .soul {
@@ -353,6 +354,7 @@ body {
   position: relative;
   transform: scale(calc(var(--scale) / 100));
   transform-origin: top;
+  margin-bottom: calc(-40px * (1 - (var(--scale)/100)));
 }
 
 #Bloat::before {
@@ -410,12 +412,17 @@ body {
 }
 
 #LivingDeath {
+  --scale: 100;
   --order: 1;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   order: var(--order);
+  transform: scale(calc(var(--scale) / 100));
+  transform-origin: top;
+  margin-top: calc(-20px * (1 - (var(--scale)/100)));
+  margin-right: calc(-40px * (1 - (var(--scale)/100)));
 }
 
 #LivingDeath img {
@@ -468,6 +475,8 @@ body {
   padding: .65rem 0;
   transform: scale(calc(var(--scale) / 100));
   transform-origin: top;
+  margin-top: calc(-20px * (1 - (var(--scale)/100)));
+  margin-left: calc(-40px * (1 - (var(--scale)/100)));
 }
 
 #Necrosis > ul {
@@ -4986,6 +4995,7 @@ function setDefaultSettings() {
         conjureScale: 100,
         soulScale: 100,
         bloatScale: 100,
+        livingDeathScale: 100,
         necrosisScale: 100,
         soulBgColor: '#52f9fa',
         necrosisDefaultBgColor: '#9205e4',
@@ -5133,6 +5143,7 @@ function setCustomScale() {
     conjures.style.setProperty('--scale', getSetting('conjureScale'));
     souls.style.setProperty('--scale', getSetting('soulScale'));
     bloat.style.setProperty('--scale', getSetting('bloatScale'));
+    livingDeath.style.setProperty('--scale', getSetting('livingDeathScale'));
     necrosis.style.setProperty('--scale', getSetting('necrosisScale'));
     document
         .getElementById('JobGaugeScale')
@@ -5146,6 +5157,9 @@ function setCustomScale() {
     document
         .getElementById('BloatScale')
         .setAttribute('value', getSetting('bloatScale'));
+    document
+        .getElementById('LivingDeathScale')
+        .setAttribute('value', getSetting('livingDeathScale'));
     document
         .getElementById('NecrosisScale')
         .setAttribute('value', getSetting('necrosisScale'));
@@ -5161,6 +5175,9 @@ function setCustomScale() {
     var BloatScaleValue = document.querySelector('#BloatScaleOutput');
     var BloatScaleInput = document.querySelector('#BloatScale');
     BloatScaleValue.textContent = BloatScaleInput.value;
+    var LivingDeathScaleValue = document.querySelector('#LivingDeathScaleOutput');
+    var LivingDeathScaleInput = document.querySelector('#LivingDeathScale');
+    LivingDeathScaleValue.textContent = LivingDeathScaleInput.value;
     var NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
     var NecrosisScaleInput = document.querySelector('#NecrosisScale');
     NecrosisScaleValue.textContent = NecrosisScaleInput.value;
@@ -5487,6 +5504,13 @@ BloatScaleValue.textContent = BloatScaleInput.value;
 BloatScaleInput.addEventListener('input', function (event) {
     BloatScaleValue.textContent = event.target.value;
     updateSetting('bloatScale', event.target.value);
+});
+var LivingDeathScaleValue = document.querySelector('#LivingDeathScaleOutput');
+var LivingDeathScaleInput = document.querySelector('#LivingDeathScale');
+LivingDeathScaleValue.textContent = LivingDeathScaleInput.value;
+LivingDeathScaleInput.addEventListener('input', function (event) {
+    LivingDeathScaleValue.textContent = event.target.value;
+    updateSetting('livingDeathScale', event.target.value);
 });
 var NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
 var NecrosisScaleInput = document.querySelector('#NecrosisScale');

@@ -113,6 +113,7 @@ function setDefaultSettings() {
 			conjureScale: 100,
 			soulScale: 100,
 			bloatScale: 100,
+			livingDeathScale: 100,
 			necrosisScale: 100,
 			soulBgColor: '#52f9fa',
 			necrosisDefaultBgColor: '#9205e4',
@@ -342,6 +343,7 @@ function setCustomScale() {
 	conjures.style.setProperty('--scale', getSetting('conjureScale'));
 	souls.style.setProperty('--scale', getSetting('soulScale'));
 	bloat.style.setProperty('--scale', getSetting('bloatScale'));
+	livingDeath.style.setProperty('--scale', getSetting('livingDeathScale'));
 	necrosis.style.setProperty('--scale', getSetting('necrosisScale'));
 
 	document
@@ -359,6 +361,10 @@ function setCustomScale() {
 	document
 		.getElementById('BloatScale')
 		.setAttribute('value', getSetting('bloatScale'));
+
+	document
+		.getElementById('LivingDeathScale')
+		.setAttribute('value', getSetting('livingDeathScale'));
 
 	document
 		.getElementById('NecrosisScale')
@@ -379,6 +385,10 @@ function setCustomScale() {
 	let BloatScaleValue = document.querySelector('#BloatScaleOutput');
 	let BloatScaleInput: any = document.querySelector('#BloatScale');
 	BloatScaleValue.textContent = BloatScaleInput.value;
+
+	let LivingDeathScaleValue = document.querySelector('#LivingDeathScaleOutput');
+	let LivingDeathScaleInput: any = document.querySelector('#LivingDeathScale');
+	LivingDeathScaleValue.textContent = LivingDeathScaleInput.value;
 
 	let NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
 	let NecrosisScaleInput: any = document.querySelector('#NecrosisScale');
@@ -781,6 +791,14 @@ BloatScaleValue.textContent = BloatScaleInput.value;
 BloatScaleInput.addEventListener('input', (event) => {
 	BloatScaleValue.textContent = event.target.value;
 	updateSetting('bloatScale', event.target.value);
+});
+
+var LivingDeathScaleValue = document.querySelector('#LivingDeathScaleOutput');
+var LivingDeathScaleInput: any = document.querySelector('#LivingDeathScale');
+LivingDeathScaleValue.textContent = LivingDeathScaleInput.value;
+LivingDeathScaleInput.addEventListener('input', (event) => {
+	LivingDeathScaleValue.textContent = event.target.value;
+	updateSetting('livingDeathScale', event.target.value);
 });
 
 var NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
