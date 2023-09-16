@@ -788,6 +788,14 @@ NecrosisScaleInput.addEventListener('input', (event) => {
 	updateSetting('necrosisScale', event.target.value);
 });
 
+let resetAllSettingsButton = document.getElementById('ResetAllSettings');
+resetAllSettingsButton.addEventListener('click', () => {
+	localStorage.removeItem('nyusNecroJobGauge');
+	localStorage.clear();
+	initSettings();
+	location.reload();
+});
+
 /* End Settings */
 
 //check if we are running inside alt1 by checking if the alt1 global exists

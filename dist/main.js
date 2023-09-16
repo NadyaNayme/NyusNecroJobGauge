@@ -5492,6 +5492,13 @@ NecrosisScaleInput.addEventListener('input', function (event) {
     NecrosisScaleValue.textContent = event.target.value;
     updateSetting('necrosisScale', event.target.value);
 });
+var resetAllSettingsButton = document.getElementById('ResetAllSettings');
+resetAllSettingsButton.addEventListener('click', function () {
+    localStorage.removeItem('nyusNecroJobGauge');
+    localStorage.clear();
+    initSettings();
+    location.reload();
+});
 /* End Settings */
 //check if we are running inside alt1 by checking if the alt1 global exists
 if (window.alt1) {
