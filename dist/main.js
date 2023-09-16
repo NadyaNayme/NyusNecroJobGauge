@@ -4988,11 +4988,11 @@ function setDefaultSettings() {
         activeConjureTimers: true,
         gappedNecrosis: false,
         livingDeathPlacement: false,
-        conjuresTracker: true,
-        soulsTracker: true,
-        bloatTracker: true,
-        necrosisTracker: true,
-        livingdDeathTracker: true,
+        conjuresTracker: false,
+        soulsTracker: false,
+        bloatTracker: false,
+        necrosisTracker: false,
+        livingdDeathTracker: false,
     }));
 }
 function loadSettings() {
