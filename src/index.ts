@@ -71,19 +71,19 @@ function startLooping() {
 		if (buffs) {
 			console.log(Object.entries(buffs));
 			if (!getSetting('necrosisTracker')) {
-				getNecrosisStacks(buffs);
+				findNecrosisCount(buffs);
 			}
 			if (!getSetting('soulsTracker')) {
-				getSoulsValue(buffs);
+				findSoulCount(buffs);
 			}
 			if (!getSetting('livingDeathTracker')) {
-				getLivingDeathTime(buffs);
+				findLivingDeath(buffs);
 			}
 			if (!getSetting('conjuresTracker')) {
-				getConjures(buffs);
+				findConjures(buffs);
 			}
 			if (!getSetting('bloatTracker')) {
-				checkBloat();
+				findBloat();
 			}
 		} else {
 			console.log('Failed to read buffs');
@@ -104,6 +104,7 @@ function setDefaultSettings() {
 	localStorage.setItem(
 		'nyusNecroJobGauge',
 		JSON.stringify({
+			buffsLocation: findPlayerBuffs,
 			offhand95: false,
 			forcedConjures: true,
 			ghostSettings: false,
@@ -395,15 +396,23 @@ function updateSetting(setting, value) {
 	loadSettings();
 }
 
-function getActiveBuffs() {
+function findPlayerBuffs() {
 	if (buffs.find()) {
-		return buffs.read();
+		return updateSetting('buffsLocation', [buffs.pos.x, buffs.pos.y]);
 	} else {
-		getActiveBuffs();
+		findPlayerBuffs();
 	}
 }
 
-function checkBloat() {
+function getActiveBuffs() {
+	if (getSetting('buffsLocation')) {
+		return buffs.read();
+	} else {
+		findPlayerBuffs();
+	}
+}
+
+function findBloat() {
 	targetDisplay.read();
 	if (targetDisplay.lastpos === null) {
 		return;
@@ -464,12 +473,9 @@ function findNecrosisCount(buffs: BuffReader.Buff[]) {
 		}
 	}
 
-	return necrosisCount;
-}
+	necrosis.dataset.stacks = necrosisCount.toString();
 
-function getNecrosisStacks(buffs: BuffReader.Buff[]) {
-	let necrosisStackValue = findNecrosisCount(buffs);
-	necrosis.dataset.stacks = necrosisStackValue.toString();
+	return necrosisCount;
 }
 
 function findLivingDeath(buffs: BuffReader.Buff[]) {
@@ -483,11 +489,6 @@ function findLivingDeath(buffs: BuffReader.Buff[]) {
 		}
 	}
 
-	return livingDeathTimer;
-}
-
-function getLivingDeathTime(buffs: BuffReader.Buff[]) {
-	let livingDeathTimer = findLivingDeath(buffs);
 	livingDeath.dataset.timer = livingDeathTimer.toString();
 
 	if (livingDeathTimer > 10) {
@@ -510,6 +511,8 @@ function getLivingDeathTime(buffs: BuffReader.Buff[]) {
 	} else {
 		livingDeath.classList.remove('inactive');
 	}
+
+	return livingDeathTimer;
 }
 
 /* We only want to call once - so use a global variable to track if we've called it */
@@ -530,22 +533,21 @@ function startLivingDeathCooldownTimer() {
 function findSoulCount(buffs: BuffReader.Buff[]) {
 	let soulsCount = 0;
 
-	for (let [key, value] of Object.entries(buffs)) {
+	for (let [_key, value] of Object.entries(buffs)) {
 		let soulsBuff = value.countMatch(buffImages.residual_soul, false);
 		if (soulsBuff.passed > 200) {
 			soulsCount = value.readTime();
 		}
 	}
+	souls.dataset.souls = soulsCount.toString();
 
 	return soulsCount;
 }
 
-function getSoulsValue(buffs: BuffReader.Buff[]) {
-	let residualSoulsValue = findSoulCount(buffs);
-	souls.dataset.souls = residualSoulsValue.toString();
-}
-
-function trackConjures(buffs: BuffReader.Buff[]) {
+var startedSkeleton12sTimer = false;
+var startedZombie12sTimer = false;
+var startedGhost12sTimer = false;
+function findConjures(buffs: BuffReader.Buff[]) {
 	let foundSkeleton = false;
 	let foundZombie = false;
 	let foundGhost = false;
@@ -573,15 +575,7 @@ function trackConjures(buffs: BuffReader.Buff[]) {
 		}
 	}
 
-	return [foundSkeleton, foundZombie, foundGhost];
-}
-
-var startedSkeleton12sTimer = false;
-var startedZombie12sTimer = false;
-var startedGhost12sTimer = false;
-function getConjures(buffs: BuffReader.Buff[]) {
-	let foundConjures = trackConjures(buffs);
-
+	let foundConjures = [foundSkeleton, foundZombie, foundGhost];
 	skeleton_conjure.classList.toggle('active', foundConjures[0]);
 	zombie_conjure.classList.toggle('active', foundConjures[1]);
 	ghost_conjure.classList.toggle('active', foundConjures[2]);
@@ -633,6 +627,8 @@ function getConjures(buffs: BuffReader.Buff[]) {
 			}, 11000);
 		}
 	}
+
+	return [foundSkeleton, foundZombie, foundGhost];
 }
 
 /* Used to count timers down that we have lost track of via Alt1 */
