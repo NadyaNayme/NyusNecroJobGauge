@@ -492,10 +492,15 @@ function getLivingDeathTime() {
 		livingDeath.dataset.cast = '1';
 	}
 
+	/* Once Living Death has ended */
 	if (livingDeathTimer == 0) {
 		livingDeath.classList.add('inactive');
+		/* When Living Death activity starts we set that the Player has cast the ability */
 		if (livingDeath.dataset.cast == '1') {
+			/* Unset value for next detection */
 			livingDeath.dataset.cast = '0';
+
+			/* Start a 60 second cooldown - the length of Living Death assuming the full 30s was used. */
 			livingDeath.dataset.remaining = '60';
 			livingDeath.classList.add('cooldown');
 			startLivingDeathCooldownTimer();
@@ -505,10 +510,11 @@ function getLivingDeathTime() {
 	}
 }
 
+/* We only want to call once - so use a global variable to track if we've called it */
 var startedLivingDeathCooldownTimer = false;
 function startLivingDeathCooldownTimer() {
 	if (!startedLivingDeathCooldownTimer) {
-		startedLivingDeathCooldownTimer = true;
+		startedLivingDeathCooldownTimer = true; /* Prevent stacking countdowns every 150ms */
 		finalCountdown(livingDeath, 60);
 	}
 	setTimeout(() => {
@@ -633,6 +639,7 @@ function getConjures() {
 	}
 }
 
+/* Used to count timers down that we have lost track of via Alt1 */
 function finalCountdown(element: HTMLElement, time: number) {
 	for (let i = 0; i < time; i++) {
 		setTimeout(() => {
