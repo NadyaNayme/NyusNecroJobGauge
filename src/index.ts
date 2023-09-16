@@ -26,6 +26,7 @@ var ghost_conjure = document.getElementById('Ghost');
 var souls = document.getElementById('Souls');
 var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById('Necrosis');
+var livingDeath = document.getElementById('LivingDeath');
 
 // loads all images as raw pixel data async, images have to be saved as *.data.png
 // this also takes care of metadata headers in the image that make browser load the image
@@ -33,6 +34,7 @@ var necrosis = document.getElementById('Necrosis');
 // this function is async, so you cant acccess the images instantly but generally takes <20ms
 // use `await imgs.promise` if you want to use the images as soon as they are loaded
 var buffImages = a1lib.webpackImages({
+	livingDeath: require('./asset/data/Living_Death.data.png'),
 	necrosis: require('./asset/data/Necrosis.data.png'),
 	residual_soul: require('./asset/data/Residual_Soul.data.png'),
 
@@ -41,17 +43,6 @@ var buffImages = a1lib.webpackImages({
 	vengeful_ghost: require('./asset/data/Vengeful_Ghost.data.png'),
 
 	bloated: require('./asset/data/Bloated.data.png'),
-});
-
-var abilityImgs = a1lib.webpackImages({
-	skeleton_warrior_ability: require('./asset/data/Skeleton_Warrior-ability.data.png'),
-	skeleton_warrior_ability_gcd: require('./asset/data/Skeleton_Warrior-ability-gcd.data.png'),
-
-	putrid_zombie_ability: require('./asset/data/Putrid_Zombie-ability.data.png'),
-	putrid_zombie_ability_gcd: require('./asset/data/Putrid_Zombie-ability-gcd.data.png'),
-
-	vengeful_ghost_ability: require('./asset/data/Vengeful_Ghost-ability.data.png'),
-	vengeful_ghost_ability_gcd: require('./asset/data/Vengeful_Ghost-ability-gcd.data.png'),
 });
 
 export function startJobGauge() {
@@ -69,7 +60,6 @@ export function startJobGauge() {
 		);
 		return;
 	}
-	var img = a1lib.captureHoldFullRs();
 	setInterval(() => {
 		getNecrosisStacks();
 	}, 150);
@@ -77,10 +67,13 @@ export function startJobGauge() {
 		getSoulsValue();
 	}, 150);
 	setInterval(() => {
+		getLivingDeathTime();
+	}, 150);
+	setInterval(() => {
 		getConjures();
 	}, 200);
 	setInterval(function () {
-		checkBloat(img);
+		checkBloat();
 	}, 200);
 }
 
@@ -112,19 +105,52 @@ function setDefaultSettings() {
 				necrosisFreecastBgColor: '#fd7d00',
 				necrosisCappedBgColor: '#ff0000',
 				bloatNotchColor: '#ff0000',
-				activeConjureTimers: true
+				activeConjureTimers: true,
+				gappedNecrosis: false,
+				livingDeathPlacement: false,
+				conjuresTracker: true,
+				soulsTracker: true,
+				bloatTracker: true,
+				necrosisTracker: true,
+				livingdDeathTracker: true,
 			})
 		);
 }
 
 function loadSettings() {
+	setTrackedComponents();
 	setOffhand();
 	setConjureTimers();
 	setForcedConjures();
 	setGhostSettingsButton();
 	setSingleNecrosis();
+	setNecrosisGap();
+	setLivingDeathPlacement();
 	setCustomColors();
 	setCustomScale();
+}
+
+function setTrackedComponents() {
+	conjuresTracker.checked = Boolean(getSetting('conjuresTracker'));
+	conjures.classList.toggle('tracked', !Boolean(getSetting('conjuresTracker')));
+
+	soulsTracker.checked = Boolean(getSetting('soulsTracker'));
+	souls.classList.toggle('tracked', !Boolean(getSetting('soulsTracker')));
+
+	bloatTracker.checked = Boolean(getSetting('bloatTracker'));
+	bloat.classList.toggle('tracked', !Boolean(getSetting('bloatTracker')));
+
+	necrosisTracker.checked = Boolean(getSetting('necrosisTracker'));
+	necrosis.classList.toggle(
+		'tracked',
+		!Boolean(getSetting('necrosisTracker'))
+	);
+
+	livingdDeathTracker.checked = Boolean(getSetting('livingdDeathTracker'));
+	livingDeath.classList.toggle(
+		'tracked',
+		!Boolean(getSetting('livingdDeathTracker'))
+	);
 }
 
 function setOffhand() {
@@ -160,6 +186,22 @@ function setGhostSettingsButton() {
 function setSingleNecrosis() {
 	singleNecrosis.checked = Boolean(getSetting('singleNecrosis'))
 	necrosis.classList.toggle('single', Boolean(getSetting('singleNecrosis')));
+}
+
+function setNecrosisGap() {
+	gappedNecrosis.checked = Boolean(getSetting('gappedNecrosis'));
+	necrosis.classList.toggle('gapped', Boolean(getSetting('gappedNecrosis')));
+}
+
+function setLivingDeathPlacement() {
+	livingDeathPlacement.checked = Boolean(getSetting('livingDeathPlacement'));
+	let livingDeath = document.getElementById('LivingDeath');
+
+	if (livingDeathPlacement.checked) {
+		livingDeath.style.setProperty('--order', '1');
+	} else {
+		livingDeath.style.setProperty('--order', '-1');
+	}
 }
 
 function setDefaultColors() {
@@ -354,7 +396,7 @@ function getActiveBuffs() {
 	}
 }
 
-function checkBloat(img) {
+function checkBloat() {
 	var targetDisplay = new TargetMob.default();
 	targetDisplay.read();
 	if (targetDisplay.lastpos === null) {
@@ -425,6 +467,55 @@ function findNecrosisCount() {
 function getNecrosisStacks() {
 	let necrosisStackValue = findNecrosisCount();
 	necrosis.dataset.stacks = necrosisStackValue.toString();
+}
+
+function findLivingDeath() {
+	let allBuffs = getActiveBuffs();
+	let livingDeathTimer = 0;
+
+	for (let [key, value] of Object.entries(allBuffs)) {
+		let livingDeathBuff = value.countMatch(buffImages.livingDeath, false);
+		if (livingDeathBuff.passed > 150) {
+			livingDeath.classList.remove('cooldown');
+			livingDeathTimer = value.readTime();
+		}
+	}
+
+	return livingDeathTimer;
+}
+
+function getLivingDeathTime() {
+	let livingDeathTimer = findLivingDeath();
+	livingDeath.dataset.timer = livingDeathTimer.toString();
+
+	if (livingDeathTimer > 10) {
+		livingDeath.dataset.cast = '1';
+	}
+
+	if (livingDeathTimer == 0) {
+		livingDeath.classList.add('inactive');
+		if (livingDeath.dataset.cast == '1') {
+			livingDeath.dataset.cast = '0';
+			livingDeath.dataset.remaining = '60';
+			livingDeath.classList.add('cooldown');
+			startLivingDeathCooldownTimer();
+		}
+	} else {
+		livingDeath.classList.remove('inactive');
+	}
+}
+
+var startedLivingDeathCooldownTimer = false;
+function startLivingDeathCooldownTimer() {
+	if (!startedLivingDeathCooldownTimer) {
+		startedLivingDeathCooldownTimer = true;
+		finalCountdown(livingDeath, 60);
+	}
+	setTimeout(() => {
+		livingDeath.classList.remove('cooldown');
+		livingDeath.dataset.remaining = '60';
+		startedLivingDeathCooldownTimer = false;
+	}, 60000);
 }
 
 function findSoulCount() {
@@ -500,9 +591,9 @@ function getConjures() {
 
 		if (skeletonFinal12 == '12') {
 			skeleton_conjure.classList.add('forced-active');
-			if (startedSkeleton12sTimer === false) {
+			if (!startedSkeleton12sTimer) {
 				startedSkeleton12sTimer = true;
-				finalCountdown(skeleton_conjure);
+				finalCountdown(skeleton_conjure, 12);
 			}
 			setTimeout(() => {
 				skeleton_conjure.classList.remove('forced-active');
@@ -514,9 +605,9 @@ function getConjures() {
 
 		if (zombieFinal12 == '12') {
 			zombie_conjure.classList.add('forced-active');
-			if (startedZombie12sTimer === false) {
+			if (!startedZombie12sTimer) {
 				startedZombie12sTimer = true;
-				finalCountdown(zombie_conjure);
+				finalCountdown(zombie_conjure, 12);
 			}
 			setTimeout(() => {
 				zombie_conjure.classList.remove('forced-active');
@@ -528,9 +619,9 @@ function getConjures() {
 
 		if (ghostFinal12 == '12') {
 			ghost_conjure.classList.add('forced-active');
-			if (startedGhost12sTimer === false) {
+			if (!startedGhost12sTimer) {
 				startedGhost12sTimer = true;
-				finalCountdown(ghost_conjure);
+				finalCountdown(ghost_conjure, 12);
 			}
 			setTimeout(() => {
 				ghost_conjure.classList.remove('forced-active');
@@ -542,13 +633,12 @@ function getConjures() {
 	}
 }
 
-function finalCountdown(conjure: HTMLElement) {
-	conjure.classList.add('forced-active');
-	for (let i = 0; i < 12; i++) {
+function finalCountdown(element: HTMLElement, time: number) {
+	for (let i = 0; i < time; i++) {
 		setTimeout(() => {
-			if (parseInt(conjure.dataset.remaining) > 0) {
-				let newValue = parseInt(conjure.dataset.remaining) - 1;
-				conjure.dataset.remaining = newValue.toString();
+			if (parseInt(element.dataset.remaining) > 0) {
+				let newValue = parseInt(element.dataset.remaining) - 1;
+				element.dataset.remaining = newValue.toString();
 			}
 		}, 1000 * i);
 	}
@@ -562,6 +652,18 @@ function toggleSettings() {
 
 settingsButton.addEventListener('click', toggleSettings);
 
+var conjuresTracker = <HTMLInputElement>(
+	document.getElementById('ConjuresTracker')
+);
+var soulsTracker = <HTMLInputElement>document.getElementById('SoulStracker');
+var bloatTracker = <HTMLInputElement>document.getElementById('BloatTracker');
+var necrosisTracker = <HTMLInputElement>(
+	document.getElementById('NecrosisTracker')
+);
+var livingdDeathTracker = <HTMLInputElement>(
+	document.getElementById('LivingDeathTracker')
+);
+
 var offhand = <HTMLInputElement>document.getElementById('Offhand');
 var conjureTimers = <HTMLInputElement>(
 	document.getElementById('ActiveConjureTimers')
@@ -570,10 +672,37 @@ var forcedConjures = <HTMLInputElement>(
 	document.getElementById('ForcedConjures')
 );
 var ghostSettings = <HTMLInputElement>document.getElementById('GhostSettings');
+var gappedNecrosis = <HTMLInputElement>document.getElementById('GappedNecrosis');
+var livingDeathPlacement = <HTMLInputElement>document.getElementById('LivingDeathPlacement');
 var singleNecrosis = <HTMLInputElement>(
 	document.getElementById('SingleRowNecrosis')
 );
 var colorFields: any = document.getElementsByClassName('colors');
+
+
+conjuresTracker.addEventListener('click', () => {
+	updateSetting('conjuresTracker', conjuresTracker.checked);
+});
+
+
+soulsTracker.addEventListener('click', () => {
+	updateSetting('soulsTracker', soulsTracker.checked);
+});
+
+
+bloatTracker.addEventListener('click', () => {
+	updateSetting('bloatTracker', bloatTracker.checked);
+});
+
+
+necrosisTracker.addEventListener('click', () => {
+	updateSetting('necrosisTracker', necrosisTracker.checked);
+});
+
+
+livingdDeathTracker.addEventListener('click', () => {
+	updateSetting('livingdDeathTracker', livingdDeathTracker.checked);
+});
 
 offhand.addEventListener('click', () => {
 	updateSetting('offhand95', offhand.checked);
@@ -589,6 +718,14 @@ forcedConjures.addEventListener('click', () => {
 
 ghostSettings.addEventListener('click', () => {
 	updateSetting('ghostSettings', ghostSettings.checked);
+});
+
+gappedNecrosis.addEventListener('click', () => {
+	updateSetting('gappedNecrosis', gappedNecrosis.checked);
+});
+
+livingDeathPlacement.addEventListener('click', () => {
+	updateSetting('livingDeathPlacement', livingDeathPlacement.checked);
 });
 
 singleNecrosis.addEventListener('click', () => {

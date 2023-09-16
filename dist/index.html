@@ -9,9 +9,17 @@
 				<div class="flex setting"><input type="checkbox" id="GhostSettings"> Hide Settings Cog (bottom right corner) unless hovered</div>
 				<div class="flex setting"><input type="checkbox" id="Offhand"> Using T95 Offhand</div>
 				<div class="flex setting"><input type="checkbox" id="SingleRowNecrosis"> Hide 2nd row of Necrosis Stacks</div>
+				<div class="flex setting"><input type="checkbox" id="GappedNecrosis">Add a gap between the 1-6 and 6-12 set of Necrosis Stacks</div>
+				<div class="flex setting"><input type="checkbox" id="LivingDeathPlacement">Move Living Death to right side of Necrosis Stacks</div>
 				<div class="flex setting"><input type="checkbox" id="ActiveConjureTimers">Track time remaining for summoned Conjures</div>
 				<div class="flex setting"><input type="checkbox" id="ForcedConjures">Force "active" the last 10s of Conjures *</div>
 				<small>* Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.</small>
+				<h3>Tracked Components</h3>
+				<div class="flex setting"><input type="checkbox" id="ConjuresTracker">Hide Conjures</div>
+				<div class="flex setting"><input type="checkbox" id="SoulStracker">Hide Residual Souls</div>
+				<div class="flex setting"><input type="checkbox" id="BloatTracker">Hide Bloat</div>
+				<div class="flex setting"><input type="checkbox" id="NecrosisTracker">Hide Necrosis Stacks</div>
+				<div class="flex setting"><input type="checkbox" id="LivingDeathTracker">Hide Living Death</div>
 				<h3>UI Colors</h3>
 				<div class="flex"><input value="#52f9fa" type="color" id="SoulBgColor" class="colors" data-setting="soulBgColor"><label for="SoulBgColor">Residual Souls</label></div>
 				<div class="flex"><input value="#9205e4" type="color" id="NecrosisDefaultBgColor" class="colors" data-setting="necrosisDefaultBgColor"><label for="NecrosisDefaultBgColor">Necrosis 0-4 Stacks</label></div>
@@ -63,32 +71,38 @@
 				<li class="notch"></li>
 				</ul>
 			</div>
-			<ul id="Necrosis" data-stacks="0">
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
-				</ul>
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
-				</ul>
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
-				</ul>
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
-				</ul>
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
-				</ul>
-				<ul>
-				<li class="stack"></li>
-				<li class="stack"></li>
+			<div id="NecrosisContainer">
+				<div id="LivingDeath" data-timer="0" data-cast="0" data-remaining="60">
+					<img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
+				</div>
+				<ul id="Necrosis" data-stacks="0">
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
+					<ul>
+						<li class="stack"></li>
+						<li class="stack"></li>
+					</ul>
 				</ul>
 			</div>
+		</div>
 		<script src="./main.js"></script>
 	</body>
 </html>

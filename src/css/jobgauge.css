@@ -67,11 +67,18 @@ body {
 #JobGauge {
   --scale: 100;
   display: flex;
+  max-width: 235px;
+  margin: 0 auto;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
   transform: scale(calc(var(--scale) / 100));
   transform-origin: top;
+}
+
+#JobGauge > * {
+  flex: 1 1 100%;
+  justify-content: center;
 }
 
 #Conjures {
@@ -272,13 +279,69 @@ body {
   margin-right: calc(10% - 2px);
 }
 
+#NecrosisContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#LivingDeath {
+  --order: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  order: var(--order);
+}
+
+#LivingDeath img {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  position: relative;
+  border: solid 2px black;
+  background-image: url('../asset/resource/living-death.png');
+  background-size: cover;
+  margin: 0 .5rem;
+}
+
+#LivingDeath.inactive img {
+  filter: grayscale(1);
+  opacity: .65;
+}
+
+#LivingDeath::after {
+  display: none;
+  z-index: 3;
+  font-family: 'trajan-pro-3', sans-serif;
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  font-size: 14px;
+  width: 55%;
+  height: 100%;
+  color: #FFFFFF;
+  text-shadow: -1px -1px 0px #010101, -1px 1px 0px #010101, 1px -1px 0px #010101, 1px 1px 0px #010101;
+  opacity: .95;
+}
+
+#LivingDeath:not(.cooldown):not(.inactive)::after {
+  display: flex;
+  content: attr(data-timer);
+}
+
+#LivingDeath.inactive.cooldown::after {
+  display: flex;
+  content: attr(data-remaining);
+}
+
 #Necrosis {
   --scale: 100;
-  min-width: 235px;
-  width: 85%;
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
   overflow: hidden;
@@ -289,9 +352,13 @@ body {
 }
 
 #Necrosis > ul {
-  padding: 0 1rem;
+  padding: 0 .65rem;
   position: relative;
   list-style: none;
+}
+
+#Necrosis.gapped > ul:nth-of-type(3) {
+  margin-right: .4rem;
 }
 
 #Necrosis.single > ul li:nth-child(2) {
@@ -359,6 +426,14 @@ body {
 
 #Necrosis[data-stacks="12"] .stack::before {
   background-color: var(--necrosis-capped-bg-color);
+}
+
+#Conjures:not(.tracked),
+#Souls:not(.tracked),
+#Bloat:not(.tracked),
+#Necrosis:not(.tracked),
+#LivingDeath:not(.tracked) {
+  display: none;
 }
 
 h3 {
