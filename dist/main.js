@@ -456,11 +456,6 @@ body {
   content: attr(data-timer);
 }
 
-#LivingDeath.inactive.cooldown::after {
-  display: flex;
-  content: attr(data-remaining);
-}
-
 #Necrosis {
   --scale: 100;
   list-style: none;
@@ -4999,6 +4994,7 @@ function setDefaultSettings() {
         bloatNotchColor: '#ff0000',
         activeConjureTimers: true,
         gappedNecrosis: false,
+        livingDeathCooldown: false,
         livingDeathPlacement: false,
         conjuresTracker: false,
         soulsTracker: false,
@@ -5015,6 +5011,7 @@ function loadSettings() {
     setGhostSettingsButton();
     setSingleNecrosis();
     setNecrosisGap();
+    setLivingDeathCooldown();
     setLivingDeathPlacement();
     setCustomColors();
     setCustomScale();
@@ -5055,6 +5052,9 @@ function setSingleNecrosis() {
 function setNecrosisGap() {
     gappedNecrosis.checked = Boolean(getSetting('gappedNecrosis'));
     necrosis.classList.toggle('gapped', Boolean(getSetting('gappedNecrosis')));
+}
+function setLivingDeathCooldown() {
+    livingDeathCooldown.checked = Boolean(getSetting('livingDeathCooldown'));
 }
 function setLivingDeathPlacement() {
     livingDeathPlacement.checked = Boolean(getSetting('livingDeathPlacement'));
@@ -5180,8 +5180,10 @@ function updateSetting(setting, value) {
     localStorage.setItem('nyusNecroJobGauge', JSON.stringify(save_data));
     loadSettings();
 }
+var foundBuffs = false;
 function findPlayerBuffs() {
     if (buffs.find()) {
+        foundBuffs = true;
         return updateSetting('buffsLocation', [buffs.pos.x, buffs.pos.y]);
     }
     else {
@@ -5189,7 +5191,7 @@ function findPlayerBuffs() {
     }
 }
 function getActiveBuffs() {
-    if (getSetting('buffsLocation')) {
+    if (foundBuffs && getSetting('buffsLocation')) {
         return buffs.read();
     }
     else {
@@ -5268,7 +5270,7 @@ function findLivingDeath(buffs) {
     if (livingDeathTimer == 0) {
         livingDeath.classList.add('inactive');
         /* When Living Death activity starts we set that the Player has cast the ability */
-        if (livingDeath.dataset.cast == '1') {
+        if (livingDeath.dataset.cast == '1' && !(getSetting('livingDeathCooldown'))) {
             /* Unset value for next detection */
             livingDeath.dataset.cast = '0';
             /* Start a 60 second cooldown - the length of Living Death assuming the full 30s was used. */
@@ -5409,6 +5411,7 @@ var conjureTimers = (document.getElementById('ActiveConjureTimers'));
 var forcedConjures = (document.getElementById('ForcedConjures'));
 var ghostSettings = document.getElementById('GhostSettings');
 var gappedNecrosis = (document.getElementById('GappedNecrosis'));
+var livingDeathCooldown = (document.getElementById('LivingDeathCooldown'));
 var livingDeathPlacement = (document.getElementById('LivingDeathPlacement'));
 var singleNecrosis = (document.getElementById('SingleRowNecrosis'));
 var colorFields = document.getElementsByClassName('colors');
@@ -5441,6 +5444,9 @@ ghostSettings.addEventListener('click', function () {
 });
 gappedNecrosis.addEventListener('click', function () {
     updateSetting('gappedNecrosis', gappedNecrosis.checked);
+});
+livingDeathCooldown.addEventListener('click', function () {
+    updateSetting('livingDeathCooldown', livingDeathCooldown.checked);
 });
 livingDeathPlacement.addEventListener('click', function () {
     updateSetting('livingDeathPlacement', livingDeathPlacement.checked);

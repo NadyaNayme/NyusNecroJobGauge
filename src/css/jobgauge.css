@@ -332,11 +332,6 @@ body {
   content: attr(data-timer);
 }
 
-#LivingDeath.inactive.cooldown::after {
-  display: flex;
-  content: attr(data-remaining);
-}
-
 #Necrosis {
   --scale: 100;
   list-style: none;

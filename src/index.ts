@@ -121,6 +121,7 @@ function setDefaultSettings() {
 			bloatNotchColor: '#ff0000',
 			activeConjureTimers: true,
 			gappedNecrosis: false,
+			livingDeathCooldown: false,
 			livingDeathPlacement: false,
 			conjuresTracker: false,
 			soulsTracker: false,
@@ -139,6 +140,7 @@ function loadSettings() {
 	setGhostSettingsButton();
 	setSingleNecrosis();
 	setNecrosisGap();
+	setLivingDeathCooldown();
 	setLivingDeathPlacement();
 	setCustomColors();
 	setCustomScale();
@@ -211,6 +213,10 @@ function setSingleNecrosis() {
 function setNecrosisGap() {
 	gappedNecrosis.checked = Boolean(getSetting('gappedNecrosis'));
 	necrosis.classList.toggle('gapped', Boolean(getSetting('gappedNecrosis')));
+}
+
+function setLivingDeathCooldown() {
+	livingDeathCooldown.checked = Boolean(getSetting('livingDeathCooldown'));
 }
 
 function setLivingDeathPlacement() {
@@ -396,8 +402,10 @@ function updateSetting(setting, value) {
 	loadSettings();
 }
 
+let foundBuffs = false;
 function findPlayerBuffs() {
 	if (buffs.find()) {
+		foundBuffs = true;
 		return updateSetting('buffsLocation', [buffs.pos.x, buffs.pos.y]);
 	} else {
 		findPlayerBuffs();
@@ -405,7 +413,7 @@ function findPlayerBuffs() {
 }
 
 function getActiveBuffs() {
-	if (getSetting('buffsLocation')) {
+	if (foundBuffs && getSetting('buffsLocation')) {
 		return buffs.read();
 	} else {
 		findPlayerBuffs();
@@ -499,7 +507,7 @@ function findLivingDeath(buffs: BuffReader.Buff[]) {
 	if (livingDeathTimer == 0) {
 		livingDeath.classList.add('inactive');
 		/* When Living Death activity starts we set that the Player has cast the ability */
-		if (livingDeath.dataset.cast == '1') {
+		if (livingDeath.dataset.cast == '1' && !(getSetting('livingDeathCooldown'))) {
 			/* Unset value for next detection */
 			livingDeath.dataset.cast = '0';
 
@@ -674,6 +682,9 @@ var ghostSettings = <HTMLInputElement>document.getElementById('GhostSettings');
 var gappedNecrosis = <HTMLInputElement>(
 	document.getElementById('GappedNecrosis')
 );
+var livingDeathCooldown = <HTMLInputElement>(
+	document.getElementById('LivingDeathCooldown')
+);
 var livingDeathPlacement = <HTMLInputElement>(
 	document.getElementById('LivingDeathPlacement')
 );
@@ -720,6 +731,10 @@ ghostSettings.addEventListener('click', () => {
 
 gappedNecrosis.addEventListener('click', () => {
 	updateSetting('gappedNecrosis', gappedNecrosis.checked);
+});
+
+livingDeathCooldown.addEventListener('click', () => {
+	updateSetting('livingDeathCooldown', livingDeathCooldown.checked);
 });
 
 livingDeathPlacement.addEventListener('click', () => {
