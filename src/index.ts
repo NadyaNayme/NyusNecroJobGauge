@@ -61,13 +61,33 @@ export function startJobGauge() {
 		);
 		return;
 	}
+
+	startLooping();
+}
+
+function startLooping() {
 	setInterval(() => {
 		let buffs = getActiveBuffs();
-		getNecrosisStacks(buffs);
-		getSoulsValue(buffs);
-		getLivingDeathTime(buffs);
-		getConjures(buffs);
-		checkBloat();
+		if (buffs) {
+			console.log(Object.entries(buffs));
+			if (!getSetting('necrosisTracker')) {
+				getNecrosisStacks(buffs);
+			}
+			if (!getSetting('soulsTracker')) {
+				getSoulsValue(buffs);
+			}
+			if (!getSetting('livingDeathTracker')) {
+				getLivingDeathTime(buffs);
+			}
+			if (!getSetting('conjuresTracker')) {
+				getConjures(buffs);
+			}
+			if (!getSetting('bloatTracker')) {
+				checkBloat();
+			}
+		} else {
+			console.log('Failed to read buffs');
+		}
 	}, 300);
 }
 
@@ -434,12 +454,10 @@ function roundedToFixed(input, digits) {
 	return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
 
-a1lib.on('rsfocus', startJobGauge);
-
 function findNecrosisCount(buffs: BuffReader.Buff[]) {
 	let necrosisCount = 0;
 
-	for (let [key, value] of Object.entries(buffs)) {
+	for (let [_key, value] of Object.entries(buffs)) {
 		let necrosisBuff = value.countMatch(buffImages.necrosis, false);
 		if (necrosisBuff.passed > 140) {
 			necrosisCount = value.readTime();
@@ -457,7 +475,7 @@ function getNecrosisStacks(buffs: BuffReader.Buff[]) {
 function findLivingDeath(buffs: BuffReader.Buff[]) {
 	let livingDeathTimer = 0;
 
-	for (let [key, value] of Object.entries(buffs)) {
+	for (let [_key, value] of Object.entries(buffs)) {
 		let livingDeathBuff = value.countMatch(buffImages.livingDeath, false);
 		if (livingDeathBuff.passed > 150) {
 			livingDeath.classList.remove('cooldown');
@@ -532,7 +550,7 @@ function trackConjures(buffs: BuffReader.Buff[]) {
 	let foundZombie = false;
 	let foundGhost = false;
 
-	for (let [key, value] of Object.entries(buffs)) {
+	for (let [_key, value] of Object.entries(buffs)) {
 		let skeletonCheck = value.countMatch(
 			buffImages.skeleton_warrior,
 			false

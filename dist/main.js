@@ -4943,13 +4943,32 @@ function startJobGauge() {
         output.insertAdjacentHTML('beforeend', "<div>Page is not installed as app or capture permission is not enabled</div>");
         return;
     }
+    startLooping();
+}
+function startLooping() {
     setInterval(function () {
         var buffs = getActiveBuffs();
-        getNecrosisStacks(buffs);
-        getSoulsValue(buffs);
-        getLivingDeathTime(buffs);
-        getConjures(buffs);
-        checkBloat();
+        if (buffs) {
+            console.log(Object.entries(buffs));
+            if (!getSetting('necrosisTracker')) {
+                getNecrosisStacks(buffs);
+            }
+            if (!getSetting('soulsTracker')) {
+                getSoulsValue(buffs);
+            }
+            if (!getSetting('livingDeathTracker')) {
+                getLivingDeathTime(buffs);
+            }
+            if (!getSetting('conjuresTracker')) {
+                getConjures(buffs);
+            }
+            if (!getSetting('bloatTracker')) {
+                checkBloat();
+            }
+        }
+        else {
+            console.log('Failed to read buffs');
+        }
     }, 300);
 }
 function initSettings() {
@@ -5210,11 +5229,10 @@ function roundedToFixed(input, digits) {
     var rounder = Math.pow(10, digits);
     return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
-alt1__WEBPACK_IMPORTED_MODULE_6__.on('rsfocus', startJobGauge);
 function findNecrosisCount(buffs) {
     var necrosisCount = 0;
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
-        var _b = _a[_i], key = _b[0], value = _b[1];
+        var _b = _a[_i], _key = _b[0], value = _b[1];
         var necrosisBuff = value.countMatch(buffImages.necrosis, false);
         if (necrosisBuff.passed > 140) {
             necrosisCount = value.readTime();
@@ -5229,7 +5247,7 @@ function getNecrosisStacks(buffs) {
 function findLivingDeath(buffs) {
     var livingDeathTimer = 0;
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
-        var _b = _a[_i], key = _b[0], value = _b[1];
+        var _b = _a[_i], _key = _b[0], value = _b[1];
         var livingDeathBuff = value.countMatch(buffImages.livingDeath, false);
         if (livingDeathBuff.passed > 150) {
             livingDeath.classList.remove('cooldown');
@@ -5295,7 +5313,7 @@ function trackConjures(buffs) {
     var foundZombie = false;
     var foundGhost = false;
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
-        var _b = _a[_i], key = _b[0], value = _b[1];
+        var _b = _a[_i], _key = _b[0], value = _b[1];
         var skeletonCheck = value.countMatch(buffImages.skeleton_warrior, false);
         if (skeletonCheck.passed > 70) {
             foundSkeleton = true;
