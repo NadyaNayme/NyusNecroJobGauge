@@ -75,8 +75,9 @@ export function startJobGauge() {
 	startLooping();
 }
 
+let maxAttempts = 10;
 function startLooping() {
-	setInterval(() => {
+	const interval = setInterval(() => {
 		let buffs = getActiveBuffs();
 		if (buffs) {
 			console.log(Object.entries(buffs));
@@ -95,8 +96,21 @@ function startLooping() {
 			if (!getSetting('bloatTracker')) {
 				findBloat();
 			}
+			// If we succesfully found buffs - restart our retries
+			maxAttempts = 10;
 		} else {
-			console.log('Failed to read buffs');
+			if (maxAttempts == 0) {
+				output.insertAdjacentHTML(
+					'beforeend',
+					`<p>Unable to find buff bar location.\nPlease login to the game or make sure that Alt1 can detect your buffs then reload the app.\nRemember - the Buffs Bar must be set to "Small". \nTo reload, right click this interface and select Reload.</p>`
+				);
+				clearInterval(interval);
+				return;
+			}
+			if (maxAttempts >- 0) {
+				maxAttempts--;
+			}
+			console.log(`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`);
 		}
 	}, 300);
 }
@@ -503,8 +517,6 @@ function findPlayerBuffs() {
 			);
 		}
 		return updateSetting('buffsLocation', [buffs.pos.x, buffs.pos.y]);
-	} else {
-		findPlayerBuffs();
 	}
 }
 
