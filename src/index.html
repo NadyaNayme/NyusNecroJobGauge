@@ -109,7 +109,7 @@
 			</div>
 			<div id="NecrosisContainer">
 				<div id="LivingDeath" class="tracker component inactive" data-timer="0" data-cast="0" data-remaining="60" data-setting="livingDeathTracker">
-					<img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
+					<img crossorigin="anonymous">
 				</div>
 				<ul id="Necrosis" class="tracker component" data-stacks="0" data-setting="necrosisTracker">
 					<ul>
@@ -138,6 +138,10 @@
 					</ul>
 				</ul>
 			</div>
+		</div>
+		<button id="OverlayButton">Start Overlay</button>
+		<div id="OverlayCanvasOutput">
+			<canvas></canvas>
 		</div>
 		<script src="./main.js" defer></script>
 	</body>

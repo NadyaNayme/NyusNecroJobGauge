@@ -3,6 +3,7 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
 import * as TargetMob from 'alt1/targetmob';
+import html2canvas from 'html2canvas';
 
 // tell webpack that this file relies index.html, appconfig.json and icon.png, this makes webpack
 // add these files to the output directory
@@ -12,6 +13,7 @@ import './index.html';
 import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
+import { isTransparent } from 'html2canvas/dist/types/css/types/color';
 
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
@@ -75,9 +77,46 @@ export function startJobGauge() {
 	startLooping();
 }
 
+let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+let overlayButton = document.getElementById('OverlayButton');
+overlayButton.addEventListener('click', () => {
+	captureOverlay();
+})
+
+function captureOverlay() {
+	setInterval(() => {
+		let overlayCanvas = document.createElement('canvas');
+		overlayCanvas.id = 'OverlayCanvas';
+		overlayCanvas.width = 177;
+		overlayCanvas.height = 114;
+		html2canvas(document.querySelector('#JobGauge'), {
+			allowTaint: true,
+			backgroundColor: 'transparent',
+			useCORS: false
+		}).then((canvas) => {
+			var imgBase64 = canvas.toDataURL();
+			// console.log("imgBase64:", imgBase64);
+			var imgURL = 'data:image/' + imgBase64;
+			var triggerDownload = document.createElement('a');
+				triggerDownload
+					.setAttribute('href', imgURL);
+					triggerDownload
+						.setAttribute(
+							'download',
+							'layout_' + new Date().getTime() + '.png'
+						);
+				overlayCanvasOutput.insertAdjacentElement('afterend', triggerDownload);
+			triggerDownload[0].click();
+			triggerDownload.remove();
+			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+		});
+	}, 50);
+}
+
 let maxAttempts = 10;
 function startLooping() {
 	const interval = setInterval(() => {
+
 		let buffs = getActiveBuffs();
 		if (buffs) {
 			console.log(Object.entries(buffs));
