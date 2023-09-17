@@ -29,7 +29,7 @@ var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById('Necrosis');
 var livingDeath = document.getElementById('LivingDeath');
 
-var alarms = {
+const alarms = {
 	alarm1: './resource/alarms/alarm1.wav',
 	alarm2: './resource/alarms/alarm2.wav',
 	notification1: './resource/alarms/notification1.wav',
@@ -115,39 +115,39 @@ function setDefaultSettings() {
 	localStorage.setItem(
 		'nyusNecroJobGauge',
 		JSON.stringify({
-			buffsLocation: findPlayerBuffs,
-			offhand95: false,
-			forcedConjures: true,
-			ghostSettings: false,
-			singleNecrosis: false,
-			jobGaugeScale: 100,
-			conjureScale: 100,
-			soulScale: 100,
-			bloatScale: 100,
-			livingDeathScale: 100,
-			necrosisScale: 100,
-			soulBgColor: '#52f9fa',
-			necrosisDefaultBgColor: '#9205e4',
-			necrosisFreecastBgColor: '#fd7d00',
-			necrosisCappedBgColor: '#ff0000',
-			bloatNotchColor: '#ff0000',
 			activeConjureTimers: true,
+			bloatNotchColor: '#ff0000',
+			bloatScale: 100,
+			bloatTracker: false,
+			buffsLocation: findPlayerBuffs,
+			conjureScale: 100,
+			conjuresTracker: false,
+			forcedConjures: true,
 			gappedNecrosis: false,
+			ghostSettings: false,
+			jobGaugeScale: 100,
+			livingdDeathTracker: false,
 			livingDeathCooldown: false,
 			livingDeathPlacement: false,
-			conjuresTracker: false,
-			soulsTracker: false,
-			bloatTracker: false,
-			necrosisTracker: false,
-			livingdDeathTracker: false,
-			playCappedSoulsAlert: false,
-			soulsAlertAudio: alarms.notification1,
-			loopCappedSoulsAlert: false,
-			soulsAlertAudioVolume: 100,
-			playCappedNecrosisAlert: false,
-			necrosisAlertAudio: alarms.notification1,
+			livingDeathScale: 100,
 			loopCappedNecrosisAlert: false,
+			loopCappedSoulsAlert: false,
+			necrosisAlertAudio: alarms.notification1,
 			necrosisAlertAudioVolume: 100,
+			necrosisCappedBgColor: '#ff0000',
+			necrosisDefaultBgColor: '#9205e4',
+			necrosisFreecastBgColor: '#fd7d00',
+			necrosisScale: 100,
+			necrosisTracker: false,
+			offhand95: false,
+			playCappedNecrosisAlert: false,
+			playCappedSoulsAlert: false,
+			singleNecrosis: false,
+			soulBgColor: '#52f9fa',
+			soulsAlertAudio: alarms.notification1,
+			soulsAlertAudioVolume: 100,
+			soulScale: 100,
+			soulsTracker: false,
 		})
 	);
 }
@@ -1005,22 +1005,24 @@ resetAllSettingsButton.addEventListener('click', () => {
 
 /* End Settings */
 
-//check if we are running inside alt1 by checking if the alt1 global exists
-if (window.alt1) {
-	//tell alt1 about the app
-	//this makes alt1 show the add app button when running inside the embedded browser
-	//also updates app settings if they are changed
-	alt1.identifyAppUrl('./appconfig.json');
-	initSettings();
-	startJobGauge();
-} else {
-	let addappurl = `alt1://addapp/${
-		new URL('./appconfig.json', document.location.href).href
-	}`;
-	output.insertAdjacentHTML(
-		'beforeend',
+window.onload = function () {
+	//check if we are running inside alt1 by checking if the alt1 global exists
+	if (window.alt1) {
+		//tell alt1 about the app
+		//this makes alt1 show the add app button when running inside the embedded browser
+		//also updates app settings if they are changed
+		alt1.identifyAppUrl('./appconfig.json');
+		initSettings();
+		startJobGauge();
+	} else {
+		let addappurl = `alt1://addapp/${
+			new URL('./appconfig.json', document.location.href).href
+		}`;
+		output.insertAdjacentHTML(
+			'beforeend',
+			`
+			Alt1 not detected, click <a href='${addappurl}'>here</a> to add this app to Alt1
 		`
-		Alt1 not detected, click <a href='${addappurl}'>here</a> to add this app to Alt1
-	`
-	);
-}
+		);
+	}
+};
