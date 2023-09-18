@@ -12880,6 +12880,7 @@ function captureOverlay() {
     overlayCanvas.height = 114;
     html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
+        canvas: overlayCanvas,
         backgroundColor: 'transparent',
         useCORS: true
     })

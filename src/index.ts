@@ -87,6 +87,7 @@ function captureOverlay() {
 	overlayCanvas.height = 114;
 	html2canvas(document.querySelector('#JobGauge'), {
 		allowTaint: true,
+		canvas: overlayCanvas,
 		backgroundColor: 'transparent',
 		useCORS: true
 	})
