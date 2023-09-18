@@ -12880,13 +12880,12 @@ function startJobGauge() {
     }
     startLooping();
 }
-var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+var overlayImage;
 function captureOverlay() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.width = 177;
     overlayCanvas.height = 114;
-    var image;
     var imageData = html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         backgroundColor: 'transparent',
@@ -12895,10 +12894,12 @@ function captureOverlay() {
         var convasContext = canvas.getContext('2d');
         return convasContext.getImageData(0, 0, canvas.width, canvas.height);
     }).then(function (res) {
-        image = res;
+        overlayImage = res;
         return res;
+    }).catch(function () {
+        console.log('Overlay failed to capture.');
     });
-    return image;
+    return;
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
@@ -12908,14 +12909,15 @@ function connectToWebSocket() {
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
-        var imageData = captureOverlay();
-        socket.send(imageData);
+        captureOverlay();
+        socket.send(overlayImage);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
-        var imageData = captureOverlay();
-        socket.send(imageData);
+        socket.send('Pong received - capturing new overlay.');
+        captureOverlay();
+        socket.send(overlayImage);
     });
 }
 var maxAttempts = 10;

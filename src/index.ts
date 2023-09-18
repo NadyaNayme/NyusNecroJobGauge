@@ -79,14 +79,12 @@ export function startJobGauge() {
 	startLooping();
 }
 
-let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-
+let overlayImage;
 function captureOverlay() {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
 	overlayCanvas.width = 177;
 	overlayCanvas.height = 114;
-	let image;
 	let imageData = html2canvas(document.querySelector('#JobGauge'), {
 		allowTaint: true,
 		backgroundColor: 'transparent',
@@ -95,10 +93,12 @@ function captureOverlay() {
 		let convasContext = canvas.getContext('2d');
 		return convasContext.getImageData(0,0,canvas.width,canvas.height);
 	}).then((res) => {
-		image = res;
+		overlayImage = res;
 		return res;
+	}).catch(() => {
+		console.log('Overlay failed to capture.')
 	});
-	return image;
+	return
 }
 
 function connectToWebSocket() {
@@ -110,15 +110,16 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
-		let imageData = captureOverlay();
-		socket.send(imageData);
+		captureOverlay();
+		socket.send(overlayImage);
 	});
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
 		console.log('Message from server ', event.data);
-		let imageData = captureOverlay();
-		socket.send(imageData);
+		socket.send('Pong received - capturing new overlay.');
+		captureOverlay();
+		socket.send(overlayImage);
 	});
 }
 
