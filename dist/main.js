@@ -12894,9 +12894,9 @@ function captureOverlay() {
         console.log('Overlay failed to capture.');
     });
 }
-function getOverlayData(socket) {
+function sendOverlayImage(socket) {
     var overlayCanvas = document.querySelector('#OverlayCanvasOutput canvas');
-    var context = overlayCanvas.getContext('2d');
+    var context = overlayCanvas.getContext('2d', { willReadFrequently: true });
     var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
     imageData.toFileBytes('image/png', 1)
         .then(function (res) {
@@ -12913,7 +12913,7 @@ function connectToWebSocket() {
         socket.send('Hello Server!');
         captureOverlay();
         setTimeout(function () {
-            getOverlayData(socket);
+            sendOverlayImage(socket);
         }, 200);
     });
     // Listen for messages
@@ -12922,7 +12922,7 @@ function connectToWebSocket() {
         socket.send('Pong received - capturing new overlay.');
         captureOverlay();
         setTimeout(function () {
-            getOverlayData(socket);
+            sendOverlayImage(socket);
         }, 200);
     });
 }

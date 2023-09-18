@@ -104,9 +104,9 @@ function captureOverlay() {
 	});
 }
 
-function getOverlayData(socket: WebSocket) {
+function sendOverlayImage(socket: WebSocket) {
 	let overlayCanvas = <HTMLCanvasElement>document.querySelector('#OverlayCanvasOutput canvas');
-	let context = overlayCanvas.getContext('2d');
+	let context = overlayCanvas.getContext('2d', {willReadFrequently: true});
 	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
 	imageData.toFileBytes('image/png', 1)
 	.then((res) => {
@@ -125,7 +125,7 @@ function connectToWebSocket() {
 		socket.send('Hello Server!');
 		captureOverlay();
 		setTimeout(function() {
-			getOverlayData(socket);
+			sendOverlayImage(socket);
 		}, 200)
 	});
 
@@ -135,7 +135,7 @@ function connectToWebSocket() {
 		socket.send('Pong received - capturing new overlay.');
 		captureOverlay();
 		setTimeout(function () {
-			getOverlayData(socket);
+			sendOverlayImage(socket);
 		}, 200);
 	});
 }
