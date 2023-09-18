@@ -339,8 +339,7 @@ body {
 }
 
 #LivingDeath.inactive img {
-  filter: grayscale(1);
-  opacity: .65;
+  background-image: url('../asset/resource/living-death-desat.png');
 }
 
 #LivingDeath::after {
