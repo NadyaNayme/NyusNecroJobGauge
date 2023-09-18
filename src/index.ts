@@ -92,14 +92,16 @@ function captureOverlay() {
 		backgroundColor: 'transparent',
 		useCORS: false
 	}).then((canvas) => {
-		imageData = canvas.toDataURL();
+		let convasContext = canvas.getContext('2d');
+		imageData = convasContext.getImageData(0,0,canvas.width,canvas.height);
 	});
-	return imageData.toString();
+	return imageData;
 }
 
 function connectToWebSocket() {
 	// Create WebSocket connection.
 	const socket = new WebSocket('ws://localhost:8080');
+	socket.binaryType = "arraybuffer";
 
 	// Connection opened
 	socket.addEventListener('open', (event) => {
