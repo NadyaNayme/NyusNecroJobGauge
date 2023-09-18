@@ -79,7 +79,6 @@ export function startJobGauge() {
 	startLooping();
 }
 
-let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay() {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
@@ -92,6 +91,9 @@ function captureOverlay() {
 		removeContainer: false,
 	})
 	.then((canvas) => {
+		let overlayCanvasOutput = document.getElementById(
+			'OverlayCanvasOutput'
+		);
 		overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
 		return
 	})
@@ -101,13 +103,13 @@ function captureOverlay() {
 }
 
 function getOverlayData(socket: WebSocket) {
+	let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 	let overlayCanvas = overlayCanvasOutput.querySelector('canvas');
 	let context = overlayCanvas.getContext('2d');
 	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
 	imageData.toFileBytes('image/png', 1)
 	.then((res) => {
-		let overlayImage = res;
-		socket.send(overlayImage);
+		socket.send(res.toString());
 	});
 }
 

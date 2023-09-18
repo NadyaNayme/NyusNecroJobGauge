@@ -12880,7 +12880,6 @@ function startJobGauge() {
     }
     startLooping();
 }
-var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
@@ -12893,6 +12892,7 @@ function captureOverlay() {
         removeContainer: false,
     })
         .then(function (canvas) {
+        var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
         overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
         return;
     })
@@ -12901,13 +12901,13 @@ function captureOverlay() {
     });
 }
 function getOverlayData(socket) {
+    var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
     var overlayCanvas = overlayCanvasOutput.querySelector('canvas');
     var context = overlayCanvas.getContext('2d');
     var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
     imageData.toFileBytes('image/png', 1)
         .then(function (res) {
-        var overlayImage = res;
-        socket.send(overlayImage);
+        socket.send(res.toString());
     });
 }
 function connectToWebSocket() {
