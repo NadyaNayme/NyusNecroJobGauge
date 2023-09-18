@@ -97,6 +97,7 @@ function captureOverlay(socket: WebSocket) {
 			'OverlayCanvasOutput'
 		);
 		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
+		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
 		overlayCanvasContext.drawImage(canvas, 0, 0);
 		let overlay = overlayCanvasOutput.querySelector('canvas');
 		updateSetting('overlayImage', overlay.toDataURL());
@@ -111,12 +112,8 @@ function captureOverlay(socket: WebSocket) {
 }
 
 function sendOverlayImage(socket: WebSocket) {
-	if (getSetting('lastOverlayFrame') != getSetting('overlayImage')) {
-		socket.send(getSetting('overlayImage'));
-		updateSetting('lastOverlayFrame', getSetting('overlayImage'));
-	} else {
-		console.log('Last overlay frame is the same as the last - avoided sending.')
-	}
+	socket.send(getSetting('overlayImage'));
+	updateSetting('lastOverlayFrame', getSetting('overlayImage'));
 }
 
 function connectToWebSocket() {
@@ -132,10 +129,16 @@ function connectToWebSocket() {
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
-		console.log('Message from server ', event.data);
 		socket.send('Pong received - capturing new overlay.');
-		if (getSetting('overlayImage')) {
+		if (
+			getSetting('overlayImage') &&
+			getSetting('lastOverlayFrame') != getSetting('overlayImage')
+		) {
 			socket.send(getSetting('overlayImage'));
+		} else {
+			console.log(
+				'Last overlay frame is the same as the last - avoided sending.'
+			);
 		}
 		captureOverlay(socket);
 	});
