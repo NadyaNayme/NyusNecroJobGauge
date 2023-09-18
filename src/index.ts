@@ -92,10 +92,9 @@ function captureOverlay(socket) {
 			backgroundColor: 'transparent',
 			useCORS: false
 		}).then((canvas) => {
-			var imgBase64 = canvas.toBlob;
-			var imgURL = 'data:image/' + imgBase64;
-			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+			var imgBase64 = canvas;
 			socket.send(imgBase64.toString());
+			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
 		});
 	}, 150);
 }
