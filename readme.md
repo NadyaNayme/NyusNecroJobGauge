@@ -9,11 +9,18 @@ Track your Residual Souls, Necrosis stacks, summoned Conjures, and Bloat all in 
 To install NecroJobGauge copy & paste this link into your browser:
 alt1://addapp/https://nadyanayme.github.io/NyusNecroJobGauge/dist/appconfig.json
 
-**Currently only works with Small Buff icons**
+**Currently only works with Small Buff icons**. Alt1's BuffReader only works with small buff icons so this is unlikely to change soon.
 
 ## Settings
 
-Click the cog wheel in the bottom right to change between 3 and 5 Residual Souls.
+Click the cog wheel in the bottom right to access the settings. It is suggested that you make the app window larger - as the settings will render below the job gauge so that you can see changes reflect on the gauge as you change them!
+
+- Switch between 3 or 5 Residual Souls for T95 offhand
+- Hide the settings cog (unless hovered)
+- Hide the redundant 2nd row of Necrosis Stacks ("real" vs visual)
+- Adjust the scale of the UI or its components
+- Adjust colors of Residual Soul stacks and Necrosis Stacks
+- Add alerts for when you reach max stacks of Residual Souls or Necrosis Stacks
 
 ## Known Issues
 
