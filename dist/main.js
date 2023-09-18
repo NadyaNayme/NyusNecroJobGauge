@@ -12990,6 +12990,7 @@ function setDefaultSettings() {
         gappedNecrosis: false,
         ghostSettings: false,
         jobGaugeScale: 100,
+        lastOverlayFrame: '',
         livingdDeathTracker: false,
         livingDeathCooldown: false,
         livingDeathPlacement: false,
