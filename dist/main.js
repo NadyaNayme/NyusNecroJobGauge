@@ -12881,7 +12881,8 @@ function startJobGauge() {
     startLooping();
 }
 var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-function captureOverlay(socket) {
+function captureOverlay() {
+    var imageData;
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.width = 177;
@@ -12891,10 +12892,9 @@ function captureOverlay(socket) {
         backgroundColor: 'transparent',
         useCORS: false
     }).then(function (canvas) {
-        var imgBase64 = canvas.toDataURL();
-        socket.send(imgBase64.toString());
-        overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+        imageData = canvas.toDataURL();
     });
+    return imageData.toString();
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
@@ -12903,12 +12903,14 @@ function connectToWebSocket() {
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
-        captureOverlay(socket);
+        var imageData = captureOverlay();
+        socket.send(imageData);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
-        captureOverlay(socket);
+        var imageData = captureOverlay();
+        socket.send(imageData);
     });
 }
 var maxAttempts = 10;
