@@ -12882,21 +12882,19 @@ function startJobGauge() {
 }
 var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay(socket) {
-    setInterval(function () {
-        var overlayCanvas = document.createElement('canvas');
-        overlayCanvas.id = 'OverlayCanvas';
-        overlayCanvas.width = 177;
-        overlayCanvas.height = 114;
-        html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
-            allowTaint: true,
-            backgroundColor: 'transparent',
-            useCORS: false
-        }).then(function (canvas) {
-            var imgBase64 = canvas.toDataURL;
-            socket.send(imgBase64.toString());
-            overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
-        });
-    }, 200);
+    var overlayCanvas = document.createElement('canvas');
+    overlayCanvas.id = 'OverlayCanvas';
+    overlayCanvas.width = 177;
+    overlayCanvas.height = 114;
+    html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
+        allowTaint: true,
+        backgroundColor: 'transparent',
+        useCORS: false
+    }).then(function (canvas) {
+        var imgBase64 = canvas.toDataURL();
+        socket.send(imgBase64.toString());
+        overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+    });
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
@@ -12910,6 +12908,7 @@ function connectToWebSocket() {
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
+        captureOverlay(socket);
     });
 }
 var maxAttempts = 10;
