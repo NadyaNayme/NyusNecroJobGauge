@@ -107,13 +107,13 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
+		captureOverlay(socket);
 	});
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
 		console.log('Message from server ', event.data);
 	});
-	captureOverlay(socket);
 }
 
 let maxAttempts = 10;

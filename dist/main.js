@@ -12834,12 +12834,12 @@ function connectToWebSocket() {
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
+        captureOverlay(socket);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
     });
-    captureOverlay(socket);
 }
 var maxAttempts = 10;
 function startLooping() {
