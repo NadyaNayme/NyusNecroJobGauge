@@ -12886,6 +12886,7 @@ function captureOverlay() {
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.width = 177;
     overlayCanvas.height = 114;
+    var image;
     var imageData = html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         backgroundColor: 'transparent',
@@ -12893,8 +12894,11 @@ function captureOverlay() {
     }).then(function (canvas) {
         var convasContext = canvas.getContext('2d');
         return convasContext.getImageData(0, 0, canvas.width, canvas.height);
+    }).then(function (res) {
+        image = res;
+        return res;
     });
-    return imageData;
+    return image;
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
