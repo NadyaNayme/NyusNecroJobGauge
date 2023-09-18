@@ -12761,6 +12761,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var ws = connectToWebSocket();
 var buffs = new (alt1_buffs__WEBPACK_IMPORTED_MODULE_5___default())();
 var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default())();
 var output = document.getElementById('output');
@@ -12825,20 +12826,26 @@ function captureOverlay() {
             backgroundColor: 'transparent',
             useCORS: false
         }).then(function (canvas) {
-            var imgBase64 = canvas.toDataURL();
-            // console.log("imgBase64:", imgBase64);
+            var imgBase64 = canvas.toBlob;
             var imgURL = 'data:image/' + imgBase64;
-            var triggerDownload = document.createElement('a');
-            triggerDownload
-                .setAttribute('href', imgURL);
-            triggerDownload
-                .setAttribute('download', 'layout_' + new Date().getTime() + '.png');
-            overlayCanvasOutput.insertAdjacentElement('afterend', triggerDownload);
-            triggerDownload[0].click();
-            triggerDownload.remove();
             overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+            ws.send(imgBase64.toString());
         });
-    }, 50);
+    }, 150);
+}
+function connectToWebSocket() {
+    // Create WebSocket connection.
+    var socket = new WebSocket('ws://localhost:8080');
+    // Connection opened
+    socket.addEventListener('open', function (event) {
+        console.log(socket.readyState.toString());
+        socket.send('Hello Server!');
+    });
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+    });
+    return socket;
 }
 var maxAttempts = 10;
 function startLooping() {

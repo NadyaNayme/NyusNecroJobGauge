@@ -3,6 +3,7 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
 import * as TargetMob from 'alt1/targetmob';
+import * as ws from 'ws';
 import html2canvas from 'html2canvas';
 
 // tell webpack that this file relies index.html, appconfig.json and icon.png, this makes webpack
@@ -14,6 +15,9 @@ import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
 import { isTransparent } from 'html2canvas/dist/types/css/types/color';
+import { connect } from 'http2';
+
+const ws = connectToWebSocket();
 
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
@@ -94,23 +98,29 @@ function captureOverlay() {
 			backgroundColor: 'transparent',
 			useCORS: false
 		}).then((canvas) => {
-			var imgBase64 = canvas.toDataURL();
-			// console.log("imgBase64:", imgBase64);
+			var imgBase64 = canvas.toBlob;
 			var imgURL = 'data:image/' + imgBase64;
-			var triggerDownload = document.createElement('a');
-				triggerDownload
-					.setAttribute('href', imgURL);
-					triggerDownload
-						.setAttribute(
-							'download',
-							'layout_' + new Date().getTime() + '.png'
-						);
-				overlayCanvasOutput.insertAdjacentElement('afterend', triggerDownload);
-			triggerDownload[0].click();
-			triggerDownload.remove();
 			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+			ws.send(imgBase64.toString());
 		});
-	}, 50);
+	}, 150);
+}
+
+function connectToWebSocket() {
+	// Create WebSocket connection.
+	const socket = new WebSocket('ws://localhost:8080');
+
+	// Connection opened
+	socket.addEventListener('open', (event) => {
+		console.log(socket.readyState.toString());
+		socket.send('Hello Server!');
+	});
+
+	// Listen for messages
+	socket.addEventListener('message', (event) => {
+		console.log('Message from server ', event.data);
+	});
+	return socket;
 }
 
 let maxAttempts = 10;
