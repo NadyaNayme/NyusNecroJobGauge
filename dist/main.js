@@ -12882,18 +12882,18 @@ function startJobGauge() {
 }
 var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay() {
-    var imageData;
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.width = 177;
     overlayCanvas.height = 114;
-    html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
+    var imageData = html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         backgroundColor: 'transparent',
         useCORS: false
     }).then(function (canvas) {
         var convasContext = canvas.getContext('2d');
         imageData = convasContext.getImageData(0, 0, canvas.width, canvas.height);
+        return imageData;
     });
     return imageData;
 }

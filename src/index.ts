@@ -82,18 +82,18 @@ export function startJobGauge() {
 let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 
 function captureOverlay() {
-	let imageData;
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
 	overlayCanvas.width = 177;
 	overlayCanvas.height = 114;
-	html2canvas(document.querySelector('#JobGauge'), {
+	let imageData = html2canvas(document.querySelector('#JobGauge'), {
 		allowTaint: true,
 		backgroundColor: 'transparent',
 		useCORS: false
 	}).then((canvas) => {
 		let convasContext = canvas.getContext('2d');
 		imageData = convasContext.getImageData(0,0,canvas.width,canvas.height);
+		return imageData;
 	});
 	return imageData;
 }
