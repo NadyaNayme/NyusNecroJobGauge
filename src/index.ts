@@ -110,7 +110,11 @@ function sendOverlayImage(socket: WebSocket) {
 	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
 	imageData.toFileBytes('image/png', 1)
 	.then((res) => {
-		socket.send(res);
+		try {
+			updateSetting('overlayImage', res);
+		} catch (e) {
+			console.log('Storage of canvas image failed: ' + e);
+		}
 	});
 }
 
@@ -132,7 +136,7 @@ function connectToWebSocket() {
 		socket.send('Pong received - capturing new overlay.');
 		captureOverlay();
 		setTimeout(function () {
-			sendOverlayImage(socket);
+			sendOverlayImage(getSetting('overlayImage'));
 		}, 200);
 	});
 }
@@ -218,6 +222,7 @@ function setDefaultSettings() {
 			necrosisScale: 100,
 			necrosisTracker: false,
 			offhand95: false,
+			overlayImage: Uint8Array,
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,
