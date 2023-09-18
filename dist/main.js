@@ -12761,7 +12761,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var ws = connectToWebSocket();
 var buffs = new (alt1_buffs__WEBPACK_IMPORTED_MODULE_5___default())();
 var targetDisplay = new (alt1_targetmob__WEBPACK_IMPORTED_MODULE_6___default())();
 var output = document.getElementById('output');
@@ -12811,11 +12810,7 @@ function startJobGauge() {
     startLooping();
 }
 var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-var overlayButton = document.getElementById('OverlayButton');
-overlayButton.addEventListener('click', function () {
-    captureOverlay();
-});
-function captureOverlay() {
+function captureOverlay(socket) {
     setInterval(function () {
         var overlayCanvas = document.createElement('canvas');
         overlayCanvas.id = 'OverlayCanvas';
@@ -12829,7 +12824,7 @@ function captureOverlay() {
             var imgBase64 = canvas.toBlob;
             var imgURL = 'data:image/' + imgBase64;
             overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
-            ws.send(imgBase64.toString());
+            socket.send(imgBase64.toString());
         });
     }, 150);
 }
@@ -12845,7 +12840,7 @@ function connectToWebSocket() {
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
     });
-    return socket;
+    captureOverlay(socket);
 }
 var maxAttempts = 10;
 function startLooping() {
@@ -12896,6 +12891,7 @@ function initSettings() {
 function setDefaultSettings() {
     localStorage.setItem('nyusNecroJobGauge', JSON.stringify({
         activeConjureTimers: true,
+        activeOverlay: false,
         bloatNotchColor: '#ff0000',
         bloatScale: 100,
         bloatTracker: false,
@@ -13503,6 +13499,9 @@ window.onload = function () {
         alt1.identifyAppUrl('./appconfig.json');
         initSettings();
         startJobGauge();
+        if (getSetting('activeOverlay')) {
+            connectToWebSocket();
+        }
     }
     else {
         var addappurl = "alt1://addapp/".concat(new URL('./appconfig.json', document.location.href).href);

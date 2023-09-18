@@ -17,8 +17,6 @@ import './css/jobgauge.css';
 import { isTransparent } from 'html2canvas/dist/types/css/types/color';
 import { connect } from 'http2';
 
-const ws = connectToWebSocket();
-
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
 
@@ -82,12 +80,8 @@ export function startJobGauge() {
 }
 
 let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-let overlayButton = document.getElementById('OverlayButton');
-overlayButton.addEventListener('click', () => {
-	captureOverlay();
-})
 
-function captureOverlay() {
+function captureOverlay(socket) {
 	setInterval(() => {
 		let overlayCanvas = document.createElement('canvas');
 		overlayCanvas.id = 'OverlayCanvas';
@@ -101,7 +95,7 @@ function captureOverlay() {
 			var imgBase64 = canvas.toBlob;
 			var imgURL = 'data:image/' + imgBase64;
 			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
-			ws.send(imgBase64.toString());
+			socket.send(imgBase64.toString());
 		});
 	}, 150);
 }
@@ -120,7 +114,7 @@ function connectToWebSocket() {
 	socket.addEventListener('message', (event) => {
 		console.log('Message from server ', event.data);
 	});
-	return socket;
+	captureOverlay(socket);
 }
 
 let maxAttempts = 10;
@@ -178,6 +172,7 @@ function setDefaultSettings() {
 		'nyusNecroJobGauge',
 		JSON.stringify({
 			activeConjureTimers: true,
+			activeOverlay: false,
 			bloatNotchColor: '#ff0000',
 			bloatScale: 100,
 			bloatTracker: false,
@@ -952,6 +947,9 @@ window.onload = function () {
 		alt1.identifyAppUrl('./appconfig.json');
 		initSettings();
 		startJobGauge();
+		if (getSetting('activeOverlay')) {
+			connectToWebSocket();
+		}
 	} else {
 		let addappurl = `alt1://addapp/${
 			new URL('./appconfig.json', document.location.href).href
