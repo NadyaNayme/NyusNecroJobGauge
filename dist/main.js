@@ -12912,14 +12912,18 @@ function connectToWebSocket() {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
         captureOverlay();
-        getOverlayData(socket);
+        setTimeout(function () {
+            getOverlayData(socket);
+        }, 200);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
         socket.send('Pong received - capturing new overlay.');
         captureOverlay();
-        getOverlayData(socket);
+        setTimeout(function () {
+            getOverlayData(socket);
+        }, 200);
     });
 }
 var maxAttempts = 10;
