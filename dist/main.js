@@ -12886,7 +12886,8 @@ function captureOverlay() {
     })
         .then(function (canvas) {
         var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-        overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+        var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
+        overlayCanvasContext.drawImage(canvas, 0, 0);
         return;
     })
         .catch(function () {
@@ -12894,8 +12895,7 @@ function captureOverlay() {
     });
 }
 function getOverlayData(socket) {
-    var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-    var overlayCanvas = overlayCanvasOutput.querySelector('canvas');
+    var overlayCanvas = document.querySelector('#OverlayCanvasOutput canvas');
     var context = overlayCanvas.getContext('2d');
     var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
     imageData.toFileBytes('image/png', 1)

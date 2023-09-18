@@ -95,7 +95,8 @@ function captureOverlay() {
 		let overlayCanvasOutput = document.getElementById(
 			'OverlayCanvasOutput'
 		);
-		overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
+		overlayCanvasContext.drawImage(canvas, 0, 0);
 		return
 	})
 	.catch(() => {
@@ -104,8 +105,7 @@ function captureOverlay() {
 }
 
 function getOverlayData(socket: WebSocket) {
-	let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-	let overlayCanvas = overlayCanvasOutput.querySelector('canvas');
+	let overlayCanvas = <HTMLCanvasElement>document.querySelector('#OverlayCanvasOutput canvas');
 	let context = overlayCanvas.getContext('2d');
 	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
 	imageData.toFileBytes('image/png', 1)
