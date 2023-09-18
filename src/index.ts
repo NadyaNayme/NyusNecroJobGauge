@@ -77,40 +77,60 @@ export function startJobGauge() {
 	startLooping();
 }
 
-let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-let overlayButton = document.getElementById('OverlayButton');
-overlayButton.addEventListener('click', () => {
-	captureOverlay();
-})
+function captureOverlay(socket: WebSocket) {
+	let overlayCanvas = document.createElement('canvas');
+	overlayCanvas.id = 'OverlayCanvas';
+	overlayCanvas.setAttribute('willReadFrequently', 'true');
+	overlayCanvas.width = 177;
+	overlayCanvas.height = 114;
+	html2canvas(document.querySelector('#JobGauge'), {
+		allowTaint: true,
+		canvas: overlayCanvas,
+		backgroundColor: 'transparent',
+		useCORS: true
+	})
+	.then((canvas) => {
+		try {
+		let overlayCanvasOutput = document.getElementById(
+			'OverlayCanvasOutput'
+		);
+		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
+		overlayCanvasContext.drawImage(canvas, 0, 0);
+		updateSetting('overlayImage', canvas.toDataURL());
+		sendOverlayImage(socket);
+		} catch(e) {
+			console.log('Error saving image? ' + e);
+		}
+	})
+	.catch(() => {
+		console.log('Overlay failed to capture.');
+	});
+}
 
-function captureOverlay() {
-	setInterval(() => {
-		let overlayCanvas = document.createElement('canvas');
-		overlayCanvas.id = 'OverlayCanvas';
-		overlayCanvas.width = 177;
-		overlayCanvas.height = 114;
-		html2canvas(document.querySelector('#JobGauge'), {
-			allowTaint: true,
-			backgroundColor: 'transparent',
-			useCORS: false
-		}).then((canvas) => {
-			var imgBase64 = canvas.toDataURL();
-			// console.log("imgBase64:", imgBase64);
-			var imgURL = 'data:image/' + imgBase64;
-			var triggerDownload = document.createElement('a');
-				triggerDownload
-					.setAttribute('href', imgURL);
-					triggerDownload
-						.setAttribute(
-							'download',
-							'layout_' + new Date().getTime() + '.png'
-						);
-				overlayCanvasOutput.insertAdjacentElement('afterend', triggerDownload);
-			triggerDownload[0].click();
-			triggerDownload.remove();
-			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
-		});
-	}, 50);
+function sendOverlayImage(socket: WebSocket) {
+	socket.send(getSetting('overlayImage'));
+}
+
+function connectToWebSocket() {
+	// Create WebSocket connection.
+	const socket = new WebSocket('ws://localhost:8080');
+	socket.binaryType = "arraybuffer";
+
+	// Connection opened
+	socket.addEventListener('open', (event) => {
+		console.log(socket.readyState.toString());
+		socket.send('Hello Server!');
+	});
+
+	// Listen for messages
+	socket.addEventListener('message', (event) => {
+		console.log('Message from server ', event.data);
+		socket.send('Pong received - capturing new overlay.');
+		if (getSetting('overlayImage')) {
+			socket.send(getSetting('overlayImage'));
+		}
+		captureOverlay(socket);
+	});
 }
 
 let maxAttempts = 10;
