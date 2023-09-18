@@ -12885,11 +12885,16 @@ function captureOverlay(socket) {
         useCORS: true
     })
         .then(function (canvas) {
-        var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-        var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
-        overlayCanvasContext.drawImage(canvas, 0, 0);
-        updateSetting('overlayImage', canvas.toDataURL());
-        sendOverlayImage(socket);
+        try {
+            var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+            var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
+            overlayCanvasContext.drawImage(canvas, 0, 0);
+            updateSetting('overlayImage', canvas.toDataURL());
+            sendOverlayImage(socket);
+        }
+        catch (e) {
+            console.log('Error saving image? ' + e);
+        }
     })
         .catch(function () {
         console.log('Overlay failed to capture.');
@@ -12911,6 +12916,9 @@ function connectToWebSocket() {
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
         socket.send('Pong received - capturing new overlay.');
+        if (getSetting('overlayImage')) {
+            socket.send(getSetting('overlayImage'));
+        }
         captureOverlay(socket);
     });
 }

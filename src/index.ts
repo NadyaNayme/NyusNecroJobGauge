@@ -92,6 +92,7 @@ function captureOverlay(socket: WebSocket) {
 		useCORS: true
 	})
 	.then((canvas) => {
+		try {
 		let overlayCanvasOutput = document.getElementById(
 			'OverlayCanvasOutput'
 		);
@@ -99,6 +100,9 @@ function captureOverlay(socket: WebSocket) {
 		overlayCanvasContext.drawImage(canvas, 0, 0);
 		updateSetting('overlayImage', canvas.toDataURL());
 		sendOverlayImage(socket);
+		} catch(e) {
+			console.log('Error saving image? ' + e);
+		}
 	})
 	.catch(() => {
 		console.log('Overlay failed to capture.');
@@ -124,6 +128,9 @@ function connectToWebSocket() {
 	socket.addEventListener('message', (event) => {
 		console.log('Message from server ', event.data);
 		socket.send('Pong received - capturing new overlay.');
+		if (getSetting('overlayImage')) {
+			socket.send(getSetting('overlayImage'));
+		}
 		captureOverlay(socket);
 	});
 }
