@@ -97,6 +97,7 @@ function captureOverlay(socket: WebSocket) {
 		);
 		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
 		overlayCanvasContext.drawImage(canvas, 0, 0);
+		updateSetting('overlayImage', canvas.toDataURL());
 		sendOverlayImage(socket);
 	})
 	.catch(() => {
@@ -105,9 +106,6 @@ function captureOverlay(socket: WebSocket) {
 }
 
 function sendOverlayImage(socket: WebSocket) {
-	let overlayCanvas = <HTMLCanvasElement>document.querySelector('#OverlayCanvasOutput canvas');
-	let imageString = overlayCanvas.toDataURL();
-	updateSetting('overlayImage', imageString);
 	socket.send(getSetting('overlayImage'));
 }
 
@@ -120,7 +118,6 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
-		captureOverlay(socket);
 	});
 
 	// Listen for messages
