@@ -12892,8 +12892,7 @@ function captureOverlay() {
         useCORS: false
     }).then(function (canvas) {
         var convasContext = canvas.getContext('2d');
-        imageData = convasContext.getImageData(0, 0, canvas.width, canvas.height);
-        return imageData;
+        return convasContext.getImageData(0, 0, canvas.width, canvas.height);
     });
     return imageData;
 }

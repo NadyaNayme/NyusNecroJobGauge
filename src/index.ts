@@ -92,8 +92,7 @@ function captureOverlay() {
 		useCORS: false
 	}).then((canvas) => {
 		let convasContext = canvas.getContext('2d');
-		imageData = convasContext.getImageData(0,0,canvas.width,canvas.height);
-		return imageData;
+		return convasContext.getImageData(0,0,canvas.width,canvas.height);
 	});
 	return imageData;
 }
