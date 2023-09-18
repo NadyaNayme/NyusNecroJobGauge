@@ -7811,7 +7811,7 @@ module.exports = function (i) {
                         case 4:
                             _i++;
                             return [3 /*break*/, 2];
-                        case 5:
+                        case 5: 
                         // 3. For all its in-flow, non-positioned, block-level descendants in tree order:
                         return [4 /*yield*/, this.renderNodeContent(stack.element)];
                         case 6:
@@ -8658,15 +8658,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _node_modules_css_loader_dist_cjs_js_jobgauge_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!./jobgauge.css */ "../node_modules/css-loader/dist/cjs.js!./css/jobgauge.css");
 
-
-
-
-
-
-
-
-
-
+      
+      
+      
+      
+      
+      
+      
+      
+      
 
 var options = {};
 
@@ -8674,7 +8674,7 @@ options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTra
 options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
 
       options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-
+    
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
@@ -11278,7 +11278,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_sharp__;
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __nested_webpack_require_79245__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -11292,14 +11292,14 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_sharp__;
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_79245__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
@@ -11312,14 +11312,14 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_sharp__;
 /******/ 			}
 /******/ 		})();
 /******/ 	})();
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __nested_webpack_exports__ = __nested_webpack_require_79245__("./src/base/index.ts");
-/******/
+/******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
 ;
@@ -11733,7 +11733,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":120,"chr":"0","pixels"
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __nested_webpack_require_20993__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -11747,21 +11747,21 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":120,"chr":"0","pixels"
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_20993__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __nested_webpack_exports__ = __nested_webpack_require_20993__("./src/buffs/index.ts");
-/******/
+/******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
 ;
@@ -11947,7 +11947,7 @@ exports.decomposeblack = decomposeblack;
  */
 function decompose3col(rp, gp, bp, r1, g1, b1, r2, g2, b2, r3, g3, b3) {
     //P=x*C1+y*C2+z*C3
-    //assemble as matrix
+    //assemble as matrix 
     //M*w=p
     //get inverse of M
     //dirty written out version of cramer's rule
@@ -12447,7 +12447,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_alt1_base__;
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __nested_webpack_require_26177__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -12461,21 +12461,21 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_alt1_base__;
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_26177__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __nested_webpack_exports__ = __nested_webpack_require_26177__("./src/ocr/index.ts");
-/******/
+/******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
 ;
@@ -12614,7 +12614,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __nested_webpack_require_37481__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -12628,21 +12628,21 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_37481__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __nested_webpack_exports__ = __nested_webpack_require_37481__("./src/targetmob/index.ts");
-/******/
+/******/ 	
 /******/ 	return __nested_webpack_exports__;
 /******/ })()
 ;
@@ -12654,7 +12654,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -12668,17 +12668,17 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = __webpack_modules__;
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -12691,7 +12691,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			return getter;
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -12703,7 +12703,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -12715,12 +12715,12 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			}
 /******/ 		})();
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -12731,7 +12731,7 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/publicPath */
 /******/ 	(() => {
 /******/ 		var scriptUrl;
@@ -12754,38 +12754,38 @@ module.exports = JSON.parse('{"chars":[{"width":7,"bonus":140,"chr":"a","pixels"
 /******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
 /******/ 		__webpack_require__.p = scriptUrl;
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
 /******/ 		__webpack_require__.b = document.baseURI || self.location.href;
-/******/
+/******/ 		
 /******/ 		// object to store loaded and loading chunks
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"main": 0
 /******/ 		};
-/******/
+/******/ 		
 /******/ 		// no chunk on demand loading
-/******/
+/******/ 		
 /******/ 		// no prefetching
-/******/
+/******/ 		
 /******/ 		// no preloaded
-/******/
+/******/ 		
 /******/ 		// no HMR
-/******/
+/******/ 		
 /******/ 		// no HMR manifest
-/******/
+/******/ 		
 /******/ 		// no on chunks loaded
-/******/
+/******/ 		
 /******/ 		// no jsonp function
 /******/ 	})();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/nonce */
 /******/ 	(() => {
 /******/ 		__webpack_require__.nc = undefined;
 /******/ 	})();
-/******/
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
@@ -12889,7 +12889,8 @@ function captureOverlay(socket) {
             var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
             var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
             overlayCanvasContext.drawImage(canvas, 0, 0);
-            updateSetting('overlayImage', canvas.toDataURL());
+            var overlay = overlayCanvasOutput.querySelector('canvas');
+            updateSetting('overlayImage', overlay.toDataURL());
             sendOverlayImage(socket);
         }
         catch (e) {

@@ -98,7 +98,8 @@ function captureOverlay(socket: WebSocket) {
 		);
 		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
 		overlayCanvasContext.drawImage(canvas, 0, 0);
-		updateSetting('overlayImage', canvas.toDataURL());
+		let overlay = overlayCanvasOutput.querySelector('canvas');
+		updateSetting('overlayImage', overlay.toDataURL());
 		sendOverlayImage(socket);
 		} catch(e) {
 			console.log('Error saving image? ' + e);
