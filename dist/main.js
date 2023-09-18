@@ -147,18 +147,10 @@ body {
   margin: 0;
 }
 
-#OverlayButton {
-  display: none;
-}
-
 #OverlayCanvasOutput {
   position: relative;
-}
-
-#OverlayCanvasOutput canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+  text-align: center;
+  width: 100%;
 }
 
 #Settings {
@@ -12883,13 +12875,13 @@ function startJobGauge() {
 function captureOverlay() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
+    overlayCanvas.setAttribute('willReadFrequently', 'true');
     overlayCanvas.width = 177;
     overlayCanvas.height = 114;
     html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         backgroundColor: 'transparent',
-        useCORS: true,
-        removeContainer: false,
+        useCORS: true
     })
         .then(function (canvas) {
         var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');

@@ -15,18 +15,10 @@ body {
   margin: 0;
 }
 
-#OverlayButton {
-  display: none;
-}
-
 #OverlayCanvasOutput {
   position: relative;
-}
-
-#OverlayCanvasOutput canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+  text-align: center;
+  width: 100%;
 }
 
 #Settings {
