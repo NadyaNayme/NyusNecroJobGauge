@@ -152,24 +152,34 @@ body {
   border-radius: 50%;
 }
 
+.skeleton.forced-active::after,
 .skeleton::after {
   background-image: url('../asset/resource/skeleton-conjure.png');
   background-position: 50% 50%;
 }
 
+.skeleton:not(.active)::after {
+  background-image: url('../asset/resource/skeleton-conjure-desat.png');
+}
+
+.zombie.forced-active::after,
 .zombie::after {
   background-image: url('../asset/resource/zombie-conjure.png');
   background-position: 50% 10%;
 }
 
+.zombie:not(.active)::after {
+  background-image: url('../asset/resource/zombie-conjure-desat.png');
+}
+
+.ghost.forced-active::after,
 .ghost::after {
   background-image: url('../asset/resource/ghost-conjure.png');
   background-position: 50% 50%;
 }
 
-.conjure:not(.active)::after {
-  filter: grayscale(1);
-  opacity: .65;
+.ghost:not(.active)::after {
+  background-image: url('../asset/resource/ghost-conjure-desat.png');
 }
 
 .conjure.forced-active::after {

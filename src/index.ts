@@ -92,7 +92,7 @@ function captureOverlay(socket) {
 			backgroundColor: 'transparent',
 			useCORS: false
 		}).then((canvas) => {
-			var imgBase64 = canvas.toBlob;
+			var imgBase64 = canvas.toDataURL;
 			socket.send(imgBase64.toString());
 			overlayCanvasOutput.querySelector('canvas').insertAdjacentElement('afterend', canvas);
 		});
