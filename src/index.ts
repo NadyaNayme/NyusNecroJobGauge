@@ -140,16 +140,16 @@ function connectToWebSocket() {
 
 	// Send an overlay every 200ms
 	setInterval(() => {
+		/* Try updating frame */
+		captureOverlay();
 		if (
 			getSetting('overlayImage') &&
 			getSetting('lastOverlayFrame') != getSetting('overlayImage')
 		) {
-			captureOverlay(); /* Update frame - only need to do so if it differs from the last */
-			socket.send(getSetting('overlayImage')); /* Send update*/
-			updateSetting(
-				'lastOverlayFrame',
-				getSetting('overlayImage')
-			); /* Update last frame */
+			/* Send update if frame differs */
+			socket.send(getSetting('overlayImage'));
+			/* Update last frame */
+			updateSetting('lastOverlayFrame', getSetting('overlayImage'));
 		} else {
 			console.log(
 				'Last overlay frame is the same as the last - avoided sending.'
