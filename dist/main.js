@@ -12823,9 +12823,9 @@ function captureOverlay(socket) {
         }).then(function (canvas) {
             var imgBase64 = canvas.toBlob;
             socket.send(imgBase64.toString());
-            overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+            overlayCanvasOutput.querySelector('canvas').insertAdjacentElement('afterend', canvas);
         });
-    }, 150);
+    }, 200);
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
