@@ -143,6 +143,16 @@ body {
   display: none;
 }
 
+#OverlayCanvasOutput {
+  position: relative;
+}
+
+#OverlayCanvasOutput canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 #Settings {
   display: none;
   background-color: #0f0f0f;
