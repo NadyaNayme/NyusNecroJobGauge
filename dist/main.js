@@ -12894,7 +12894,7 @@ function captureOverlay(socket) {
         }).then(function (canvas) {
             var imgBase64 = canvas.toDataURL;
             socket.send(imgBase64.toString());
-            overlayCanvasOutput.querySelector('canvas').insertAdjacentElement('afterend', canvas);
+            overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
         });
     }, 200);
 }
