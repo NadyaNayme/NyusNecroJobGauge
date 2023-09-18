@@ -80,6 +80,7 @@ export function startJobGauge() {
 }
 
 let overlayImage;
+let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay() {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
@@ -88,17 +89,26 @@ function captureOverlay() {
 	let imageData = html2canvas(document.querySelector('#JobGauge'), {
 		allowTaint: true,
 		backgroundColor: 'transparent',
-		useCORS: false
-	}).then((canvas) => {
-		let convasContext = canvas.getContext('2d');
-		return convasContext.getImageData(0,0,canvas.width,canvas.height);
-	}).then((res) => {
-		overlayImage = res;
-		return res;
-	}).catch(() => {
-		console.log('Overlay failed to capture.')
-	});
+		useCORS: true,
+		removeContainer: false,
+	})
+		.then((canvas) => {
+			overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+			return
+		})
+		.catch(() => {
+			console.log('Overlay failed to capture.');
+		});
 	return
+}
+
+function getOverlayData() {
+	let overlayCanvas = overlayCanvasOutput.querySelector('canvas');
+	let context = overlayCanvas.getContext('2d');
+	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
+	imageData.toFileBytes('image/png', 1).then((res) => {
+		overlayImage = res;
+	});
 }
 
 function connectToWebSocket() {
@@ -111,6 +121,7 @@ function connectToWebSocket() {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
 		captureOverlay();
+		getOverlayData();
 		socket.send(overlayImage);
 	});
 
@@ -119,6 +130,7 @@ function connectToWebSocket() {
 		console.log('Message from server ', event.data);
 		socket.send('Pong received - capturing new overlay.');
 		captureOverlay();
+		getOverlayData();
 		socket.send(overlayImage);
 	});
 }

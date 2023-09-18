@@ -12881,6 +12881,7 @@ function startJobGauge() {
     startLooping();
 }
 var overlayImage;
+var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
 function captureOverlay() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
@@ -12889,17 +12890,25 @@ function captureOverlay() {
     var imageData = html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         backgroundColor: 'transparent',
-        useCORS: false
-    }).then(function (canvas) {
-        var convasContext = canvas.getContext('2d');
-        return convasContext.getImageData(0, 0, canvas.width, canvas.height);
-    }).then(function (res) {
-        overlayImage = res;
-        return res;
-    }).catch(function () {
+        useCORS: true,
+        removeContainer: false,
+    })
+        .then(function (canvas) {
+        overlayCanvasOutput.querySelector('canvas').replaceWith(canvas);
+        return;
+    })
+        .catch(function () {
         console.log('Overlay failed to capture.');
     });
     return;
+}
+function getOverlayData() {
+    var overlayCanvas = overlayCanvasOutput.querySelector('canvas');
+    var context = overlayCanvas.getContext('2d');
+    var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
+    imageData.toFileBytes('image/png', 1).then(function (res) {
+        overlayImage = res;
+    });
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
@@ -12910,6 +12919,7 @@ function connectToWebSocket() {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
         captureOverlay();
+        getOverlayData();
         socket.send(overlayImage);
     });
     // Listen for messages
@@ -12917,6 +12927,7 @@ function connectToWebSocket() {
         console.log('Message from server ', event.data);
         socket.send('Pong received - capturing new overlay.');
         captureOverlay();
+        getOverlayData();
         socket.send(overlayImage);
     });
 }
