@@ -89,7 +89,8 @@ function captureOverlay(socket: WebSocket) {
 		allowTaint: true,
 		canvas: overlayCanvas,
 		backgroundColor: 'transparent',
-		useCORS: true
+		useCORS: true,
+		removeContainer: true
 	})
 	.then((canvas) => {
 		try {
@@ -101,7 +102,6 @@ function captureOverlay(socket: WebSocket) {
 		overlayCanvasContext.drawImage(canvas, 0, 0);
 		let overlay = overlayCanvasOutput.querySelector('canvas');
 		updateSetting('overlayImage', overlay.toDataURL());
-		sendOverlayImage(socket);
 		} catch(e) {
 			console.log('Error saving image? ' + e);
 		}
@@ -109,11 +109,6 @@ function captureOverlay(socket: WebSocket) {
 	.catch(() => {
 		console.log('Overlay failed to capture.');
 	});
-}
-
-function sendOverlayImage(socket: WebSocket) {
-	socket.send(getSetting('overlayImage'));
-	updateSetting('lastOverlayFrame', getSetting('overlayImage'));
 }
 
 function connectToWebSocket() {
@@ -135,6 +130,7 @@ function connectToWebSocket() {
 			getSetting('lastOverlayFrame') != getSetting('overlayImage')
 		) {
 			socket.send(getSetting('overlayImage'));
+			updateSetting('lastOverlayFrame', getSetting('overlayImage'));
 		} else {
 			console.log(
 				'Last overlay frame is the same as the last - avoided sending.'
