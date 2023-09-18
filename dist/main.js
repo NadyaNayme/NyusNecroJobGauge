@@ -12900,7 +12900,7 @@ function sendOverlayImage(socket) {
     var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
     imageData.toFileBytes('image/png', 1)
         .then(function (res) {
-        socket.send(res.toString());
+        socket.send(res);
     });
 }
 function connectToWebSocket() {
@@ -12912,9 +12912,6 @@ function connectToWebSocket() {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
         captureOverlay();
-        setTimeout(function () {
-            sendOverlayImage(socket);
-        }, 200);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {

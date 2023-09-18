@@ -110,7 +110,7 @@ function sendOverlayImage(socket: WebSocket) {
 	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
 	imageData.toFileBytes('image/png', 1)
 	.then((res) => {
-		socket.send(res.toString());
+		socket.send(res);
 	});
 }
 
@@ -124,9 +124,6 @@ function connectToWebSocket() {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
 		captureOverlay();
-		setTimeout(function() {
-			sendOverlayImage(socket);
-		}, 200)
 	});
 
 	// Listen for messages
