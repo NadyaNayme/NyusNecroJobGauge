@@ -6,7 +6,8 @@
 	"dependencies": {
 		"@alt1/buffs": "^1.0.0-alpha.6",
 		"alt1": "^0.0.1",
-		"html2canvas": "^1.4.1"
+		"html2canvas": "^1.4.1",
+		"ws": "^8.14.1"
 	},
 	"devDependencies": {
 		"@types/node": "^12.12.54",

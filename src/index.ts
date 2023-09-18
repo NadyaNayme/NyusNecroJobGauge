@@ -3,6 +3,7 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
 import * as TargetMob from 'alt1/targetmob';
+import * as ws from 'ws';
 import html2canvas from 'html2canvas';
 
 // tell webpack that this file relies index.html, appconfig.json and icon.png, this makes webpack
@@ -14,6 +15,7 @@ import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
 import { isTransparent } from 'html2canvas/dist/types/css/types/color';
+import { connect } from 'http2';
 
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
@@ -188,6 +190,7 @@ function setDefaultSettings() {
 		'nyusNecroJobGauge',
 		JSON.stringify({
 			activeConjureTimers: true,
+			activeOverlay: false,
 			bloatNotchColor: '#ff0000',
 			bloatScale: 100,
 			bloatTracker: false,
@@ -213,6 +216,7 @@ function setDefaultSettings() {
 			necrosisScale: 100,
 			necrosisTracker: false,
 			offhand95: false,
+			overlayImage: '',
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,
@@ -962,6 +966,9 @@ window.onload = function () {
 		alt1.identifyAppUrl('./appconfig.json');
 		initSettings();
 		startJobGauge();
+		if (getSetting('activeOverlay')) {
+			connectToWebSocket();
+		}
 	} else {
 		let addappurl = `alt1://addapp/${
 			new URL('./appconfig.json', document.location.href).href
