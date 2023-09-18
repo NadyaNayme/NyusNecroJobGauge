@@ -79,7 +79,7 @@ export function startJobGauge() {
 	startLooping();
 }
 
-function captureOverlay() {
+function captureOverlay(socket: WebSocket) {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
 	overlayCanvas.setAttribute('willReadFrequently', 'true');
@@ -97,7 +97,7 @@ function captureOverlay() {
 		);
 		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
 		overlayCanvasContext.drawImage(canvas, 0, 0);
-		return
+		sendOverlayImage(socket);
 	})
 	.catch(() => {
 		console.log('Overlay failed to capture.');
@@ -106,16 +106,9 @@ function captureOverlay() {
 
 function sendOverlayImage(socket: WebSocket) {
 	let overlayCanvas = <HTMLCanvasElement>document.querySelector('#OverlayCanvasOutput canvas');
-	let context = overlayCanvas.getContext('2d', {willReadFrequently: true});
-	let imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
-	imageData.toFileBytes('image/png', 1)
-	.then((res) => {
-		try {
-			updateSetting('overlayImage', res);
-		} catch (e) {
-			console.log('Storage of canvas image failed: ' + e);
-		}
-	});
+	let imageString = overlayCanvas.toDataURL();
+	updateSetting('overlayImage', imageString);
+	socket.send(getSetting('overlayImage'));
 }
 
 function connectToWebSocket() {
@@ -127,17 +120,14 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		socket.send('Hello Server!');
-		captureOverlay();
+		captureOverlay(socket);
 	});
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
 		console.log('Message from server ', event.data);
 		socket.send('Pong received - capturing new overlay.');
-		captureOverlay();
-		setTimeout(function () {
-			sendOverlayImage(getSetting('overlayImage'));
-		}, 200);
+		captureOverlay(socket);
 	});
 }
 
@@ -222,7 +212,7 @@ function setDefaultSettings() {
 			necrosisScale: 100,
 			necrosisTracker: false,
 			offhand95: false,
-			overlayImage: Uint8Array,
+			overlayImage: '',
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,

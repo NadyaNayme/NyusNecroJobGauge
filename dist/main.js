@@ -12872,7 +12872,7 @@ function startJobGauge() {
     }
     startLooping();
 }
-function captureOverlay() {
+function captureOverlay(socket) {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.setAttribute('willReadFrequently', 'true');
@@ -12888,7 +12888,7 @@ function captureOverlay() {
         var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
         var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
         overlayCanvasContext.drawImage(canvas, 0, 0);
-        return;
+        sendOverlayImage(socket);
     })
         .catch(function () {
         console.log('Overlay failed to capture.');
@@ -12896,17 +12896,9 @@ function captureOverlay() {
 }
 function sendOverlayImage(socket) {
     var overlayCanvas = document.querySelector('#OverlayCanvasOutput canvas');
-    var context = overlayCanvas.getContext('2d', { willReadFrequently: true });
-    var imageData = context.getImageData(0, 0, overlayCanvas.width, overlayCanvas.height);
-    imageData.toFileBytes('image/png', 1)
-        .then(function (res) {
-        try {
-            updateSetting('overlayImage', res);
-        }
-        catch (e) {
-            console.log('Storage of canvas image failed: ' + e);
-        }
-    });
+    var imageString = overlayCanvas.toDataURL();
+    updateSetting('overlayImage', imageString);
+    socket.send(getSetting('overlayImage'));
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
@@ -12916,16 +12908,13 @@ function connectToWebSocket() {
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         socket.send('Hello Server!');
-        captureOverlay();
+        captureOverlay(socket);
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
         socket.send('Pong received - capturing new overlay.');
-        captureOverlay();
-        setTimeout(function () {
-            sendOverlayImage(getSetting('overlayImage'));
-        }, 200);
+        captureOverlay(socket);
     });
 }
 var maxAttempts = 10;
@@ -13003,7 +12992,7 @@ function setDefaultSettings() {
         necrosisScale: 100,
         necrosisTracker: false,
         offhand95: false,
-        overlayImage: Uint8Array,
+        overlayImage: '',
         playCappedNecrosisAlert: false,
         playCappedSoulsAlert: false,
         singleNecrosis: false,
