@@ -12872,12 +12872,26 @@ function startJobGauge() {
     }
     startLooping();
 }
-function captureOverlay(socket) {
+function createCanvas() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
     overlayCanvas.setAttribute('willReadFrequently', 'true');
     overlayCanvas.width = 177;
     overlayCanvas.height = 114;
+    return overlayCanvas;
+}
+function paintCanvas(canvas) {
+    var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+    var overlayCanvasContext = overlayCanvasOutput
+        .querySelector('canvas')
+        .getContext('2d');
+    overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    overlayCanvasContext.drawImage(canvas, 0, 0);
+    var overlay = overlayCanvasOutput.querySelector('canvas');
+    updateSetting('overlayImage', overlay.toDataURL());
+}
+function captureOverlay() {
+    var overlayCanvas = createCanvas();
     html2canvas__WEBPACK_IMPORTED_MODULE_0___default()(document.querySelector('#JobGauge'), {
         allowTaint: true,
         canvas: overlayCanvas,
@@ -12887,12 +12901,7 @@ function captureOverlay(socket) {
     })
         .then(function (canvas) {
         try {
-            var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-            var overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
-            overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
-            overlayCanvasContext.drawImage(canvas, 0, 0);
-            var overlay = overlayCanvasOutput.querySelector('canvas');
-            updateSetting('overlayImage', overlay.toDataURL());
+            paintCanvas(canvas);
         }
         catch (e) {
             console.log('Error saving image? ' + e);
@@ -12909,21 +12918,33 @@ function connectToWebSocket() {
     // Connection opened
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
-        captureOverlay(socket); /* Initial frame */
+        captureOverlay(); /* Initial frame */
         socket.send('Hello Server!');
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
+    });
+    // Send an overlay every 200ms
+    setInterval(function () {
         if (getSetting('overlayImage') &&
             getSetting('lastOverlayFrame') != getSetting('overlayImage')) {
-            captureOverlay(socket); /* Update frame - only need to do so if it differs from the last */
+            captureOverlay(); /* Update frame - only need to do so if it differs from the last */
             socket.send(getSetting('overlayImage')); /* Send update*/
             updateSetting('lastOverlayFrame', getSetting('overlayImage')); /* Update last frame */
         }
         else {
             console.log('Last overlay frame is the same as the last - avoided sending.');
+            /* Cleanup any straggling <iframe> */
+            var iframes = document.querySelectorAll('iframe');
+            iframes.forEach(function (frame) {
+                var iframes = document.querySelectorAll('iframe');
+                /* Remove the iframe unless it is the last one */
+                if (iframes.length > 1) {
+                    frame.remove();
+                }
+            });
         }
-    });
+    }, 200);
 }
 var maxAttempts = 10;
 function startLooping() {

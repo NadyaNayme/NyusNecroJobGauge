@@ -79,12 +79,30 @@ export function startJobGauge() {
 	startLooping();
 }
 
-function captureOverlay(socket: WebSocket) {
+function createCanvas() {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
 	overlayCanvas.setAttribute('willReadFrequently', 'true');
 	overlayCanvas.width = 177;
 	overlayCanvas.height = 114;
+	return overlayCanvas;
+}
+
+function paintCanvas(canvas: HTMLCanvasElement) {
+		let overlayCanvasOutput = document.getElementById(
+			'OverlayCanvasOutput'
+		);
+		let overlayCanvasContext = overlayCanvasOutput
+			.querySelector('canvas')
+			.getContext('2d');
+		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+		overlayCanvasContext.drawImage(canvas, 0, 0);
+		let overlay = overlayCanvasOutput.querySelector('canvas');
+		updateSetting('overlayImage', overlay.toDataURL());
+}
+
+function captureOverlay() {
+	let overlayCanvas = createCanvas();
 	html2canvas(document.querySelector('#JobGauge'), {
 		allowTaint: true,
 		canvas: overlayCanvas,
@@ -94,14 +112,7 @@ function captureOverlay(socket: WebSocket) {
 	})
 	.then((canvas) => {
 		try {
-		let overlayCanvasOutput = document.getElementById(
-			'OverlayCanvasOutput'
-		);
-		let overlayCanvasContext = overlayCanvasOutput.querySelector('canvas').getContext('2d');
-		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
-		overlayCanvasContext.drawImage(canvas, 0, 0);
-		let overlay = overlayCanvasOutput.querySelector('canvas');
-		updateSetting('overlayImage', overlay.toDataURL());
+			paintCanvas(canvas);
 		} catch(e) {
 			console.log('Error saving image? ' + e);
 		}
@@ -119,25 +130,42 @@ function connectToWebSocket() {
 	// Connection opened
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
-		captureOverlay(socket); /* Initial frame */
+		captureOverlay(); /* Initial frame */
 		socket.send('Hello Server!');
 	});
 
 	// Listen for messages
 	socket.addEventListener('message', (event) => {
+	});
+
+	// Send an overlay every 200ms
+	setInterval(() => {
 		if (
 			getSetting('overlayImage') &&
 			getSetting('lastOverlayFrame') != getSetting('overlayImage')
 		) {
-			captureOverlay(socket); /* Update frame - only need to do so if it differs from the last */
+			captureOverlay(); /* Update frame - only need to do so if it differs from the last */
 			socket.send(getSetting('overlayImage')); /* Send update*/
-			updateSetting('lastOverlayFrame', getSetting('overlayImage')); /* Update last frame */
+			updateSetting(
+				'lastOverlayFrame',
+				getSetting('overlayImage')
+			); /* Update last frame */
 		} else {
 			console.log(
 				'Last overlay frame is the same as the last - avoided sending.'
 			);
+			/* Cleanup any straggling <iframe> */
+			let iframes = document.querySelectorAll('iframe');
+			iframes.forEach((frame) => {
+				let iframes = document.querySelectorAll('iframe');
+				/* Remove the iframe unless it is the last one */
+				if (iframes.length > 1) {
+					frame.remove();
+				}
+			});
 		}
-	});
+	}, 200);
+
 }
 
 let maxAttempts = 10;
