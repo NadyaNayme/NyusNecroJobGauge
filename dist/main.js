@@ -12902,7 +12902,13 @@ function captureOverlay(socket) {
     });
 }
 function sendOverlayImage(socket) {
-    socket.send(getSetting('overlayImage'));
+    if (getSetting('lastOverlayFrame') != getSetting('overlayImage')) {
+        socket.send(getSetting('overlayImage'));
+        updateSetting('lastOverlayFrame', getSetting('overlayImage'));
+    }
+    else {
+        console.log('Last overlay frame is the same as the last - avoided sending.');
+    }
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
