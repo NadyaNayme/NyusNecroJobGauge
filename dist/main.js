@@ -12913,13 +12913,13 @@ function captureOverlay() {
 }
 function connectToWebSocket() {
     // Create WebSocket connection.
-    var socket = new WebSocket('ws://localhost:8080');
+    var socket = new WebSocket('ws://localhost:8020');
     socket.binaryType = "arraybuffer";
     // Connection opened
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         captureOverlay(); /* Initial frame */
-        socket.send('Hello Server!');
+        socket.send('Start Overlay');
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
