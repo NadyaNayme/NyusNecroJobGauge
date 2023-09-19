@@ -333,6 +333,7 @@ body {
   height: 16px;
   margin: 0 .25rem;
   position: relative;
+  border: solid 1px black;
 }
 
 #Souls[data-souls="0"] .soul {
