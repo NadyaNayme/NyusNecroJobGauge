@@ -124,7 +124,7 @@ function captureOverlay() {
 
 function connectToWebSocket() {
 	// Create WebSocket connection.
-	const socket = new WebSocket('ws://localhost:8080');
+	const socket = new WebSocket('ws://localhost:8020');
 	socket.binaryType = "arraybuffer";
 
 	// Connection opened
