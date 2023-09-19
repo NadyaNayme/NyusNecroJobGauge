@@ -131,7 +131,7 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		captureOverlay(); /* Initial frame */
-		socket.send('Hello Server!');
+		socket.send('Start Overlay');
 	});
 
 	// Listen for messages
