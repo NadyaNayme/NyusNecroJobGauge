@@ -142,6 +142,7 @@ body {
   display: block;
   content: '';
   border-radius: 50%;
+  background-size: 105%; /* Hack until I cbf to get better bg images */
 }
 
 .skeleton.forced-active::after,
