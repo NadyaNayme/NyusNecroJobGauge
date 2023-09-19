@@ -19,6 +19,7 @@ body {
   position: relative;
   text-align: center;
   width: 100%;
+  display: none;
 }
 
 #Settings {

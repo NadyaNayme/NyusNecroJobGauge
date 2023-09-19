@@ -140,6 +140,9 @@ function connectToWebSocket() {
 
 	// Send an overlay every 200ms
 	setInterval(() => {
+		/* Update any changes in opacity */
+		socket.send(getSetting('overlayOpacity'));
+
 		/* Try updating frame */
 		captureOverlay();
 		if (
@@ -164,8 +167,7 @@ function connectToWebSocket() {
 				}
 			});
 		}
-	}, 200);
-
+	}, 125);
 }
 
 let maxAttempts = 10;
@@ -251,6 +253,7 @@ function setDefaultSettings() {
 			necrosisTracker: false,
 			offhand95: false,
 			overlayImage: '',
+			overlayOpacity: 1.0,
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,

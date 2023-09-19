@@ -151,6 +151,7 @@ body {
   position: relative;
   text-align: center;
   width: 100%;
+  display: none;
 }
 
 #Settings {
@@ -12918,6 +12919,8 @@ function connectToWebSocket() {
     });
     // Send an overlay every 200ms
     setInterval(function () {
+        /* Update any changes in opacity */
+        socket.send(getSetting('overlayOpacity'));
         /* Try updating frame */
         captureOverlay();
         if (getSetting('overlayImage') &&
@@ -12939,7 +12942,7 @@ function connectToWebSocket() {
                 }
             });
         }
-    }, 200);
+    }, 125);
 }
 var maxAttempts = 10;
 function startLooping() {
@@ -13018,6 +13021,7 @@ function setDefaultSettings() {
         necrosisTracker: false,
         offhand95: false,
         overlayImage: '',
+        overlayOpacity: 1.0,
         playCappedNecrosisAlert: false,
         playCappedSoulsAlert: false,
         singleNecrosis: false,
