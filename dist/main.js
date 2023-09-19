@@ -333,32 +333,26 @@ body {
   height: 16px;
   margin: 0 .25rem;
   position: relative;
-  border: solid 1px #FFFFFF;
 }
 
 #Souls[data-souls="0"] .soul {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Souls[data-souls="1"] .soul:nth-child(n+2) {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Souls[data-souls="2"] .soul:nth-child(n+3) {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Souls[data-souls="3"] .soul:nth-child(n+4) {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Souls[data-souls="4"] .soul:nth-child(n+5) {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Souls[data-souls="5"] .soul {
@@ -537,33 +531,27 @@ body {
 }
 
 #Necrosis[data-stacks="0"] .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="2"] ul:nth-child(n+2) .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="4"] ul:nth-child(n+3) .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="6"] ul:nth-child(n+4) .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="8"] ul:nth-child(n+5) .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="10"] ul:nth-child(n+6) .stack::before {
-  opacity: .3;
-  background-color: #FFF;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #Necrosis[data-stacks="12"] ul:nth-child(n) .stack::before {
