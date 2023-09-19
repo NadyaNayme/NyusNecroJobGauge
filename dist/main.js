@@ -279,11 +279,7 @@ body {
 
 .skeleton.forced-active::after,
 .skeleton::after {
-
-
-background-image: url(${___CSS_LOADER_URL_REPLACEMENT_1___});
-
-
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_1___});
   background-position: 50% 50%;
 }
 
