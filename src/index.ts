@@ -209,7 +209,7 @@ function startLooping() {
 			}
 			console.log(`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`);
 		}
-	}, 300);
+	}, 125);
 }
 
 function initSettings() {
