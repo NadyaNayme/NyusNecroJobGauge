@@ -209,7 +209,7 @@ function startLooping() {
 			}
 			console.log(`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`);
 		}
-	}, 125);
+	}, getSetting('loopSpeed'));
 }
 
 function initSettings() {
@@ -245,6 +245,7 @@ function setDefaultSettings() {
 			livingDeathScale: 100,
 			loopCappedNecrosisAlert: false,
 			loopCappedSoulsAlert: false,
+			loopSpeed: 125,
 			necrosisAlertAudio: alarms.notification1,
 			necrosisAlertAudioVolume: 100,
 			necrosisCappedBgColor: '#ff0000',
@@ -280,6 +281,7 @@ function loadSettings() {
 	setAlerts();
 	setCustomColors();
 	setCustomScale();
+	setLoopSpeed();
 }
 
 function setTrackerComponents() {
@@ -583,6 +585,24 @@ function setCustomScale() {
 	let NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
 	let NecrosisScaleInput: any = document.querySelector('#NecrosisScale');
 	NecrosisScaleValue.textContent = NecrosisScaleInput.value;
+}
+
+function setLoopSpeed() {
+
+	if (getSetting('loopSpeed') == '') {
+		updateSetting('loopSpeed', 125);
+	}
+
+	let loopSpeed = <HTMLInputElement>document.getElementById('LoopSpeed');
+	loopSpeed.value = getSetting('loopSpeed');
+
+	document
+		.getElementById('LoopSpeed')
+		.setAttribute('value', getSetting('loopSoeed'));
+
+	let LoopSpeedValue = document.querySelector('#LoopSpeedOutput');
+	let LoopSpeedInput: any = document.querySelector('#LoopSpeed');
+	LoopSpeedValue.textContent = LoopSpeedInput.value;
 }
 
 function getSetting(setting) {
@@ -983,6 +1003,11 @@ var NecrosisAlertAudioVolume: any = document.querySelector('#NecrosisAlertAudioV
 NecrosisAlertAudioVolume.addEventListener('input', (event) => {
 	updateSetting('necrosisAlertAudioVolume', event.target.value);
 	necrosisAlert.volume = Number(getSetting('necrosisAlertAudioVolume')) / 100;
+});
+
+var loopSpeed: any = document.querySelector('#LoopSpeed');
+loopSpeed.addEventListener('change', (event) => {
+	updateSetting('loopSpeed', event.target.value);
 });
 
 let resetAllSettingsButton = document.getElementById('ResetAllSettings');

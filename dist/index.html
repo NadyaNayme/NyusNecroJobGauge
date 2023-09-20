@@ -74,6 +74,10 @@
 				<option value="elevator">Elevator</option>
 				<option value="nuclear">Nuclear</option></select></div>
 				<div class="flex setting">Loop<input type="checkbox" id="LoopCappedNecrosisAlert" data-setting="loopCappedNecrosisAlert">Volume<input type="range" min="1" max="100" value="100" id="NecrosisAlertAudioVolume"><output for="NecrosisAlertAudioVolume" id="NecrosisAlertAudioVolumeOutput"></output>%</div>
+				<h3>Interface Search Speed</h3>
+				<p>Lower value will detect changes faster but may cause hits to overall performance. Adjust at your own risk - although if it causes any issues you can always slow it back down. It is heavily recommended to set this as low as you can without encountering performance issues.
+					</p><p><strong>**Requires a MANUAL RESTART of the app after adjusting.**</strong></p>
+				<div class="flex setting"><input class="speed" type="range" min="10" max="300" value="125" step="5" id="LoopSpeed" data-setting="loopSpeed"><output for="LoopSpeed" id="LoopSpeedOutput"></output>ms</div>
 				<h3>Hard Reset</h3>
 				<p>Sometimes I break localStorage. This will clear local storage, reset all settings to default, and reload the app in an attempt to fix things.</p>
 				<div class="flex"><button id="ResetAllSettings">Reset All Settings</button></div>
