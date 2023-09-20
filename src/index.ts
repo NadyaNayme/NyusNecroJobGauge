@@ -57,6 +57,10 @@ var buffImages = a1lib.webpackImages({
 	bloated: require('./asset/data/Bloated.data.png'),
 });
 
+var equipmentImages = a1lib.webpackImages({
+	ofhandt95: require('./asset/data/Augmented_Soulbound_lantern.data.png'),
+});
+
 export function startJobGauge() {
 	if (!window.alt1) {
 		output.insertAdjacentHTML(
@@ -68,7 +72,14 @@ export function startJobGauge() {
 	if (!alt1.permissionPixel) {
 		output.insertAdjacentHTML(
 			'beforeend',
-			`<div>Page is not installed as app or capture permission is not enabled</div>`
+			`<div><p>Page is not installed as app or capture permission is not enabled</p></div>`
+		);
+		return;
+	}
+	if (!alt1.permissionOverlay && getSetting('activeOverlay')) {
+		output.insertAdjacentHTML(
+			'beforeend',
+			`<div><p>Attempted to use Overlay but app overlay permission is not enabled. Please enable "Show Overlay" permission in Alt1 settinsg (wrench icon in corner).</p></div>`
 		);
 		return;
 	}

@@ -11,6 +11,16 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./asset/data/Augmented_Soulbound_lantern.data.png":
+/*!*********************************************************!*\
+  !*** ./asset/data/Augmented_Soulbound_lantern.data.png ***!
+  \*********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports=(__webpack_require__(/*! alt1/base */ "../node_modules/alt1/dist/base/index.js").ImageDetect.imageDataFromBase64)("iVBORw0KGgoAAAANSUhEUgAAAA4AAAAeCAMAAAArQN94AAAAIG5vUEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMQ6ThMAAAF6UExURQAAAAAAAnRhMLGVR3JgLbyeTbudS3BeLcuqUb+gTVZJJHxnMo95OqOJQsGiTpF7PBwXAEQ6HMOkTpR9PLKXR2dWKkY6HL6gTS3lpJZ/PNGwVKCHQJqCPnFeLcanUIVwNVxNJJiAPhAwVqqQRsKjTs+uU5Z+PI53OjctF8ChTpmBPn1pMq6SRlRHJNWzVtm2V7mcS6iNRMSkTqKIQmZWKmBRJ+C9Wtq3V86tU7KWR6WLQqGHQn9rMndlMIx1OsmqUceoUXtmMp6FQHVkME5CIOC8WsysUyS9hzDuqsSlUByWa7ibS62RRo12Oi3mpCrZmhyNZSS+h4x2OsyrUye/iC3enhdwUCCsey3ppiSzgCfNkhd+WiCndyfBiSrcnByXayS3gxdsTSfDiirXmRyFXiCldRdvTrWZSSS4hIZxNRd2VF1OJCfEi493OiCreoZwNRBWPhd/WgAAAIhzN4BsNU1AIFNGIEA1HNe1V39qMty4WXllMGpZKv///9mXPNQAAAABdFJOUwBA5thmAAAAAW5vUEUAYtdMlAAAAAdub1BFAAAAAAAAAFrm3tAAAAABbm9QRQBi10yUAAAAJW5vUEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHMNHTQAAACVub1BFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABzDR00AAAAobm9QRQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6Vo1VAAAAWm5vUEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQh2OxAAAA+ElEQVQY02NggABGBmTAyITMZ2RmQeGysrEj8Rk5OFE0M3KhcrnhXBCDkQfGZeRlZGDk4xdgBEswCjIDuULCIkBSFIjFxBkZJfgkpaQZZUCysnLyjAqsikrCjDLKQFkVVTV1DU0tJW0dNV0gV0/fwFDFyNhEnVnNFKSa0czcwkLF0sraBmylrR2nvYOjk7SzC9huRlc3dw9PL28fX4hTGP18/DkCAoOgDmMMlgoJDQtHuDoiMio6BsGNjYtPSERwk5JTUtPgfkqXycjMyoZzc3Lz8gsKi6D2SPsW85SUlpXD+IyMFRaVQBJuVlU1atCxoHJr0CIJQgEANdohvxoUpUMAAAAASUVORK5CYII=")
+
+/***/ }),
+
 /***/ "./asset/data/Bloated.data.png":
 /*!*************************************!*\
   !*** ./asset/data/Bloated.data.png ***!
@@ -12897,13 +12907,20 @@ var buffImages = alt1__WEBPACK_IMPORTED_MODULE_7__.webpackImages({
     vengeful_ghost: __webpack_require__(/*! ./asset/data/Vengeful_Ghost.data.png */ "./asset/data/Vengeful_Ghost.data.png"),
     bloated: __webpack_require__(/*! ./asset/data/Bloated.data.png */ "./asset/data/Bloated.data.png"),
 });
+var equipmentImages = alt1__WEBPACK_IMPORTED_MODULE_7__.webpackImages({
+    ofhandt95: __webpack_require__(/*! ./asset/data/Augmented_Soulbound_lantern.data.png */ "./asset/data/Augmented_Soulbound_lantern.data.png"),
+});
 function startJobGauge() {
     if (!window.alt1) {
         output.insertAdjacentHTML('beforeend', "<div>You need to run this page in alt1 to capture the screen</div>");
         return;
     }
     if (!alt1.permissionPixel) {
-        output.insertAdjacentHTML('beforeend', "<div>Page is not installed as app or capture permission is not enabled</div>");
+        output.insertAdjacentHTML('beforeend', "<div><p>Page is not installed as app or capture permission is not enabled</p></div>");
+        return;
+    }
+    if (!alt1.permissionOverlay && getSetting('activeOverlay')) {
+        output.insertAdjacentHTML('beforeend', "<div><p>Attempted to use Overlay but app overlay permission is not enabled. Please enable \"Show Overlay\" permission in Alt1 settinsg (wrench icon in corner).</p></div>");
         return;
     }
     startLooping();
