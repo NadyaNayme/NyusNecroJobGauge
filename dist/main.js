@@ -12912,7 +12912,8 @@ function connectToWebSocket() {
     socket.addEventListener('open', function (event) {
         console.log(socket.readyState.toString());
         captureOverlay(); /* Initial frame */
-        socket.send('Start Overlay');
+        socket.send('Start Overlay'); /* Tell server to start overlay */
+        socket.send(getSetting('overlayImage')); /* Send 1st frame of overlay to prevent server from hanging */
     });
     // Listen for messages
     socket.addEventListener('message', function (event) {
@@ -12942,7 +12943,7 @@ function connectToWebSocket() {
                 }
             });
         }
-    }, 125);
+    }, 100);
 }
 var maxAttempts = 10;
 function startLooping() {

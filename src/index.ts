@@ -131,7 +131,8 @@ function connectToWebSocket() {
 	socket.addEventListener('open', (event) => {
 		console.log(socket.readyState.toString());
 		captureOverlay(); /* Initial frame */
-		socket.send('Start Overlay');
+		socket.send('Start Overlay'); /* Tell server to start overlay */
+		socket.send(getSetting('overlayImage')); /* Send 1st frame of overlay to prevent server from hanging */
 	});
 
 	// Listen for messages
@@ -167,7 +168,7 @@ function connectToWebSocket() {
 				}
 			});
 		}
-	}, 125);
+	}, 100);
 }
 
 let maxAttempts = 10;
