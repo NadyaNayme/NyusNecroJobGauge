@@ -216,6 +216,12 @@ body {
   transform-origin: top;
 }
 
+#JobGauge.overlay #Conjures .conjure,
+#JobGauge.overlay #LivingDeath span,
+#JobGauge.overlay #Souls .soul {
+  border: solid 1px #1a1a1a !important;
+}
+
 #JobGauge > * {
   flex: 1 1 100%;
   justify-content: center;
@@ -12789,7 +12795,8 @@ var __webpack_exports__ = {};
   \******************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   startJobGauge: () => (/* binding */ startJobGauge)
+/* harmony export */   startJobGauge: () => (/* binding */ startJobGauge),
+/* harmony export */   startOverlay: () => (/* binding */ startOverlay)
 /* harmony export */ });
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! alt1 */ "../node_modules/alt1/dist/base/index.js");
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_7__);
@@ -12803,6 +12810,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 /* harmony import */ var _css_jobgauge_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/jobgauge.css */ "./css/jobgauge.css");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 // alt1 base libs, provides all the commonly used methods for image matching and capture
 // also gives your editor info about the window.alt1 api
 
@@ -12868,20 +12911,12 @@ function startJobGauge() {
 function createCanvas() {
     var overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'OverlayCanvas';
-    overlayCanvas.setAttribute('willReadFrequently', 'true');
-    overlayCanvas.width = 177;
-    overlayCanvas.height = 114;
+    var jg = document.getElementById('JobGauge');
+    var jobGaugeWidth = jg.offsetWidth;
+    var jobGaugeHeight = jg.offsetHeight;
+    overlayCanvas.width = jobGaugeWidth;
+    overlayCanvas.height = jobGaugeHeight;
     return overlayCanvas;
-}
-function paintCanvas(canvas) {
-    var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
-    var overlayCanvasContext = overlayCanvasOutput
-        .querySelector('canvas')
-        .getContext('2d');
-    overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    overlayCanvasContext.drawImage(canvas, 0, 0);
-    var overlay = overlayCanvasOutput.querySelector('canvas');
-    updateSetting('overlayImage', overlay.toDataURL());
 }
 function captureOverlay() {
     var overlayCanvas = createCanvas();
@@ -12890,7 +12925,7 @@ function captureOverlay() {
         canvas: overlayCanvas,
         backgroundColor: 'transparent',
         useCORS: true,
-        removeContainer: true
+        removeContainer: true,
     })
         .then(function (canvas) {
         try {
@@ -12904,53 +12939,31 @@ function captureOverlay() {
         console.log('Overlay failed to capture.');
     });
 }
-function connectToWebSocket() {
-    // Create WebSocket connection.
-    var socket = new WebSocket('ws://localhost:8020');
-    socket.binaryType = "arraybuffer";
-    // Connection opened
-    socket.addEventListener('open', function (event) {
-        console.log(socket.readyState.toString());
-        captureOverlay(); /* Initial frame */
-        socket.send('Start Overlay'); /* Tell server to start overlay */
-        socket.send(getSetting('overlayImage')); /* Send 1st frame of overlay to prevent server from hanging */
-    });
-    // Listen for messages
-    socket.addEventListener('message', function (event) {
-    });
-    // Send an overlay every 200ms
-    setInterval(function () {
-        /* Update any changes in opacity */
-        socket.send(getSetting('overlayOpacity'));
-        /* Try updating frame */
-        captureOverlay();
-        if (getSetting('overlayImage') &&
-            getSetting('lastOverlayFrame') != getSetting('overlayImage')) {
-            /* Send update if frame differs */
-            socket.send(getSetting('overlayImage'));
-            /* Update last frame */
-            updateSetting('lastOverlayFrame', getSetting('overlayImage'));
-        }
-        else {
-            console.log('Last overlay frame is the same as the last - avoided sending.');
-            /* Cleanup any straggling <iframe> */
-            var iframes = document.querySelectorAll('iframe');
-            iframes.forEach(function (frame) {
-                var iframes = document.querySelectorAll('iframe');
-                /* Remove the iframe unless it is the last one */
-                if (iframes.length > 1) {
-                    frame.remove();
-                }
-            });
-        }
-    }, 100);
+function paintCanvas(canvas) {
+    var overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+    var overlayCanvasContext = overlayCanvasOutput
+        .querySelector('canvas')
+        .getContext('2d', { 'willReadFrequently': true });
+    overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    overlayCanvasContext.drawImage(canvas, 0, 0);
+    var overlay = overlayCanvasOutput.querySelector('canvas');
+    updateSetting('overlayImage', overlay.toDataURL());
+    updateSetting('firstFrame', true);
 }
 var maxAttempts = 10;
 function startLooping() {
+    updateSetting('firstFrame', false); /* We haven't captured a new frame yet */
+    if (getSetting('activeOverlay')) {
+        startOverlay();
+    }
+    else {
+        alt1.overLayContinueGroup('jobGauge');
+        alt1.overLayClearGroup('jobGauge');
+        alt1.overLaySetGroup('jobGauge');
+    }
     var interval = setInterval(function () {
         var buffs = getActiveBuffs();
         if (buffs) {
-            console.log(Object.entries(buffs));
             if (!getSetting('necrosisTracker')) {
                 findNecrosisCount(buffs);
             }
@@ -12981,6 +12994,56 @@ function startLooping() {
             console.log("Failed to read buffs - attempting again. Attempts left: ".concat(maxAttempts, "."));
         }
     }, getSetting('loopSpeed'));
+    "";
+}
+var posBtn = document.getElementById('OverlayPosition');
+posBtn.addEventListener('click', setOverlayPosition);
+function setOverlayPosition() {
+    alt1__WEBPACK_IMPORTED_MODULE_7__.once("alt1pressed", updateLocation);
+    alt1.setTooltip('Move mouse to where you want the overlay to appear. Then press Alt+1');
+}
+function updateLocation(e) {
+    var jg = document.getElementById('JobGauge');
+    var jobGaugeWidth = jg.offsetWidth;
+    var jobGaugeHeight = jg.offsetHeight;
+    updateSetting("overlayPosition", { x: Math.floor((e.x - (jobGaugeWidth / 4 + 20))), y: Math.floor((e.y - (jobGaugeHeight / 4))) });
+    alt1.clearTooltip();
+}
+function startOverlay() {
+    return __awaiter(this, void 0, void 0, function () {
+        var cnv, ctx, overlay, overlayPosition, jg, jobGaugeWidth, jobGaugeHeight, data;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    cnv = document.createElement('canvas');
+                    ctx = cnv.getContext('2d', { "willReadFrequently": true });
+                    _a.label = 1;
+                case 1:
+                    if (false) {}
+                    captureOverlay();
+                    overlay = document.getElementsByTagName('canvas')[0];
+                    overlayPosition = getSetting('overlayPosition');
+                    jg = document.getElementById('JobGauge');
+                    jobGaugeWidth = jg.offsetWidth;
+                    jobGaugeHeight = jg.offsetHeight;
+                    alt1.overLaySetGroup('jobGauge');
+                    alt1.overLayFreezeGroup('jobGauge');
+                    cnv.width = jobGaugeWidth;
+                    cnv.height = jobGaugeHeight;
+                    /* If I try and use the overlay instead of copying the overlay it doesn't work. No idea why. */
+                    ctx.drawImage(overlay, 0, 0);
+                    data = ctx.getImageData(0, 0, cnv.width, cnv.height);
+                    alt1.overLayClearGroup('jobGauge');
+                    alt1.overLayImage(overlayPosition.x, overlayPosition.y, alt1__WEBPACK_IMPORTED_MODULE_7__.encodeImageString(data), data.width, 125);
+                    alt1.overLayRefreshGroup('jobGauge');
+                    return [4 /*yield*/, new Promise(function (done) { return setTimeout(done, 125); })];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 1];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
 function initSettings() {
     if (!localStorage.nyusNecroJobGauge) {
@@ -13045,6 +13108,7 @@ function loadSettings() {
     setLivingDeathCooldown();
     setLivingDeathPlacement();
     setAlerts();
+    setOverlay();
     setCustomColors();
     setCustomScale();
     setLoopSpeed();
@@ -13181,6 +13245,14 @@ var revertDefaultColorButton = document.getElementById('RevertDefaultColors');
 revertDefaultColorButton.addEventListener('click', function () {
     setDefaultColors();
 });
+function setOverlay() {
+    var showOverlay = (document.getElementById('ShowOverlay'));
+    setCheckboxChecked(showOverlay);
+    jobGauge.classList.toggle('overlay', Boolean(getSetting('activeOverlay')));
+    showOverlay.addEventListener('change', function () {
+        location.reload();
+    });
+}
 function setCustomColors() {
     var currentSoulBgColor = getSetting('soulBgColor');
     var currentNecrosisDefaultBgColor = getSetting('necrosisDefaultBgColor');
@@ -13624,9 +13696,6 @@ window.onload = function () {
         alt1.identifyAppUrl('./appconfig.json');
         initSettings();
         startJobGauge();
-        if (getSetting('activeOverlay')) {
-            connectToWebSocket();
-        }
     }
     else {
         var addappurl = "alt1://addapp/".concat(new URL('./appconfig.json', document.location.href).href);

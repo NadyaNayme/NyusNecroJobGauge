@@ -84,6 +84,12 @@ body {
   transform-origin: top;
 }
 
+#JobGauge.overlay #Conjures .conjure,
+#JobGauge.overlay #LivingDeath span,
+#JobGauge.overlay #Souls .soul {
+  border: solid 1px #1a1a1a !important;
+}
+
 #JobGauge > * {
   flex: 1 1 100%;
   justify-content: center;

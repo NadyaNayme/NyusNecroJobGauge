@@ -22,6 +22,12 @@
 				<div class="flex setting"><input type="checkbox" id="ActiveConjureTimers" data-setting="activeConjureTimers">Track time remaining for summoned Conjures</div>
 				<div class="flex setting"><input type="checkbox" id="ForcedConjures" data-setting="forcedConjures">Force "active" the last 10s of Conjures *</div>
 				<small>* Conjures cannot be reliably detected in the last 10s. This setting forces them to appear as active during this time - even if the player unsummons them.</small>
+				<h3>Overlay (Beta / Experimental)</h3>
+				<small>Make sure to enable "Show Overlay" for this app in your Alt1 settings.</small><br><br>
+				<div class="flex setting"><input type="checkbox" id="ShowOverlay" data-setting="activeOverlay">Enable Overlay - App will refresh when toggled. After overlay position has been set - you must leave this app open but you may 'Minimize' it by pressing the _ icon in the top right corner and move it out of the way.</div>
+				<p>The Overlay currently has a small delay. I'm working on improving this.</p>
+				<button id="OverlayPosition" data-setting="overlayPosition">Set Overlay Position</button>
+				<br><small>ps. It's not you - it doesn't place in the center of your mouse unless you use 65% UI Scale. I'm working on improving that too.</small>
 				<h3>Tracked Components</h3>
 				<div class="flex setting"><input class="tracker setting" type="checkbox" id="ConjuresTracker" data-setting="conjuresTracker">Hide Conjures</div>
 				<div class="flex setting"><input class="tracker setting" type="checkbox" id="SoulStracker" data-setting="soulsTracker">Hide Residual Souls</div>
@@ -144,7 +150,7 @@
 			</div>
 		</div>
 		<div id="OverlayCanvasOutput">
-			<canvas willReadFrequently="true" width="177" width="114"></canvas>
+			<canvas willReadFrequently="true" width="235" width="158"></canvas>
 		</div>
 		<script src="./main.js" defer></script>
 	</body>

@@ -3,7 +3,6 @@
 import * as a1lib from 'alt1';
 import * as BuffReader from 'alt1/buffs';
 import * as TargetMob from 'alt1/targetmob';
-import * as ws from 'ws';
 import html2canvas from 'html2canvas';
 
 // tell webpack that this file relies index.html, appconfig.json and icon.png, this makes webpack
@@ -14,8 +13,6 @@ import './index.html';
 import './appconfig.json';
 import './icon.png';
 import './css/jobgauge.css';
-import { isTransparent } from 'html2canvas/dist/types/css/types/color';
-import { connect } from 'http2';
 
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
@@ -82,23 +79,13 @@ export function startJobGauge() {
 function createCanvas() {
 	let overlayCanvas = document.createElement('canvas');
 	overlayCanvas.id = 'OverlayCanvas';
-	overlayCanvas.setAttribute('willReadFrequently', 'true');
-	overlayCanvas.width = 177;
-	overlayCanvas.height = 114;
-	return overlayCanvas;
-}
 
-function paintCanvas(canvas: HTMLCanvasElement) {
-		let overlayCanvasOutput = document.getElementById(
-			'OverlayCanvasOutput'
-		);
-		let overlayCanvasContext = overlayCanvasOutput
-			.querySelector('canvas')
-			.getContext('2d');
-		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
-		overlayCanvasContext.drawImage(canvas, 0, 0);
-		let overlay = overlayCanvasOutput.querySelector('canvas');
-		updateSetting('overlayImage', overlay.toDataURL());
+	let jg = document.getElementById('JobGauge');
+	let jobGaugeWidth = jg.offsetWidth;
+	let jobGaugeHeight = jg.offsetHeight;
+	overlayCanvas.width = jobGaugeWidth;
+	overlayCanvas.height = jobGaugeHeight;
+	return overlayCanvas;
 }
 
 function captureOverlay() {
@@ -108,12 +95,12 @@ function captureOverlay() {
 		canvas: overlayCanvas,
 		backgroundColor: 'transparent',
 		useCORS: true,
-		removeContainer: true
+		removeContainer: true,
 	})
 	.then((canvas) => {
 		try {
 			paintCanvas(canvas);
-		} catch(e) {
+		} catch (e) {
 			console.log('Error saving image? ' + e);
 		}
 	})
@@ -122,62 +109,34 @@ function captureOverlay() {
 	});
 }
 
-function connectToWebSocket() {
-	// Create WebSocket connection.
-	const socket = new WebSocket('ws://localhost:8020');
-	socket.binaryType = "arraybuffer";
-
-	// Connection opened
-	socket.addEventListener('open', (event) => {
-		console.log(socket.readyState.toString());
-		captureOverlay(); /* Initial frame */
-		socket.send('Start Overlay'); /* Tell server to start overlay */
-		socket.send(getSetting('overlayImage')); /* Send 1st frame of overlay to prevent server from hanging */
-	});
-
-	// Listen for messages
-	socket.addEventListener('message', (event) => {
-	});
-
-	// Send an overlay every 200ms
-	setInterval(() => {
-		/* Update any changes in opacity */
-		socket.send(getSetting('overlayOpacity'));
-
-		/* Try updating frame */
-		captureOverlay();
-		if (
-			getSetting('overlayImage') &&
-			getSetting('lastOverlayFrame') != getSetting('overlayImage')
-		) {
-			/* Send update if frame differs */
-			socket.send(getSetting('overlayImage'));
-			/* Update last frame */
-			updateSetting('lastOverlayFrame', getSetting('overlayImage'));
-		} else {
-			console.log(
-				'Last overlay frame is the same as the last - avoided sending.'
-			);
-			/* Cleanup any straggling <iframe> */
-			let iframes = document.querySelectorAll('iframe');
-			iframes.forEach((frame) => {
-				let iframes = document.querySelectorAll('iframe');
-				/* Remove the iframe unless it is the last one */
-				if (iframes.length > 1) {
-					frame.remove();
-				}
-			});
-		}
-	}, 100);
+function paintCanvas(canvas: HTMLCanvasElement) {
+		let overlayCanvasOutput = document.getElementById(
+			'OverlayCanvasOutput'
+		);
+		let overlayCanvasContext = overlayCanvasOutput
+			.querySelector('canvas')
+			.getContext('2d', {'willReadFrequently': true});
+		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+		overlayCanvasContext.drawImage(canvas, 0, 0);
+		let overlay = overlayCanvasOutput.querySelector('canvas');
+		updateSetting('overlayImage', overlay.toDataURL());
+		updateSetting('firstFrame', true);
 }
 
 let maxAttempts = 10;
 function startLooping() {
+	updateSetting('firstFrame', false); /* We haven't captured a new frame yet */
+	if (getSetting('activeOverlay')) {
+		startOverlay();
+	} else {
+		alt1.overLayContinueGroup('jobGauge');
+		alt1.overLayClearGroup('jobGauge');
+		alt1.overLaySetGroup('jobGauge');
+	}
 	const interval = setInterval(() => {
 
 		let buffs = getActiveBuffs();
 		if (buffs) {
-			console.log(Object.entries(buffs));
 			if (!getSetting('necrosisTracker')) {
 				findNecrosisCount(buffs);
 			}
@@ -209,7 +168,58 @@ function startLooping() {
 			}
 			console.log(`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`);
 		}
-	}, getSetting('loopSpeed'));
+	}, getSetting('loopSpeed'));``
+}
+
+let posBtn = document.getElementById('OverlayPosition');
+posBtn.addEventListener('click', setOverlayPosition);
+function setOverlayPosition() {
+	a1lib.once("alt1pressed", updateLocation);
+	alt1.setTooltip('Move mouse to where you want the overlay to appear. Then press Alt+1')
+}
+
+function updateLocation(e) {
+	let jg = document.getElementById('JobGauge');
+	let jobGaugeWidth = jg.offsetWidth;
+	let jobGaugeHeight = jg.offsetHeight;
+	updateSetting("overlayPosition", { x: Math.floor((e.x - (jobGaugeWidth/4 + 20))), y: Math.floor((e.y - (jobGaugeHeight/4)))});
+	alt1.clearTooltip();
+}
+
+export async function startOverlay() {
+    let cnv = document.createElement('canvas');
+	let ctx = cnv.getContext('2d', {"willReadFrequently": true});
+
+	while (true) {
+		captureOverlay();
+		let overlay = <HTMLCanvasElement>document.getElementsByTagName('canvas')[0];
+
+		let overlayPosition = getSetting('overlayPosition');
+
+		let jg = document.getElementById('JobGauge');
+		let jobGaugeWidth = jg.offsetWidth;
+		let jobGaugeHeight = jg.offsetHeight;
+
+		alt1.overLaySetGroup('jobGauge');
+		alt1.overLayFreezeGroup('jobGauge');
+		cnv.width = jobGaugeWidth;
+		cnv.height = jobGaugeHeight;
+		/* If I try and use the overlay instead of copying the overlay it doesn't work. No idea why. */
+		ctx.drawImage(overlay, 0, 0);
+
+		let data = ctx.getImageData(0, 0, cnv.width, cnv.height);
+
+		alt1.overLayClearGroup('jobGauge');
+		alt1.overLayImage(
+			overlayPosition.x,
+			overlayPosition.y,
+			a1lib.encodeImageString(data),
+			data.width,
+			125
+		)
+		alt1.overLayRefreshGroup('jobGauge');
+		await new Promise((done) => setTimeout(done, 125));
+	}
 }
 
 function initSettings() {
@@ -279,6 +289,7 @@ function loadSettings() {
 	setLivingDeathCooldown();
 	setLivingDeathPlacement();
 	setAlerts();
+	setOverlay();
 	setCustomColors();
 	setCustomScale();
 	setLoopSpeed();
@@ -480,6 +491,17 @@ let revertDefaultColorButton = document.getElementById('RevertDefaultColors');
 revertDefaultColorButton.addEventListener('click', () => {
 	setDefaultColors();
 });
+
+function setOverlay() {
+	let showOverlay = <HTMLInputElement>(
+		document.getElementById('ShowOverlay')
+	);
+	setCheckboxChecked(showOverlay);
+	jobGauge.classList.toggle('overlay', Boolean(getSetting('activeOverlay')));
+	showOverlay.addEventListener('change', function() {
+		location.reload();
+	})
+}
 
 function setCustomColors() {
 	let currentSoulBgColor = getSetting('soulBgColor');
@@ -1029,9 +1051,6 @@ window.onload = function () {
 		alt1.identifyAppUrl('./appconfig.json');
 		initSettings();
 		startJobGauge();
-		if (getSetting('activeOverlay')) {
-			connectToWebSocket();
-		}
 	} else {
 		let addappurl = `alt1://addapp/${
 			new URL('./appconfig.json', document.location.href).href
