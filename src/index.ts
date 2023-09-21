@@ -183,9 +183,32 @@ function startLooping() {
 
 let posBtn = document.getElementById('OverlayPosition');
 posBtn.addEventListener('click', setOverlayPosition);
-function setOverlayPosition() {
-	a1lib.once("alt1pressed", updateLocation);
-	alt1.setTooltip('Move mouse to where you want the overlay to appear. Then press Alt+1')
+async function setOverlayPosition() {
+	let jg = document.getElementById('JobGauge');
+	let jobGaugeWidth = jg.offsetWidth;
+	let jobGaugeHeight = jg.offsetHeight;
+
+	a1lib.once('alt1pressed', updateLocation);
+	updateSetting('updatingOverlayPosition', true);
+	while (getSetting('updatingOverlayPosition')) {
+		alt1.overLaySetGroup('overlayPositionHelper');
+		alt1.overLayRect(
+			a1lib.mixColor(255, 255, 255),
+			Math.floor(
+				a1lib.getMousePosition().x -
+					((getSetting('jobGaugeScale') / 100) * jobGaugeWidth) / 2
+			),
+			Math.floor(
+				a1lib.getMousePosition().y -
+					((getSetting('jobGaugeScale') / 100) * jobGaugeHeight) / 2
+			),
+			Math.floor((getSetting('jobGaugeScale') / 100) * jobGaugeWidth),
+			Math.floor((getSetting('jobGaugeScale') / 100) * jobGaugeHeight),
+			200,
+			2
+		);
+			await new Promise((done) => setTimeout(done, 200));
+	}
 }
 
 function updateLocation(e) {
@@ -200,7 +223,8 @@ function updateLocation(e) {
 			e.y - (getSetting('jobGaugeScale') / 100) * (jobGaugeHeight / 2)
 		),
 	});
-	alt1.clearTooltip();
+	updateSetting('updatingOverlayPosition', false);
+	alt1.overLayClearGroup('overlayPositionHelper');
 }
 
 export async function startOverlay() {

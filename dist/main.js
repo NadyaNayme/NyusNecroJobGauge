@@ -13016,8 +13016,31 @@ function startLooping() {
 var posBtn = document.getElementById('OverlayPosition');
 posBtn.addEventListener('click', setOverlayPosition);
 function setOverlayPosition() {
-    alt1__WEBPACK_IMPORTED_MODULE_7__.once("alt1pressed", updateLocation);
-    alt1.setTooltip('Move mouse to where you want the overlay to appear. Then press Alt+1');
+    return __awaiter(this, void 0, void 0, function () {
+        var jg, jobGaugeWidth, jobGaugeHeight;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    jg = document.getElementById('JobGauge');
+                    jobGaugeWidth = jg.offsetWidth;
+                    jobGaugeHeight = jg.offsetHeight;
+                    alt1__WEBPACK_IMPORTED_MODULE_7__.once('alt1pressed', updateLocation);
+                    updateSetting('updatingOverlayPosition', true);
+                    _a.label = 1;
+                case 1:
+                    if (!getSetting('updatingOverlayPosition')) return [3 /*break*/, 3];
+                    alt1.overLaySetGroup('overlayPositionHelper');
+                    alt1.overLayRect(alt1__WEBPACK_IMPORTED_MODULE_7__.mixColor(255, 255, 255), Math.floor(alt1__WEBPACK_IMPORTED_MODULE_7__.getMousePosition().x -
+                        ((getSetting('jobGaugeScale') / 100) * jobGaugeWidth) / 2), Math.floor(alt1__WEBPACK_IMPORTED_MODULE_7__.getMousePosition().y -
+                        ((getSetting('jobGaugeScale') / 100) * jobGaugeHeight) / 2), Math.floor((getSetting('jobGaugeScale') / 100) * jobGaugeWidth), Math.floor((getSetting('jobGaugeScale') / 100) * jobGaugeHeight), 200, 2);
+                    return [4 /*yield*/, new Promise(function (done) { return setTimeout(done, 200); })];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 1];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
 function updateLocation(e) {
     var jg = document.getElementById('JobGauge');
@@ -13027,7 +13050,8 @@ function updateLocation(e) {
         x: Math.floor(e.x - (getSetting('jobGaugeScale') / 100) * (jobGaugeWidth / 2)),
         y: Math.floor(e.y - (getSetting('jobGaugeScale') / 100) * (jobGaugeHeight / 2)),
     });
-    alt1.clearTooltip();
+    updateSetting('updatingOverlayPosition', false);
+    alt1.overLayClearGroup('overlayPositionHelper');
 }
 function startOverlay() {
     return __awaiter(this, void 0, void 0, function () {
