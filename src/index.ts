@@ -145,7 +145,6 @@ function startLooping() {
 		alt1.overLaySetGroup('jobGauge');
 	}
 	const interval = setInterval(() => {
-
 		let buffs = getActiveBuffs();
 		if (buffs) {
 			if (!getSetting('necrosisTracker')) {
@@ -193,7 +192,14 @@ function updateLocation(e) {
 	let jg = document.getElementById('JobGauge');
 	let jobGaugeWidth = jg.offsetWidth;
 	let jobGaugeHeight = jg.offsetHeight;
-	updateSetting("overlayPosition", { x: Math.floor((e.x - (jobGaugeWidth/4 + 20))), y: Math.floor((e.y - (jobGaugeHeight/4)))});
+	updateSetting('overlayPosition', {
+		x: Math.floor(
+			e.x - (getSetting('jobGaugeScale') / 100) * (jobGaugeWidth / 2)
+		),
+		y: Math.floor(
+			e.y - (getSetting('jobGaugeScale') / 100) * (jobGaugeHeight / 2)
+		),
+	});
 	alt1.clearTooltip();
 }
 
