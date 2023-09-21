@@ -58,7 +58,7 @@ var buffImages = a1lib.webpackImages({
 });
 
 var equipmentImages = a1lib.webpackImages({
-	ofhandt95: require('./asset/data/Augmented_Soulbound_lantern.data.png'),
+	offhand95: require('./asset/data/Augmented_Soulbound_lantern.data.png'),
 });
 
 export function startJobGauge() {
@@ -236,6 +236,7 @@ export async function startOverlay() {
 function initSettings() {
 	if (!localStorage.nyusNecroJobGauge) {
 		setDefaultSettings();
+		checkForT95();
 		loadSettings();
 	} else {
 		loadSettings();
@@ -323,12 +324,23 @@ function setTrackerComponents() {
 	})
 }
 
+function checkForT95() {
+	let of95found = a1lib.findSubimage(
+		a1lib.captureHoldFullRs(),
+		equipmentImages.offhand95
+	);
+	let soulsCap = <HTMLInputElement>document.getElementById('SoulsCap');
+	if (of95found.length > 0) {
+		updateSetting('offhand95', true);
+		soulsCap.innerHTML = '5';
+	}
+}
+
 function setOffhand() {
 	let offhand = <HTMLInputElement>document.getElementById('Offhand');
+	let soulsCap = <HTMLInputElement>document.getElementById('SoulsCap');
 	setCheckboxChecked(offhand);
 	souls.classList.toggle('t90', !Boolean(getSetting('offhand95')));
-
-	let soulsCap = <HTMLInputElement>document.getElementById('SoulsCap');
 	if (offhand.checked) {
 		soulsCap.innerHTML = '5';
 	} else {

@@ -12908,7 +12908,7 @@ var buffImages = alt1__WEBPACK_IMPORTED_MODULE_7__.webpackImages({
     bloated: __webpack_require__(/*! ./asset/data/Bloated.data.png */ "./asset/data/Bloated.data.png"),
 });
 var equipmentImages = alt1__WEBPACK_IMPORTED_MODULE_7__.webpackImages({
-    ofhandt95: __webpack_require__(/*! ./asset/data/Augmented_Soulbound_lantern.data.png */ "./asset/data/Augmented_Soulbound_lantern.data.png"),
+    offhand95: __webpack_require__(/*! ./asset/data/Augmented_Soulbound_lantern.data.png */ "./asset/data/Augmented_Soulbound_lantern.data.png"),
 });
 function startJobGauge() {
     if (!window.alt1) {
@@ -13065,6 +13065,7 @@ function startOverlay() {
 function initSettings() {
     if (!localStorage.nyusNecroJobGauge) {
         setDefaultSettings();
+        checkForT95();
         loadSettings();
     }
     else {
@@ -13140,11 +13141,19 @@ function setTrackerComponents() {
         component.classList.toggle('tracked', !Boolean(getSetting(component.dataset.setting)));
     });
 }
+function checkForT95() {
+    var of95found = alt1__WEBPACK_IMPORTED_MODULE_7__.findSubimage(alt1__WEBPACK_IMPORTED_MODULE_7__.captureHoldFullRs(), equipmentImages.offhand95);
+    var soulsCap = document.getElementById('SoulsCap');
+    if (of95found.length > 0) {
+        updateSetting('offhand95', true);
+        soulsCap.innerHTML = '5';
+    }
+}
 function setOffhand() {
     var offhand = document.getElementById('Offhand');
+    var soulsCap = document.getElementById('SoulsCap');
     setCheckboxChecked(offhand);
     souls.classList.toggle('t90', !Boolean(getSetting('offhand95')));
-    var soulsCap = document.getElementById('SoulsCap');
     if (offhand.checked) {
         soulsCap.innerHTML = '5';
     }
