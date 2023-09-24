@@ -30,7 +30,6 @@ var necrosis = document.getElementById('Necrosis');
 var livingDeath = document.getElementById('LivingDeath');
 
 const alarms = {
-	alarm1: './resource/alarms/alarm1.wav',
 	alarm2: './resource/alarms/alarm2.wav',
 	notification1: './resource/alarms/notification1.wav',
 	notification2: './resource/alarms/notification2.wav',

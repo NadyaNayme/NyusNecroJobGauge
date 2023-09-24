@@ -158,7 +158,6 @@ body {
 }
 
 #OverlayCanvasOutput {
-  position: relative;
   text-align: center;
   width: 100%;
   display: none;
@@ -386,6 +385,7 @@ body {
   --timer: 0;
   --scale: 100;
   min-width: 200px;
+  max-width: 235px;
   height: 20px;
   background-color: #000;
   background-image: url(${___CSS_LOADER_URL_REPLACEMENT_7___});
@@ -12884,7 +12884,6 @@ var bloat = document.getElementById('Bloat');
 var necrosis = document.getElementById('Necrosis');
 var livingDeath = document.getElementById('LivingDeath');
 var alarms = {
-    alarm1: './resource/alarms/alarm1.wav',
     alarm2: './resource/alarms/alarm2.wav',
     notification1: './resource/alarms/notification1.wav',
     notification2: './resource/alarms/notification2.wav',

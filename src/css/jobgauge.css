@@ -16,7 +16,6 @@ body {
 }
 
 #OverlayCanvasOutput {
-  position: relative;
   text-align: center;
   width: 100%;
   display: none;
@@ -244,6 +243,7 @@ body {
   --timer: 0;
   --scale: 100;
   min-width: 200px;
+  max-width: 235px;
   height: 20px;
   background-color: #000;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAAAAACDjCb1AAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAZFJREFUOMt1082OUzEMhuHXPzktMELcwGy5/0tDQjD0NJ/NIqfTzgxkEVnKE1tyHHsGcwwKp2WOdZlDCAFAg+EYBd7I3BDLdJ7BdggCQQAUbgNCLgKiwSSI4NWAR0DMjIScnuum2pFXxIDyHqBShkNdTxymVq1lcotQ7HGkRaKJBGlOsG4iMkJxyZuZdTN7zfwKeNhm0ND79MDZq3uM5cfZAetTGjQtV/gy7iO/SfFyzsiJkMY4hVBpA0iA7QRifzqxDB55N/k0YaO8rdO83KlqkgQDL7aRqLk4vDVhCZZfgNYEBZCEmNyqBwIjDiMCyODB5KfVWsCPHlH38GHVI7mbrDci9BrynyTRFQLWTv6se1pfjyTaaSxvJw8Ex7qqRHuDbfkDIKzX3Aa6aOZUkFsG1twG+p2BZfJ3leNGY05P368C/jjxeQSACyb/Ntt5y1/zyE8CsybAvKq3mGsqBWqw/miai323UYAndnw9ayrm7JFNdZvp6rmM8cFkaX2x18a3lD6xeukwNzFN9HtjLON/AZYKBuOQJdXHAAAAAElFTkSuQmCC");
