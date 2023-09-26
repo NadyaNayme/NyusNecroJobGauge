@@ -307,6 +307,7 @@ function setDefaultSettings() {
 			offhand95: false,
 			overlayImage: '',
 			overlayOpacity: 1.0,
+			overlayPosition: {x: 100, y: 100},
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,
