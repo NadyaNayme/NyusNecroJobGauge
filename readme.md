@@ -42,3 +42,7 @@ Click the cog wheel in the bottom right to access the settings. It is suggested 
 - Bloat needs a lot of work to better track early re-applications. I'm brainstorming ideas but since the ability itself doesn't have a cooldown and both Finger of Death and Spectral Scythe can take 20% adrenaline, and the player might proc Ruthless, there is a lot of additional tracking to be done to tell if the player re-applied Bloat to reset the timer. For now if Bloat is re-applied the timer will reset to the full 18s once it is meant to expire and sees that it is still active. If Bloat drops off the target the timer will instantly set itself to 0s.
 
 If you encounter any other bugs - please submit an issue and I'll investigate it.
+
+## My Other Plugins
+
+To see my other Alt1 plugins [click here](https://github.com/NadyaNayme/NyusPluginDirectory)
