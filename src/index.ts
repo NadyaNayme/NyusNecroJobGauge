@@ -16,6 +16,7 @@ import './css/jobgauge.css';
 
 var buffs = new BuffReader.default();
 var targetDisplay = new TargetMob.default();
+var currentOverlayPosition = getSetting('overlayPosition');
 
 var output = document.getElementById('output');
 var settings = document.getElementById('Settings');
@@ -59,6 +60,41 @@ var buffImages = a1lib.webpackImages({
 var equipmentImages = a1lib.webpackImages({
 	offhand95: require('./asset/data/Augmented_Soulbound_lantern.data.png'),
 });
+
+let inCombat = false;
+let checkForTarget = getSetting('checkForTarget');
+let timeUntilHide = 2;
+let checkCombatState = () => {
+	let haveBuffs = buffs.read().length;
+	//If we don't have a target we aren't in combat (except for target cycle bug...)
+	if (targetDisplay && checkForTarget) {
+		targetDisplay.read();
+		if (targetDisplay.state === null) {
+			timeUntilHide = 0;
+			inCombat = false;
+		} else {
+			timeUntilHide = 2;
+			inCombat = true;
+		}
+	}
+	// If we aren't checking to see if we have a target - pretend we always do
+	if (!checkForTarget && haveBuffs) {
+		timeUntilHide = 2;
+		inCombat = true;
+	}
+	if (!haveBuffs) {
+		// We either have no buffs or they aren't visible (eg. banking) so aren't in combat
+		if (timeUntilHide == 0) {
+			inCombat = false;
+		} else {
+			setTimeout(() => {
+				if (timeUntilHide > 0) {
+					timeUntilHide--;
+				}
+			}, 1000);
+		}
+	}
+};
 
 export function startJobGauge() {
 	if (!window.alt1) {
@@ -107,35 +143,29 @@ function captureOverlay() {
 		useCORS: true,
 		removeContainer: true,
 	})
-	.then((canvas) => {
-		try {
-			paintCanvas(canvas);
-		} catch (e) {
-			console.log('Error saving image? ' + e);
-		}
-	})
-	.catch(() => {
-		console.log('Overlay failed to capture.');
-	});
+		.then((canvas) => {
+			try {
+				paintCanvas(canvas);
+			} catch (e) {
+				console.log('Error saving image? ' + e);
+			}
+		})
+		.catch(() => {
+			console.log('Overlay failed to capture.');
+		});
 }
 
 function paintCanvas(canvas: HTMLCanvasElement) {
-		let overlayCanvasOutput = document.getElementById(
-			'OverlayCanvasOutput'
-		);
-		let overlayCanvasContext = overlayCanvasOutput
-			.querySelector('canvas')
-			.getContext('2d', {'willReadFrequently': true});
-		overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
-		overlayCanvasContext.drawImage(canvas, 0, 0);
-		let overlay = overlayCanvasOutput.querySelector('canvas');
-		updateSetting('overlayImage', overlay.toDataURL());
-		updateSetting('firstFrame', true);
+	let overlayCanvasOutput = document.getElementById('OverlayCanvasOutput');
+	let overlayCanvasContext = overlayCanvasOutput
+		.querySelector('canvas')
+		.getContext('2d', { willReadFrequently: true });
+	overlayCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+	overlayCanvasContext.drawImage(canvas, 0, 0);
 }
 
 let maxAttempts = 10;
 function startLooping() {
-	updateSetting('firstFrame', false); /* We haven't captured a new frame yet */
 	if (getSetting('activeOverlay')) {
 		startOverlay();
 	} else {
@@ -145,20 +175,38 @@ function startLooping() {
 	}
 	const interval = setInterval(() => {
 		let buffs = getActiveBuffs();
+
+		// TODO: Benchmark this vs reading the setting from localStorage as I'm currently guessing which is faster here
+		let necrosisTracker = <HTMLInputElement>(
+			document.getElementById('NecrosisTracker')
+		);
+		let soulsTracker = <HTMLInputElement>(
+			document.getElementById('SoulStracker')
+		);
+		let conjureTracker = <HTMLInputElement>(
+			document.getElementById('ConjuresTracker')
+		);
+		let livingDeathTracker = <HTMLInputElement>(
+			document.getElementById('LivingDeathTracker')
+		);
+		let bloatTracker = <HTMLInputElement>(
+			document.getElementById('BloatTracker')
+		);
 		if (buffs) {
-			if (!getSetting('necrosisTracker')) {
+			checkCombatState();
+			if (!necrosisTracker.checked) {
 				findNecrosisCount(buffs);
 			}
-			if (!getSetting('soulsTracker')) {
+			if (!soulsTracker.checked) {
 				findSoulCount(buffs);
 			}
-			if (!getSetting('livingDeathTracker')) {
+			if (!livingDeathTracker.checked) {
 				findLivingDeath(buffs);
 			}
-			if (!getSetting('conjuresTracker')) {
+			if (!conjureTracker.checked) {
 				findConjures(buffs);
 			}
-			if (!getSetting('bloatTracker')) {
+			if (!bloatTracker.checked) {
 				findBloat();
 			}
 			// If we succesfully found buffs - restart our retries
@@ -172,12 +220,16 @@ function startLooping() {
 				clearInterval(interval);
 				return;
 			}
-			if (maxAttempts >- 0) {
+			if (maxAttempts > 0) {
 				maxAttempts--;
+				setTimeout(() => {}, 3000);
 			}
-			console.log(`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`);
+			console.log(
+				`Failed to read buffs - attempting again. Attempts left: ${maxAttempts}.`
+			);
 		}
-	}, getSetting('loopSpeed'));``
+	}, getSetting('loopSpeed'));
+	``;
 }
 
 let posBtn = document.getElementById('OverlayPosition');
@@ -206,7 +258,7 @@ async function setOverlayPosition() {
 			200,
 			2
 		);
-			await new Promise((done) => setTimeout(done, 200));
+		await new Promise((done) => setTimeout(done, 200));
 	}
 }
 
@@ -223,18 +275,19 @@ function updateLocation(e) {
 		),
 	});
 	updateSetting('updatingOverlayPosition', false);
+	currentOverlayPosition = getSetting('overlayPosition');
 	alt1.overLayClearGroup('overlayPositionHelper');
 }
 
 export async function startOverlay() {
-    let cnv = document.createElement('canvas');
-	let ctx = cnv.getContext('2d', {"willReadFrequently": true});
+	let cnv = document.createElement('canvas');
+	let ctx = cnv.getContext('2d', { willReadFrequently: true });
+	let overlay = <HTMLCanvasElement>document.getElementsByTagName('canvas')[0];
 
 	while (true) {
 		captureOverlay();
-		let overlay = <HTMLCanvasElement>document.getElementsByTagName('canvas')[0];
 
-		let overlayPosition = getSetting('overlayPosition');
+		let overlayPosition = currentOverlayPosition;
 
 		let jg = document.getElementById('JobGauge');
 		let jobGaugeWidth = jg.offsetWidth;
@@ -250,14 +303,20 @@ export async function startOverlay() {
 		let data = ctx.getImageData(0, 0, cnv.width, cnv.height);
 
 		alt1.overLayClearGroup('jobGauge');
-		alt1.overLayImage(
-			overlayPosition.x,
-			overlayPosition.y,
-			a1lib.encodeImageString(data),
-			data.width,
-			125
-		)
-		alt1.overLayRefreshGroup('jobGauge');
+		if (inCombat) {
+			alt1.overLayImage(
+				overlayPosition.x,
+				overlayPosition.y,
+				a1lib.encodeImageString(data),
+				data.width,
+				125
+			);
+			alt1.overLayRefreshGroup('jobGauge');
+		} else {
+			alt1.overLayClearGroup('jobGauge');
+			alt1.overLayRefreshGroup('jobGauge');
+		}
+
 		await new Promise((done) => setTimeout(done, 125));
 	}
 }
@@ -282,6 +341,7 @@ function setDefaultSettings() {
 			bloatScale: 100,
 			bloatTracker: false,
 			buffsLocation: findPlayerBuffs,
+			checkForTarget: true,
 			conjureScale: 100,
 			conjuresTracker: false,
 			debugMode: false,
@@ -305,9 +365,8 @@ function setDefaultSettings() {
 			necrosisScale: 100,
 			necrosisTracker: false,
 			offhand95: false,
-			overlayImage: '',
 			overlayOpacity: 1.0,
-			overlayPosition: {x: 100, y: 100},
+			overlayPosition: { x: 100, y: 100 },
 			playCappedNecrosisAlert: false,
 			playCappedSoulsAlert: false,
 			singleNecrosis: false,
@@ -326,6 +385,7 @@ function loadSettings() {
 	setConjureTimers();
 	setForcedConjures();
 	setGhostSettingsButton();
+	setCheckForTargetButton();
 	setSingleNecrosis();
 	setNecrosisGap();
 	setLivingDeathCooldown();
@@ -338,20 +398,20 @@ function loadSettings() {
 }
 
 function setTrackerComponents() {
-	let checkboxFields: NodeListOf<HTMLInputElement> = document.querySelectorAll(
-		'.tracker.setting'
-	);
+	let checkboxFields: NodeListOf<HTMLInputElement> =
+		document.querySelectorAll('.tracker.setting');
 	checkboxFields.forEach((checkbox) => {
 		checkbox.checked = Boolean(getSetting(checkbox.dataset.setting));
 	});
 
-	let trackerComponents: NodeListOf<HTMLElement> = document.querySelectorAll('.tracker.component');
+	let trackerComponents: NodeListOf<HTMLElement> =
+		document.querySelectorAll('.tracker.component');
 	trackerComponents.forEach((component) => {
 		component.classList.toggle(
 			'tracked',
 			!Boolean(getSetting(component.dataset.setting))
 		);
-	})
+	});
 }
 
 function checkForT95() {
@@ -377,7 +437,7 @@ function setOffhand() {
 		soulsCap.innerHTML = '3';
 	}
 	offhand.addEventListener('click', () => {
-		if(getSetting('offhand95')) {
+		if (getSetting('offhand95')) {
 			soulsCap.innerHTML = '5';
 		} else {
 			soulsCap.innerHTML = '3';
@@ -397,22 +457,36 @@ function setConjureTimers() {
 			'active-timer',
 			getSetting('activeConjureTimers')
 		);
-	})
+	});
 }
 
 function setForcedConjures() {
-	let forcedConjures = <HTMLInputElement>(document.getElementById('ForcedConjures'));
+	let forcedConjures = <HTMLInputElement>(
+		document.getElementById('ForcedConjures')
+	);
 	setCheckboxChecked(forcedConjures);
 }
 
 function setGhostSettingsButton() {
 	let settingsButton = document.getElementById('SettingsButton');
-	let ghostSettings = <HTMLInputElement>document.getElementById('GhostSettings');
+	let ghostSettings = <HTMLInputElement>(
+		document.getElementById('GhostSettings')
+	);
 	setCheckboxChecked(ghostSettings);
 	settingsButton.classList.toggle(
 		'ghost',
 		Boolean(getSetting('ghostSettings'))
 	);
+}
+
+function setCheckForTargetButton() {
+	let checkForTargetSetting = <HTMLInputElement>(
+		document.getElementById('CheckForTarget')
+	);
+	setCheckboxChecked(checkForTargetSetting);
+	checkForTargetSetting.addEventListener('click', () => {
+		checkForTarget = checkForTargetSetting.checked;
+	});
 }
 
 function setCheckboxChecked(el: HTMLInputElement) {
@@ -462,27 +536,41 @@ function setAlerts() {
 	);
 	setCheckboxChecked(loopCappedSoulsAlert);
 	playCappedSoulsAlert.checked = Boolean(getSetting('playCappedSoulsAlert'));
-	playCappedNecrosisAlert.checked = Boolean(getSetting('playCappedNecrosisAlert'));
+	playCappedNecrosisAlert.checked = Boolean(
+		getSetting('playCappedNecrosisAlert')
+	);
 
 	let loopCappedNecrosisAlert = <HTMLInputElement>(
 		document.getElementById('LoopCappedNecrosisAlert')
 	);
 	setCheckboxChecked(loopCappedNecrosisAlert);
 
-	let soulsAlertAudio = <HTMLInputElement>(document.getElementById('SoulsAlertAudio'));
+	let soulsAlertAudio = <HTMLInputElement>(
+		document.getElementById('SoulsAlertAudio')
+	);
 	soulsAlertAudio.value = getSetting('soulsAlertAudio');
 
-	let necrosisAlertAudio = <HTMLInputElement>(document.getElementById('NecrosisAlertAudio'));
+	let necrosisAlertAudio = <HTMLInputElement>(
+		document.getElementById('NecrosisAlertAudio')
+	);
 	necrosisAlertAudio.value = getSetting('necrosisAlertAudio');
 
 	/* Volume */
-	let SoulsAlertAudioVolumeOutput = document.querySelector('#SoulsAlertAudioVolumeOutput');
-	let SoulsAlertAudioVolume: any = document.querySelector('#SoulsAlertAudioVolume');
+	let SoulsAlertAudioVolumeOutput = document.querySelector(
+		'#SoulsAlertAudioVolumeOutput'
+	);
+	let SoulsAlertAudioVolume: any = document.querySelector(
+		'#SoulsAlertAudioVolume'
+	);
 	SoulsAlertAudioVolume.value = getSetting('soulsAlertAudioVolume');
 	SoulsAlertAudioVolumeOutput.textContent = SoulsAlertAudioVolume.value;
 
-	let NecrosisAlertAudioVolumeOutput = document.querySelector('#NecrosisAlertAudioVolumeOutput');
-	let NecrosisAlertAudioVolume: any = document.querySelector('#NecrosisAlertAudioVolume');
+	let NecrosisAlertAudioVolumeOutput = document.querySelector(
+		'#NecrosisAlertAudioVolumeOutput'
+	);
+	let NecrosisAlertAudioVolume: any = document.querySelector(
+		'#NecrosisAlertAudioVolume'
+	);
 	NecrosisAlertAudioVolume.value = getSetting('necrosisAlertAudioVolume');
 	NecrosisAlertAudioVolumeOutput.textContent = NecrosisAlertAudioVolume.value;
 }
@@ -546,14 +634,12 @@ revertDefaultColorButton.addEventListener('click', () => {
 });
 
 function setOverlay() {
-	let showOverlay = <HTMLInputElement>(
-		document.getElementById('ShowOverlay')
-	);
+	let showOverlay = <HTMLInputElement>document.getElementById('ShowOverlay');
 	setCheckboxChecked(showOverlay);
 	jobGauge.classList.toggle('overlay', Boolean(getSetting('activeOverlay')));
-	showOverlay.addEventListener('change', function() {
+	showOverlay.addEventListener('change', function () {
 		location.reload();
-	})
+	});
 }
 
 function setCustomColors() {
@@ -653,8 +739,11 @@ function setCustomScale() {
 	let BloatScaleInput: any = document.querySelector('#BloatScale');
 	BloatScaleValue.textContent = BloatScaleInput.value;
 
-	let LivingDeathScaleValue = document.querySelector('#LivingDeathScaleOutput');
-	let LivingDeathScaleInput: any = document.querySelector('#LivingDeathScale');
+	let LivingDeathScaleValue = document.querySelector(
+		'#LivingDeathScaleOutput'
+	);
+	let LivingDeathScaleInput: any =
+		document.querySelector('#LivingDeathScale');
 	LivingDeathScaleValue.textContent = LivingDeathScaleInput.value;
 
 	let NecrosisScaleValue = document.querySelector('#NecrosisScaleOutput');
@@ -663,7 +752,6 @@ function setCustomScale() {
 }
 
 function setLoopSpeed() {
-
 	if (getSetting('loopSpeed') == '') {
 		updateSetting('loopSpeed', 125);
 	}
@@ -781,13 +869,14 @@ function playAlert(type: string) {
 	if (type === 'souls') {
 		soulsAlert = new Audio(alarms[getSetting('soulsAlertAudio')]);
 		soulsAlert.loop = getSetting('loopCappedSoulsAlert');
-		soulsAlert.volume = Number(getSetting('soulsAlertAudioVolume'))/100;
+		soulsAlert.volume = Number(getSetting('soulsAlertAudioVolume')) / 100;
 		soulsAlert.play();
 	}
 	if (type == 'necrosis') {
 		necrosisAlert = new Audio(alarms[getSetting('necrosisAlertAudio')]);
 		necrosisAlert.loop = getSetting('loopCappedNecrosisAlert');
-		necrosisAlert.volume = Number(getSetting('necrosisAlertAudioVolume'))/100;
+		necrosisAlert.volume =
+			Number(getSetting('necrosisAlertAudioVolume')) / 100;
 		necrosisAlert.play();
 	}
 }
@@ -845,7 +934,10 @@ function findLivingDeath(buffs: BuffReader.Buff[]) {
 	if (livingDeathTimer == 0) {
 		livingDeath.classList.add('inactive');
 		/* When Living Death activity starts we set that the Player has cast the ability */
-		if (livingDeath.dataset.cast == '1' && !(getSetting('livingDeathCooldown'))) {
+		if (
+			livingDeath.dataset.cast == '1' &&
+			!getSetting('livingDeathCooldown')
+		) {
 			/* Unset value for next detection */
 			livingDeath.dataset.cast = '0';
 
@@ -891,7 +983,6 @@ function findSoulCount(buffs: BuffReader.Buff[]) {
 		}
 	}
 	souls.dataset.souls = soulsCount.toString();
-
 
 	if (
 		soulsCount === maxSoulsCount &&
@@ -947,7 +1038,9 @@ function findConjures(buffs: BuffReader.Buff[]) {
 	zombie_conjure.classList.toggle('active', foundConjures[1]);
 	ghost_conjure.classList.toggle('active', foundConjures[2]);
 
-	let forcedConjures = <HTMLInputElement>(document.getElementById('ForcedConjures'));
+	let forcedConjures = <HTMLInputElement>(
+		document.getElementById('ForcedConjures')
+	);
 	if (forcedConjures.checked) {
 		let skeletonFinal12 = skeleton_conjure.dataset.timer;
 		let zombieFinal12 = zombie_conjure.dataset.timer;
@@ -1020,11 +1113,13 @@ function toggleSettings() {
 let settingsButton = document.getElementById('SettingsButton');
 settingsButton.addEventListener('click', toggleSettings);
 
-let checkboxFields: NodeListOf<HTMLInputElement> = document.querySelectorAll('input[type="checkbox"]');
+let checkboxFields: NodeListOf<HTMLInputElement> = document.querySelectorAll(
+	'input[type="checkbox"]'
+);
 checkboxFields.forEach((checkbox) => {
 	checkbox.addEventListener('click', (e) => {
-			updateSetting(checkbox.dataset.setting, checkbox.checked);
-		})
+		updateSetting(checkbox.dataset.setting, checkbox.checked);
+	});
 });
 
 let playCappedSoulsAlert = <HTMLInputElement>(
@@ -1047,11 +1142,12 @@ playCappedNecrosisAlert.addEventListener('click', () => {
 	}
 });
 
-let audioFileSelectors: NodeListOf<HTMLSelectElement> = document.querySelectorAll('select.audio-file');
+let audioFileSelectors: NodeListOf<HTMLSelectElement> =
+	document.querySelectorAll('select.audio-file');
 audioFileSelectors.forEach((fileSelector) => {
 	fileSelector.addEventListener('change', () => {
 		updateSetting(fileSelector.dataset.setting, fileSelector.value);
-	})
+	});
 });
 
 var colorFields: any = document.getElementsByClassName('colors');
@@ -1061,20 +1157,26 @@ for (let color of colorFields) {
 	});
 }
 
-var scaleSliderFields: any = document.querySelectorAll('input[type="range"].scale');
+var scaleSliderFields: any = document.querySelectorAll(
+	'input[type="range"].scale'
+);
 scaleSliderFields.forEach((scaleSlider) => {
 	scaleSlider.addEventListener('input', (event) => {
 		updateSetting(scaleSlider.dataset.setting, event.target.value);
-	})
+	});
 });
 
-var SoulsAlertAudioVolume: any = document.querySelector('#SoulsAlertAudioVolume');
+var SoulsAlertAudioVolume: any = document.querySelector(
+	'#SoulsAlertAudioVolume'
+);
 SoulsAlertAudioVolume.addEventListener('input', (event) => {
 	updateSetting('soulsAlertAudioVolume', event.target.value);
 	soulsAlert.volume = Number(getSetting('soulslertAudioVolume')) / 100;
 });
 
-var NecrosisAlertAudioVolume: any = document.querySelector('#NecrosisAlertAudioVolume');
+var NecrosisAlertAudioVolume: any = document.querySelector(
+	'#NecrosisAlertAudioVolume'
+);
 NecrosisAlertAudioVolume.addEventListener('input', (event) => {
 	updateSetting('necrosisAlertAudioVolume', event.target.value);
 	necrosisAlert.volume = Number(getSetting('necrosisAlertAudioVolume')) / 100;
