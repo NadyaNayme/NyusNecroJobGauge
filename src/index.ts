@@ -50,11 +50,11 @@ var buffImages = a1lib.webpackImages({
 	necrosis: require('./asset/data/Necrosis.data.png'),
 	residual_soul: require('./asset/data/Residual_Soul.data.png'),
 
-	skeleton_warrior: require('./asset/data/Skeleton_Warrior.data.png'),
-	putrid_zombie: require('./asset/data/Putrid_Zombie.data.png'),
-	vengeful_ghost: require('./asset/data/Vengeful_Ghost.data.png'),
+	skeleton_warrior: require('./asset/data/skeleton_warrior-top.data.png'),
+	putrid_zombie: require('./asset/data/putrid_zombie-top.data.png'),
+	vengeful_ghost: require('./asset/data/vengeful_ghost-top.data.png'),
 
-	bloated: require('./asset/data/Bloated.data.png'),
+	bloated: require('./asset/data/bloated.data.png'),
 });
 
 var equipmentImages = a1lib.webpackImages({
@@ -794,10 +794,10 @@ function findPlayerBuffs() {
 				a1lib.mixColor(255, 255, 255),
 				getSetting('buffsLocation')[0],
 				getSetting('buffsLocation')[1],
-				250,
-				100,
-				50,
-				1
+				306,
+				78,
+				500,
+				2
 			);
 		}
 		return updateSetting('buffsLocation', [buffs.pos.x, buffs.pos.y]);
