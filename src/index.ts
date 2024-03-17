@@ -1015,13 +1015,13 @@ function findConjures(buffs: BuffReader.Buff[]) {
 			buffImages.skeleton_warrior,
 			false
 		);
-		if (skeletonCheck.passed > 70) {
+		if (skeletonCheck.passed > 150) {
 			foundSkeleton = true;
 			skeleton_conjure.dataset.timer = value.readTime().toString();
 		}
 
 		let zombieCheck = value.countMatch(buffImages.putrid_zombie, false);
-		if (zombieCheck.passed > 100) {
+		if (zombieCheck.passed > 150) {
 			foundZombie = true;
 			zombie_conjure.dataset.timer = value.readTime().toString();
 		}

@@ -13723,12 +13723,12 @@ function findConjures(buffs) {
     for (var _i = 0, _a = Object.entries(buffs); _i < _a.length; _i++) {
         var _b = _a[_i], _key = _b[0], value = _b[1];
         var skeletonCheck = value.countMatch(buffImages.skeleton_warrior, false);
-        if (skeletonCheck.passed > 70) {
+        if (skeletonCheck.passed > 150) {
             foundSkeleton = true;
             skeleton_conjure.dataset.timer = value.readTime().toString();
         }
         var zombieCheck = value.countMatch(buffImages.putrid_zombie, false);
-        if (zombieCheck.passed > 100) {
+        if (zombieCheck.passed > 150) {
             foundZombie = true;
             zombie_conjure.dataset.timer = value.readTime().toString();
         }
