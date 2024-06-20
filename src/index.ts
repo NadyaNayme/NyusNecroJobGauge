@@ -40,6 +40,9 @@ const alarms = {
 	nuclear: './resource/alarms/nuclear.wav',
 };
 
+// A map to store interval IDs associated with elements to manage timers
+const intervalMap = new Map();
+
 // loads all images as raw pixel data async, images have to be saved as *.data.png
 // this also takes care of metadata headers in the image that make browser load the image
 // with slightly wrong colors
@@ -813,54 +816,59 @@ function getActiveBuffs() {
 }
 
 function findBloat() {
-	targetDisplay.read();
-	if (targetDisplay.lastpos === null) {
-		return;
-	}
+    targetDisplay.read();
+    if (targetDisplay.lastpos === null) {
+        return;
+    }
 
-	var target_display_loc = {
-		x: targetDisplay?.lastpos.x - 120,
-		y: targetDisplay?.lastpos.y + 20,
-		w: 150,
-		h: 60,
-	};
-	var targetDebuffs = a1lib.captureHold(
-		target_display_loc.x,
-		target_display_loc.y,
-		target_display_loc.w,
-		target_display_loc.h
-	);
-	var targetIsBloated = targetDebuffs.findSubimage(buffImages.bloated).length;
-	var bloatTimer = parseFloat(parseFloat(bloat.dataset.timer).toFixed(2));
-	if (targetIsBloated && bloatTimer == 0) {
-		bloat.dataset.timer = '18';
-		for (let i = 0; i < 30; i++) {
-			setTimeout(() => {
-				if (!targetIsBloated) {
-					bloat.style.setProperty('--timer', (0.0).toString());
-					bloat.dataset.timer = (0.0).toString();
-				} else {
-					let currentTick = roundedToFixed(bloat.dataset.timer, 1);
-					let nextTick = roundedToFixed(
-						parseFloat(currentTick) - 0.6,
-						1
-					);
-					if (parseInt(nextTick, 10) > 0) {
-						bloat.style.setProperty('--timer', nextTick);
-						bloat.dataset.timer = nextTick;
-					}
-				}
-			}, 600 * i);
-		}
-	} else if (!targetIsBloated) {
-		bloat.style.setProperty('--timer', (0.0).toString());
-		bloat.dataset.timer = (0.0).toString();
-	}
+    var target_display_loc = {
+        x: targetDisplay?.lastpos.x - 120,
+        y: targetDisplay?.lastpos.y + 20,
+        w: 150,
+        h: 60,
+    };
+    var targetDebuffs = a1lib.captureHold(
+        target_display_loc.x,
+        target_display_loc.y,
+        target_display_loc.w,
+        target_display_loc.h
+    );
+    var targetIsBloated = targetDebuffs.findSubimage(buffImages.bloated).length > 0;
+
+    if (targetIsBloated && !intervalMap.has(bloat)) {
+        bloat.dataset.timer = '18';
+        bloat.style.setProperty('--timer', '18');
+
+        const intervalId = setInterval(() => {
+            let currentTick = parseFloat(bloat.dataset.timer);
+
+            if (currentTick > 0) {
+                let nextTick = roundedToFixed(currentTick - 0.6, 1);
+                bloat.style.setProperty('--timer', nextTick.toString());
+                bloat.dataset.timer = nextTick.toString();
+            } else {
+                clearInterval(intervalMap.get(bloat));
+                intervalMap.delete(bloat);
+                bloat.style.setProperty('--timer', '0.0');
+                bloat.dataset.timer = '0.0';
+            }
+        }, 600);
+
+        intervalMap.set(bloat, intervalId);
+    } else if (!targetIsBloated) {
+        if (intervalMap.has(bloat)) {
+            clearInterval(intervalMap.get(bloat));
+            intervalMap.delete(bloat);
+        }
+
+        bloat.style.setProperty('--timer', '0.0');
+        bloat.dataset.timer = '0.0';
+    }
 }
 
 function roundedToFixed(input, digits) {
-	var rounder = Math.pow(10, digits);
-	return (Math.round(input * rounder) / rounder).toFixed(digits);
+    var rounder = Math.pow(10, digits);
+    return (Math.round(input * rounder) / rounder).toFixed(digits);
 }
 
 let soulsAlert: HTMLAudioElement;
