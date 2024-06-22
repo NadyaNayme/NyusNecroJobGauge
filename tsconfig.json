@@ -5,7 +5,5 @@
 		"resolvePackageJsonExports": true,
 		"moduleResolution": "bundler",
 		"module": "ESNext",
-		"lib": ["dom", "es6"],
-		"target": "es6",
 	}
 }
