@@ -2,6 +2,9 @@
 
 If someone linked you to this repo please look at [Job Gauges](https://github.com/NadyaNayme/job-gauges) instead. It is a rewrite of Necromancy Job Gauge with the intention of supporting other combat styles eventually within the same app. It is significantly lighter on CPU usage and is the supported version of this plugin going forward. All current and future development of Necromancy Job Gauges has ceased to focus on Job Gauges.
 
+> [!CAUTION]
+> If you are a new user you are likely looking for Job Gauges! If there is a reason you are choosing Necromancy Job Gauge over Job Gauges please let me know!
+
 ## (Nyu's) Necro Job Gauge
 
 Track your Residual Souls, Necrosis stacks, summoned Conjures, and Bloat all in one consistent place. Inspired by FFXIV's Job Gauges - to make tracking your resources as easy as can be!
