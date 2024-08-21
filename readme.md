@@ -11,7 +11,7 @@ Track your Residual Souls, Necrosis stacks, summoned Conjures, and Bloat all in 
 ## How to Install & Required Settings
 
 > [!CAUTION]
-> If you are a new user you are likely looking for Job Gauges! If there is a reason you are choosing Necromancy Job Gauge over Job Gauges please let me know!
+> If you are a new user you are likely looking for [Job Gauges](https://github.com/NadyaNayme/job-gauges)! If there is a reason you are choosing Necromancy Job Gauge over Job Gauges please let me know!
 
 To install Nyu's Necromancy Job Gauge copy & paste this link into Alt1's browser app:
 `alt1://addapp/https://nadyanayme.github.io/NyusNecroJobGauge/dist/appconfig.json`
