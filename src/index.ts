@@ -1207,11 +1207,6 @@ window.onload = function () {
 		initSettings();
 		startJobGauge();
 
-		alt1.setTooltip('Please consider updating to Job Gauges - link found in settings.');
-		setTimeout(() => {
-			alt1.clearTooltip();
-		}, 5000);
-
 	} else {
 		let addappurl = `alt1://addapp/${
 			new URL('./appconfig.json', document.location.href).href
